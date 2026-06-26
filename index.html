@@ -18,7 +18,6 @@
         <div class="header-container">
             <a href="#" class="logo" id="logo-btn">
                 <span class="logo-accent">Fallen</span>Anime
-                <span class="logo-badge">Cloned</span>
             </a>
             
             <div class="search-box">
@@ -98,7 +97,17 @@
         <!-- Catalog Section -->
         <section class="catalog-section" id="catalog-section">
             <div class="section-header">
-                <h2 class="section-title" id="catalog-heading">Latest Updates</h2>
+                <div class="section-header-top">
+                    <h2 class="section-title" id="catalog-heading">Latest Updates</h2>
+                    <div class="layout-toggle">
+                        <button id="layout-grid-btn" class="layout-btn active" title="Grid View" aria-label="Grid View">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        </button>
+                        <button id="layout-list-btn" class="layout-btn" title="List View" aria-label="List View">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                        </button>
+                    </div>
+                </div>
                 <div class="filter-badge-list" id="genre-filters">
                     <!-- Filter tags populated dynamically -->
                 </div>
@@ -158,10 +167,26 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">
-            <p>&copy; 2026 FallenAnime Portal. Content synced from animexin.dev.</p>
-            <p class="footer-subtext">This website is a cloned interface for offline media viewing and testing synchronization scripts.</p>
+            <p>&copy; 2026 FallenAnime Portal. All rights reserved.</p>
+            <p class="footer-subtext">Watch high-quality Donghua and Anime with English and Indonesian subtitles.</p>
         </div>
     </footer>
+
+    <!-- Floating Chat Button -->
+    <button class="chat-toggle-btn" id="chat-toggle-btn" title="Open Community Chat">
+        <span>💬 Community Chat</span>
+    </button>
+
+    <!-- Chat Drawer -->
+    <div class="chat-drawer" id="chat-drawer">
+        <div class="chat-drawer-header">
+            <h3>💬 Viewer Chat Room</h3>
+            <button class="chat-close-btn" id="chat-close-btn" aria-label="Close Chat Drawer">&times;</button>
+        </div>
+        <div class="chat-drawer-body">
+            <iframe src="https://chitchatter.im/public/fallenanime-chat?embed=1" allow="camera; microphone; display-capture; fullscreen; clipboard-read; clipboard-write; speaker-selection"></iframe>
+        </div>
+    </div>
 
     <!-- Script Application -->
     <script src="app.js"></script>

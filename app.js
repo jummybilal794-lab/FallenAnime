@@ -41,6 +41,10 @@ const syncStatusIndicator = document.getElementById('sync-status-indicator');
 const lastSyncTime = document.getElementById('last-sync-time');
 const consoleLog = document.getElementById('console-log');
 
+const chatToggleBtn = document.getElementById('chat-toggle-btn');
+const chatCloseBtn = document.getElementById('chat-close-btn');
+const chatDrawer = document.getElementById('chat-drawer');
+
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
     loadDatabase();
@@ -411,6 +415,15 @@ function setupEventListeners() {
 
     // Trigger Sync button
     triggerSyncBtn.addEventListener('click', triggerSync);
+
+    // Chat drawer controls
+    chatToggleBtn.addEventListener('click', () => {
+        chatDrawer.classList.toggle('active');
+    });
+
+    chatCloseBtn.addEventListener('click', () => {
+        chatDrawer.classList.remove('active');
+    });
 }
 
 // Trigger background synchronization API

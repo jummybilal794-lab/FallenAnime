@@ -919,3 +919,235 @@ a {
     from { opacity: 0; transform: translateY(-15px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* ==========================================
+   Grid/List Layout Switcher & List Styles
+   ========================================== */
+.section-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.layout-toggle {
+    display: flex;
+    gap: 0.5rem;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    padding: 4px;
+    border-radius: var(--radius-sm);
+}
+
+.layout-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    padding: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.layout-btn:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-tertiary);
+}
+
+.layout-btn.active {
+    color: var(--text-primary);
+    background-color: var(--accent-red);
+    box-shadow: 0 0 10px var(--accent-red-glow);
+}
+
+.card-time-badge {
+    font-size: 0.72rem;
+    color: var(--accent-peach);
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* List View Layout Override for Catalog Grid */
+.catalog-grid.list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.catalog-grid.list-view .video-card {
+    flex-direction: row;
+    align-items: center;
+    padding: 0.75rem;
+    gap: 1.5rem;
+}
+
+.catalog-grid.list-view .card-thumb-wrapper {
+    width: 180px;
+    height: 110px;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+}
+
+.catalog-grid.list-view .card-details {
+    padding: 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 1.5rem;
+}
+
+.catalog-grid.list-view .card-title {
+    margin-bottom: 0;
+    height: auto;
+    -webkit-line-clamp: 1;
+    font-size: 1.05rem;
+}
+
+.catalog-grid.list-view .card-meta {
+    flex-direction: row;
+    gap: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 0;
+}
+
+@media (max-width: 768px) {
+    .section-header-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .catalog-grid.list-view .video-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .catalog-grid.list-view .card-thumb-wrapper {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16/10;
+    }
+    
+    .catalog-grid.list-view .card-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+}
+
+/* ==========================================
+   Real-Time Community Chat Widget & Drawer
+   ========================================== */
+.chat-toggle-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 400;
+    background: var(--accent-gradient);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 8px 25px var(--accent-red-glow);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.chat-toggle-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(225, 15, 28, 0.6);
+}
+
+.chat-toggle-btn:active {
+    transform: scale(0.97);
+}
+
+.chat-drawer {
+    position: fixed;
+    top: 0;
+    right: -400px; /* Hidden by default */
+    width: 380px;
+    height: 100vh;
+    background-color: var(--bg-secondary);
+    border-left: 1px solid var(--border-color);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.8);
+    z-index: 450;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chat-drawer.active {
+    right: 0;
+}
+
+.chat-drawer-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-tertiary);
+}
+
+.chat-drawer-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.chat-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: var(--transition);
+}
+
+.chat-close-btn:hover {
+    color: var(--text-primary);
+}
+
+.chat-drawer-body {
+    flex-grow: 1;
+    background-color: black;
+    position: relative;
+    overflow: hidden;
+}
+
+.chat-drawer-body iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background-color: transparent;
+}
+
+@media (max-width: 480px) {
+    .chat-drawer {
+        width: 100%;
+        right: -100%;
+    }
+    
+    .chat-toggle-btn {
+        bottom: 1.5rem;
+        right: 1.5rem;
+        padding: 0.7rem 1.2rem;
+        font-size: 0.85rem;
+    }
+}
