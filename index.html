@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FallenAnime - Clone & Sync Hub</title>
+    <meta name="description" content="Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from Animexin.dev.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Top Header -->
+    <header class="header">
+        <div class="header-container">
+            <a href="#" class="logo" id="logo-btn">
+                <span class="logo-accent">Fallen</span>Anime
+                <span class="logo-badge">Cloned</span>
+            </a>
+            
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search donghua series or episodes..." aria-label="Search videos">
+                <span class="search-icon">🔍</span>
+            </div>
+            
+            <nav class="nav">
+                <a href="#" class="nav-link active" id="nav-all">All Episodes</a>
+                <button class="btn btn-primary" id="open-sync-btn">Sync Hub</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        
+        <!-- Live Sync Bar -->
+        <div class="sync-banner" id="sync-banner" style="display: none;">
+            <div class="sync-banner-content">
+                <div class="sync-spinner"></div>
+                <span id="sync-banner-text">Video synchronization is running in the background...</span>
+            </div>
+        </div>
+
+        <!-- Watch Section (Hidden by default, shown when an episode is selected) -->
+        <section class="watch-section" id="watch-section" style="display: none;">
+            <div class="watch-container">
+                <div class="watch-main">
+                    <!-- Video player element -->
+                    <div class="player-wrapper">
+                        <div class="player-container" id="player-container">
+                            <div class="player-placeholder">
+                                <p>Select an episode or mirror to begin playback.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Watch Details -->
+                    <div class="watch-details">
+                        <div class="watch-meta-top">
+                            <h1 class="watch-title" id="watch-title">Episode Title</h1>
+                            <span class="watch-date" id="watch-date">Date Published</span>
+                        </div>
+                        
+                        <!-- Mirror Selector -->
+                        <div class="mirror-selector-box">
+                            <label for="mirror-select" class="mirror-label">Select Mirror Server:</label>
+                            <div class="custom-select-wrapper">
+                                <select id="mirror-select" class="mirror-select" aria-label="Select Video Mirror">
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="watch-desc-box">
+                            <h3>Synopsis & Info</h3>
+                            <p class="watch-description" id="watch-description">Episode description goes here...</p>
+                        </div>
+                        
+                        <div class="watch-categories" id="watch-categories">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Watch Sidebar (Up Next / Recommended) -->
+                <aside class="watch-sidebar">
+                    <h2 class="sidebar-heading">Latest Episodes</h2>
+                    <div class="sidebar-list" id="sidebar-list">
+                        <!-- Populated dynamically -->
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <!-- Catalog Section -->
+        <section class="catalog-section" id="catalog-section">
+            <div class="section-header">
+                <h2 class="section-title" id="catalog-heading">Latest Updates</h2>
+                <div class="filter-badge-list" id="genre-filters">
+                    <!-- Filter tags populated dynamically -->
+                </div>
+            </div>
+            
+            <div class="catalog-grid" id="catalog-grid">
+                <!-- Video cards loaded dynamically -->
+                <div class="loading-state">
+                    <div class="sync-spinner big"></div>
+                    <p>Loading catalog items...</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Sync Dashboard Overlay -->
+    <div class="overlay" id="sync-overlay">
+        <div class="dashboard-modal">
+            <button class="close-btn" id="close-sync-btn" aria-label="Close Sync Dashboard">&times;</button>
+            <h2 class="modal-title">🔄 Video Synchronization Hub</h2>
+            <p class="modal-desc">This panel manages the connection with animexin.dev to fetch new episodes directly into your local offline database.</p>
+            
+            <div class="status-card">
+                <div class="status-item">
+                    <span class="status-label">Database Status:</span>
+                    <span class="status-value highlight" id="db-count">0 Synced Videos</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Updater Agent:</span>
+                    <span class="status-value" id="sync-status-indicator">
+                        <span class="dot dot-green"></span> Idle (Standby)
+                    </span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Last Checked:</span>
+                    <span class="status-value" id="last-sync-time">Never</span>
+                </div>
+            </div>
+            
+            <div class="action-box">
+                <button class="btn btn-success btn-lg" id="trigger-sync-btn">
+                    Sync New Videos Now
+                </button>
+                <p class="action-note">Running a sync checks the WordPress RSS feed and downloads metadata/mirrors for any episodes published since the last update. This takes about 1-2 seconds per episode.</p>
+            </div>
+            
+            <div class="console-box">
+                <h3>System Updater Log Output</h3>
+                <div class="console-log" id="console-log">
+                    [System] Standby. Waiting for sync trigger...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2026 FallenAnime Portal. Content synced from animexin.dev.</p>
+            <p class="footer-subtext">This website is a cloned interface for offline media viewing and testing synchronization scripts.</p>
+        </div>
+    </footer>
+
+    <!-- Script Application -->
+    <script src="app.js"></script>
+</body>
+</html>
