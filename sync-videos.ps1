@@ -146,10 +146,24 @@ foreach ($item in $newItems) {
         # Parse categories
         $categories = @()
         if ($item.category) {
+            $catItems = @()
             if ($item.category -is [array]) {
-                $categories = $item.category
+                $catItems = $item.category
             } else {
-                $categories = @($item.category)
+                $catItems = @($item.category)
+            }
+            foreach ($cat in $catItems) {
+                $val = ""
+                if ($cat -is [System.Xml.XmlElement]) {
+                    $val = $cat.InnerText
+                } elseif ($cat -is [string]) {
+                    $val = $cat
+                } elseif ($cat) {
+                    $val = $cat.ToString()
+                }
+                if (-not [string]::IsNullOrWhiteSpace($val)) {
+                    $categories += $val.Trim()
+                }
             }
         }
         
@@ -182,8 +196,8 @@ foreach ($item in $newItems) {
         Write-Error "Failed to scrape page $($item.link): $_"
     }
     
-    # Brief pause to avoid hammering the server
-    Start-Sleep -Seconds 1
+    # Brief pause to avoid rate limiting
+    Start-Sleep -Milliseconds 150
 }
 
 if ($newVideosList.Count -gt 0) {
@@ -194,7 +208,7 @@ if ($newVideosList.Count -gt 0) {
     }
     
     # Merge
-    $updatedVideos = $newObjects + $videos
+    $updatedVideos = @($newObjects) + $videos
     
     # Convert and write to file
     try {

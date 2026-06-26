@@ -107,8 +107,8 @@ function generateFilterTags() {
         if (v.categories && Array.isArray(v.categories)) {
             v.categories.forEach(c => {
                 // Keep tags clean (avoid long tags or title tags)
-                if (c && c.length < 25 && !c.includes('Episode') && !c.includes('Subtitle')) {
-                    categoriesSet.add(c);
+                if (c && typeof c === 'string' && c.trim().length > 0 && c.length < 25 && !c.includes('Episode') && !c.includes('Subtitle')) {
+                    categoriesSet.add(c.trim());
                 }
             });
         }
@@ -252,12 +252,14 @@ function showWatchView(index, scroll = true) {
 
     // Populate Categories
     watchCategories.innerHTML = '';
-    if (video.categories) {
+    if (video.categories && Array.isArray(video.categories)) {
         video.categories.forEach(c => {
-            const tag = document.createElement('span');
-            tag.className = 'category-tag';
-            tag.textContent = c;
-            watchCategories.appendChild(tag);
+            if (c && typeof c === 'string' && c.trim().length > 0) {
+                const tag = document.createElement('span');
+                tag.className = 'category-tag';
+                tag.textContent = c.trim();
+                watchCategories.appendChild(tag);
+            }
         });
     }
 
