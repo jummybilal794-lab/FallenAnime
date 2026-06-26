@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jummybilal794-lab.github.io/FallenAnime/sitemap.xml

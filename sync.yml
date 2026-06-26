@@ -1,0 +1,41 @@
+name: Sync Videos
+
+on:
+  schedule:
+    - cron: '0 */4 * * *' # Triggers automatically every 4 hours
+  workflow_dispatch: # Allows you to trigger the sync manually from your GitHub Actions tab
+
+permissions:
+  contents: write # Grants the workflow permission to commit the updated database back to your repository
+
+jobs:
+  sync-job:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Run synchronization script
+        shell: pwsh
+        run: |
+          ./sync-videos.ps1 -MaxPages 5
+          
+      - name: Generate updated sitemap
+        shell: pwsh
+        run: |
+          ./generate-sitemap.ps1
+
+      - name: Check if database or sitemap changed
+        id: git-check
+        run: |
+          git diff --quiet videos.json sitemap.xml || echo "changes=true" >> $GITHUB_OUTPUT
+          
+      - name: Commit and Push changes
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add videos.json sitemap.xml
+          git commit -m "System: Auto-synced latest episodes and updated sitemap"
+          git push

@@ -310,6 +310,68 @@ function showWatchView(index, scroll = true) {
     // Show watch section, collapse catalog view spacing
     watchSection.style.display = 'block';
     catalogHeading.textContent = 'Browse More Episodes';
+
+    // Update Document Title and Meta details for SEO
+    const episodeTitle = video.title;
+    const episodeDesc = video.description ? video.description.substring(0, 160).trim() + '...' : `Watch ${episodeTitle} in high quality with English and Indonesian subtitles.`;
+    const episodeUrl = `${window.location.origin}${window.location.pathname}#watch?idx=${index}`;
+    const episodeThumb = video.thumbnail || "https://jummybilal794-lab.github.io/FallenAnime/wp-content/uploads/2021/04/Lord-of-the-Ancient-God-Grave-Subtitle.webp";
+
+    document.title = `${episodeTitle} - FallenAnime`;
+    
+    const metaDesc = document.getElementById('meta-description');
+    if (metaDesc) metaDesc.setAttribute('content', episodeDesc);
+    
+    const canonicalLink = document.getElementById('link-canonical');
+    if (canonicalLink) canonicalLink.setAttribute('href', episodeUrl);
+    
+    // Update OpenGraph details
+    const ogTitle = document.getElementById('meta-og-title');
+    if (ogTitle) ogTitle.setAttribute('content', `${episodeTitle} - FallenAnime`);
+    
+    const ogDesc = document.getElementById('meta-og-description');
+    if (ogDesc) ogDesc.setAttribute('content', episodeDesc);
+    
+    const ogImage = document.getElementById('meta-og-image');
+    if (ogImage) ogImage.setAttribute('content', episodeThumb);
+    
+    const ogUrl = document.getElementById('meta-og-url');
+    if (ogUrl) ogUrl.setAttribute('content', episodeUrl);
+    
+    // Update Twitter details
+    const twTitle = document.getElementById('meta-tw-title');
+    if (twTitle) twTitle.setAttribute('content', `${episodeTitle} - FallenAnime`);
+    
+    const twDesc = document.getElementById('meta-tw-description');
+    if (twDesc) twDesc.setAttribute('content', episodeDesc);
+    
+    const twImage = document.getElementById('meta-tw-image');
+    if (twImage) twImage.setAttribute('content', episodeThumb);
+
+    // Inject dynamic JSON-LD VideoObject schema for Google Video Search indexing
+    let schemaScript = document.getElementById('schema-video-object');
+    if (!schemaScript) {
+        schemaScript = document.createElement('script');
+        schemaScript.type = 'application/ld+json';
+        schemaScript.id = 'schema-video-object';
+        document.head.appendChild(schemaScript);
+    }
+    
+    const defaultEmbedUrl = video.mirrors && video.mirrors.length > 0 ? (video.mirrors[0].embedUrl || "") : "";
+    
+    const videoSchema = {
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        "name": episodeTitle,
+        "description": video.description || `Watch ${episodeTitle} on FallenAnime with English and Indonesian subtitles.`,
+        "thumbnailUrl": [
+            episodeThumb
+        ],
+        "uploadDate": video.pubDate ? new Date(video.pubDate).toISOString() : new Date().toISOString(),
+        "embedUrl": defaultEmbedUrl
+    };
+    
+    schemaScript.textContent = JSON.stringify(videoSchema, null, 2);
     
     // Hide home sections
     scheduleSection.style.display = 'none';
@@ -566,6 +628,42 @@ function hideWatchView() {
     // Show home sections
     scheduleSection.style.display = 'block';
     popularSection.style.display = 'block';
+
+    // Reset SEO Metadata to default
+    document.title = 'FallenAnime';
+    
+    const metaDesc = document.getElementById('meta-description');
+    if (metaDesc) metaDesc.setAttribute('content', 'Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from Animexin.dev.');
+    
+    const canonicalLink = document.getElementById('link-canonical');
+    if (canonicalLink) canonicalLink.setAttribute('href', 'https://jummybilal794-lab.github.io/FallenAnime/');
+    
+    const ogTitle = document.getElementById('meta-og-title');
+    if (ogTitle) ogTitle.setAttribute('content', 'FallenAnime - Watch Free Donghua & Anime Sub');
+    
+    const ogDesc = document.getElementById('meta-og-description');
+    if (ogDesc) ogDesc.setAttribute('content', 'Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from Animexin.dev.');
+    
+    const ogImage = document.getElementById('meta-og-image');
+    if (ogImage) ogImage.setAttribute('content', 'https://jummybilal794-lab.github.io/FallenAnime/wp-content/uploads/2021/04/Lord-of-the-Ancient-God-Grave-Subtitle.webp');
+    
+    const ogUrl = document.getElementById('meta-og-url');
+    if (ogUrl) ogUrl.setAttribute('content', 'https://jummybilal794-lab.github.io/FallenAnime/');
+    
+    const twTitle = document.getElementById('meta-tw-title');
+    if (twTitle) twTitle.setAttribute('content', 'FallenAnime - Watch Free Donghua & Anime Sub');
+    
+    const twDesc = document.getElementById('meta-tw-description');
+    if (twDesc) twDesc.setAttribute('content', 'Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from Animexin.dev.');
+    
+    const twImage = document.getElementById('meta-tw-image');
+    if (twImage) twImage.setAttribute('content', 'https://jummybilal794-lab.github.io/FallenAnime/wp-content/uploads/2021/04/Lord-of-the-Ancient-God-Grave-Subtitle.webp');
+    
+    // Remove dynamic VideoObject schema
+    const schemaScript = document.getElementById('schema-video-object');
+    if (schemaScript) {
+        schemaScript.remove();
+    }
 }
 
 // Load mirror HTML/Iframe into container
