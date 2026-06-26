@@ -1339,6 +1339,11 @@ a {
         font-size: 0.85rem;
         padding: 0.5rem 1rem;
     }
+
+    .catalog-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1352,5 +1357,50 @@ a {
         right: 1.5rem;
         padding: 0.7rem 1.2rem;
         font-size: 0.85rem;
+    }
+
+    .main-container {
+        padding: 1rem 0.75rem;
+    }
+
+    .schedule-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .schedule-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+
+    .schedule-btn {
+        padding: 0.6rem 0.4rem;
+        font-size: 0.75rem;
+    }
+
+    .popular-section {
+        margin-bottom: 2rem;
+    }
+
+    .popular-card {
+        flex: 0 0 135px;
+    }
+
+    .catalog-section {
+        margin-bottom: 2rem;
+    }
+
+    .catalog-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    .video-card .card-title {
+        font-size: 0.78rem;
+        height: 2.2rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .video-card .card-meta {
+        font-size: 0.68rem;
     }
 }
