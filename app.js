@@ -424,6 +424,7 @@ function showWatchView(index, scroll = true) {
                     downloadLinksGrid.appendChild(link);
                 }
             });
+        }
         // Populate share links
         const shareBox = document.getElementById('share-box');
         const shareLinksGrid = document.getElementById('share-links-grid');
