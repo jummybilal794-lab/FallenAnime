@@ -54,6 +54,13 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDatabase();
     setupEventListeners();
     checkSyncStatusOnStart();
+    
+    // Admin mode check to display Sync Hub button
+    if (window.location.search.includes('admin=true') || window.location.hash.includes('admin')) {
+        if (openSyncBtn) openSyncBtn.style.display = 'inline-flex';
+    } else {
+        if (openSyncBtn) openSyncBtn.style.display = 'none';
+    }
 });
 
 // Load catalog data from local videos.json
