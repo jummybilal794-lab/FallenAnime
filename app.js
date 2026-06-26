@@ -143,7 +143,8 @@ function applyFiltersAndSearch() {
     const keyword = searchInput.value.toLowerCase().trim();
     
     filteredVideos = allVideos.filter(video => {
-        const matchesSearch = video.title.toLowerCase().includes(keyword) || 
+        const matchesSearch = !keyword || 
+                              video.title.toLowerCase().includes(keyword) || 
                               (video.description && video.description.toLowerCase().includes(keyword));
         
         const matchesCategory = activeFilter === 'All' || 
@@ -158,7 +159,79 @@ function applyFiltersAndSearch() {
         return matchesSearch && matchesCategory && matchesDay;
     });
 
+    // If there is a search keyword, sort results by search relevance score
+    if (keyword) {
+        filteredVideos.sort((a, b) => {
+            const scoreA = getSearchScore(a, keyword);
+            const scoreB = getSearchScore(b, keyword);
+            
+            if (scoreB !== scoreA) {
+                return scoreB - scoreA; // Higher relevance score first
+            }
+            
+            // If scores are equal, keep newer publication date first
+            const dateA = new Date(a.pubDate);
+            const dateB = new Date(b.pubDate);
+            return (isNaN(dateB.getTime()) ? 0 : dateB) - (isNaN(dateA.getTime()) ? 0 : dateA);
+        });
+    }
+
     renderCatalogGrid();
+}
+
+// Calculate search relevance score for ranking results
+function getSearchScore(video, keyword) {
+    const title = video.title.toLowerCase();
+    const desc = video.description ? video.description.toLowerCase() : '';
+    let score = 0;
+    
+    // 1. Exact title match (highest priority)
+    if (title === keyword) {
+        score += 200;
+    }
+    // 2. Title starts with keyword phrase
+    else if (title.startsWith(keyword)) {
+        score += 150;
+    }
+    // 3. Title contains full keyword phrase
+    else if (title.includes(keyword)) {
+        score += 100;
+    }
+    
+    // 4. Word boundary matches (e.g. searching 'Episode 1' matches 'Episode 1' but scores higher than 'Episode 10')
+    try {
+        const escaped = escapeRegExp(keyword);
+        const regex = new RegExp('\\b' + escaped + '\\b', 'i');
+        if (regex.test(title)) {
+            score += 50;
+        }
+    } catch (e) {
+        // Fallback if regex generation fails
+    }
+    
+    // 5. Multi-term match (individual terms matching)
+    const terms = keyword.split(/\s+/).filter(t => t.length > 1);
+    let matchedTerms = 0;
+    terms.forEach(term => {
+        if (title.includes(term)) {
+            matchedTerms++;
+        }
+    });
+    if (terms.length > 0) {
+        score += (matchedTerms / terms.length) * 30;
+    }
+    
+    // 6. Description match (low priority helper)
+    if (desc.includes(keyword)) {
+        score += 10;
+    }
+    
+    return score;
+}
+
+// Helper to escape regex special characters
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 // Render cards grid
@@ -351,10 +424,123 @@ function showWatchView(index, scroll = true) {
                     downloadLinksGrid.appendChild(link);
                 }
             });
+        // Populate share links
+        const shareBox = document.getElementById('share-box');
+        const shareLinksGrid = document.getElementById('share-links-grid');
+        if (shareBox && shareLinksGrid) {
+            shareLinksGrid.innerHTML = '';
+            shareBox.style.display = 'block';
+            
+            const currentUrl = encodeURIComponent(window.location.href);
+            const shareText = encodeURIComponent(`Watch ${video.title} on FallenAnime!`);
+            
+            const platforms = [
+                {
+                    name: 'WhatsApp',
+                    icon: '💬',
+                    url: `https://api.whatsapp.com/send?text=${shareText}%20${currentUrl}`,
+                    color: '#25D366'
+                },
+                {
+                    name: 'Telegram',
+                    icon: '✈️',
+                    url: `https://t.me/share/url?url=${currentUrl}&text=${shareText}`,
+                    color: '#0088cc'
+                },
+                {
+                    name: 'Twitter / X',
+                    icon: '🐦',
+                    url: `https://twitter.com/intent/tweet?text=${shareText}&url=${currentUrl}`,
+                    color: '#1DA1F2'
+                },
+                {
+                    name: 'Facebook',
+                    icon: '👥',
+                    url: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`,
+                    color: '#1877F2'
+                }
+            ];
+            
+            platforms.forEach(p => {
+                const link = document.createElement('a');
+                link.className = 'btn';
+                link.target = '_blank';
+                link.href = p.url;
+                link.style.fontSize = '0.85rem';
+                link.style.padding = '0.5rem 1rem';
+                link.style.borderRadius = '50px';
+                link.style.backgroundColor = 'var(--bg-tertiary)';
+                link.style.border = '1px solid var(--border-color)';
+                link.style.color = 'var(--text-primary)';
+                link.style.display = 'inline-flex';
+                link.style.alignItems = 'center';
+                link.style.gap = '6px';
+                link.style.transition = 'var(--transition)';
+                
+                link.innerHTML = `<span>${p.icon}</span> <span>${p.name}</span>`;
+                
+                link.onmouseenter = () => {
+                    link.style.borderColor = p.color;
+                    link.style.boxShadow = `0 0 10px ${p.color}80`;
+                    link.style.transform = 'translateY(-2px)';
+                };
+                link.onmouseleave = () => {
+                    link.style.borderColor = 'var(--border-color)';
+                    link.style.boxShadow = 'none';
+                    link.style.transform = 'translateY(0)';
+                };
+                
+                shareLinksGrid.appendChild(link);
+            });
+            
+            // Add a "Copy Link" button
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'btn';
+            copyBtn.style.fontSize = '0.85rem';
+            copyBtn.style.padding = '0.5rem 1rem';
+            copyBtn.style.borderRadius = '50px';
+            copyBtn.style.backgroundColor = 'var(--bg-tertiary)';
+            copyBtn.style.border = '1px solid var(--border-color)';
+            copyBtn.style.color = 'var(--text-primary)';
+            copyBtn.style.display = 'inline-flex';
+            copyBtn.style.alignItems = 'center';
+            copyBtn.style.gap = '6px';
+            copyBtn.style.cursor = 'pointer';
+            copyBtn.style.transition = 'var(--transition)';
+            
+            copyBtn.innerHTML = `<span>🔗</span> <span>Copy Link</span>`;
+            
+            copyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    copyBtn.innerHTML = `<span>✅</span> <span>Copied!</span>`;
+                    copyBtn.style.borderColor = 'var(--success)';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = `<span>🔗</span> <span>Copy Link</span>`;
+                        copyBtn.style.borderColor = 'var(--border-color)';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Could not copy link:', err);
+                });
+            });
+            
+            copyBtn.onmouseenter = () => {
+                copyBtn.style.borderColor = 'var(--accent-red)';
+                copyBtn.style.boxShadow = '0 0 10px var(--accent-red-glow)';
+                copyBtn.style.transform = 'translateY(-2px)';
+            };
+            copyBtn.onmouseleave = () => {
+                copyBtn.style.borderColor = 'var(--border-color)';
+                copyBtn.style.boxShadow = 'none';
+                copyBtn.style.transform = 'translateY(0)';
+            };
+            
+            shareLinksGrid.appendChild(copyBtn);
         }
     } else {
         const downloadBox = document.getElementById('download-box');
         if (downloadBox) downloadBox.style.display = 'none';
+        const shareBox = document.getElementById('share-box');
+        if (shareBox) shareBox.style.display = 'none';
         playerContainer.innerHTML = `
             <div class="player-placeholder">
                 <p style="color: var(--danger)">❌ No video stream mirrors found for this episode.</p>
