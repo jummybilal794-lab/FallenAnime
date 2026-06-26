@@ -291,7 +291,70 @@ function showWatchView(index, scroll = true) {
 
         // Load first mirror as default
         loadMirrorPlayer(video.mirrors[0]);
+
+        // Populate download/source links
+        const downloadBox = document.getElementById('download-box');
+        const downloadLinksGrid = document.getElementById('download-links-grid');
+        if (downloadBox && downloadLinksGrid) {
+            downloadLinksGrid.innerHTML = '';
+            downloadBox.style.display = 'block';
+            video.mirrors.forEach((mirror) => {
+                const url = mirror.embedUrl || "";
+                if (url) {
+                    const link = document.createElement('a');
+                    link.className = 'btn';
+                    link.target = '_blank';
+                    link.href = url;
+                    link.style.fontSize = '0.85rem';
+                    link.style.padding = '0.5rem 1rem';
+                    link.style.borderRadius = '50px';
+                    link.style.backgroundColor = 'var(--bg-tertiary)';
+                    link.style.border = '1px solid var(--border-color)';
+                    link.style.color = 'var(--text-primary)';
+                    link.style.display = 'inline-flex';
+                    link.style.alignItems = 'center';
+                    link.style.gap = '6px';
+                    link.style.transition = 'var(--transition)';
+                    
+                    let label = mirror.label || "Mirror";
+                    let icon = "🔗";
+                    if (label.toLowerCase().includes('mega')) {
+                        icon = "🔴";
+                    } else if (label.toLowerCase().includes('odysee')) {
+                        icon = "🚀";
+                    } else if (label.toLowerCase().includes('dailymotion')) {
+                        icon = "📺";
+                    } else if (label.toLowerCase().includes('ok.ru')) {
+                        icon = "🆗";
+                    } else if (label.toLowerCase().includes('rumble')) {
+                        icon = "🟢";
+                    } else if (label.toLowerCase().includes('streamwish')) {
+                        icon = "✨";
+                    } else if (label.toLowerCase().includes('dood')) {
+                        icon = "🐶";
+                    }
+                    
+                    link.innerHTML = `<span>${icon}</span> <span>Download (${label})</span>`;
+                    
+                    // Hover animation
+                    link.onmouseenter = () => {
+                        link.style.borderColor = 'var(--accent-red)';
+                        link.style.boxShadow = '0 0 10px var(--accent-red-glow)';
+                        link.style.transform = 'translateY(-2px)';
+                    };
+                    link.onmouseleave = () => {
+                        link.style.borderColor = 'var(--border-color)';
+                        link.style.boxShadow = 'none';
+                        link.style.transform = 'translateY(0)';
+                    };
+                    
+                    downloadLinksGrid.appendChild(link);
+                }
+            });
+        }
     } else {
+        const downloadBox = document.getElementById('download-box');
+        if (downloadBox) downloadBox.style.display = 'none';
         playerContainer.innerHTML = `
             <div class="player-placeholder">
                 <p style="color: var(--danger)">❌ No video stream mirrors found for this episode.</p>
