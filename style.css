@@ -1322,6 +1322,7 @@ a {
     .search-box {
         width: 100%;
         margin: 0.25rem 0;
+        flex: none;
     }
     
     .nav {

@@ -387,16 +387,22 @@ function setupEventListeners() {
         e.preventDefault();
         searchInput.value = '';
         activeFilter = 'All';
+        activeScheduleDay = null;
+        document.querySelectorAll('.schedule-btn').forEach(b => b.classList.remove('active'));
         window.location.hash = '';
-        loadDatabase(); // reload catalog fresh
+        hideWatchView();
+        applyFiltersAndSearch();
     });
     
     navAll.addEventListener('click', (e) => {
         e.preventDefault();
         searchInput.value = '';
         activeFilter = 'All';
+        activeScheduleDay = null;
+        document.querySelectorAll('.schedule-btn').forEach(b => b.classList.remove('active'));
         window.location.hash = '';
-        loadDatabase();
+        hideWatchView();
+        applyFiltersAndSearch();
     });
 
     // Layout buttons
