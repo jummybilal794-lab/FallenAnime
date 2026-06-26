@@ -7,6 +7,7 @@ let filteredVideos = [];
 let activeFilter = 'All';
 let isSyncing = false;
 let syncIntervalId = null;
+let catalogLayout = 'grid'; // 'grid' or 'list'
 
 // DOM Elements
 const logoBtn = document.getElementById('logo-btn');
@@ -32,6 +33,8 @@ const catalogSection = document.getElementById('catalog-section');
 const catalogHeading = document.getElementById('catalog-heading');
 const catalogGrid = document.getElementById('catalog-grid');
 const genreFilters = document.getElementById('genre-filters');
+const layoutGridBtn = document.getElementById('layout-grid-btn');
+const layoutListBtn = document.getElementById('layout-list-btn');
 
 const dbCount = document.getElementById('db-count');
 const syncStatusIndicator = document.getElementById('sync-status-indicator');
@@ -53,6 +56,13 @@ async function loadDatabase() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         allVideos = await response.json();
+        
+        // Sort by publication date descending (newest first)
+        allVideos.sort((a, b) => {
+            const dateA = new Date(a.pubDate);
+            const dateB = new Date(b.pubDate);
+            return (isNaN(dateB.getTime()) ? 0 : dateB) - (isNaN(dateA.getTime()) ? 0 : dateA);
+        });
         
         // Update database count
         dbCount.textContent = `${allVideos.length} Synced Videos`;
@@ -128,6 +138,12 @@ function applyFiltersAndSearch() {
 function renderCatalogGrid() {
     catalogGrid.innerHTML = '';
     
+    if (catalogLayout === 'list') {
+        catalogGrid.classList.add('list-view');
+    } else {
+        catalogGrid.classList.remove('list-view');
+    }
+    
     if (filteredVideos.length === 0) {
         catalogGrid.innerHTML = `
             <div class="loading-state">
@@ -154,9 +170,9 @@ function renderCatalogGrid() {
                 <span class="card-badge">${badgeText}</span>
             </div>
             <div class="card-details">
+                <div class="card-time-badge">📅 ${formattedDate}</div>
                 <h3 class="card-title">${video.title}</h3>
                 <div class="card-meta">
-                    <span>📅 ${formattedDate}</span>
                     <span>🔗 ${video.mirrors ? video.mirrors.length : 0} Mirrors</span>
                 </div>
             </div>
@@ -176,17 +192,21 @@ function handleHashRoute() {
     if (hash.startsWith('#watch?idx=')) {
         const index = parseInt(hash.split('idx=')[1]);
         if (!isNaN(index) && allVideos[index]) {
-            showWatchView(index);
+            showWatchView(index, true);
             return;
         }
     }
     
-    // Default: Catalog View
-    hideWatchView();
+    // Default: Show the latest episode player immediately without jumpy scroll
+    if (allVideos.length > 0) {
+        showWatchView(0, false);
+    } else {
+        hideWatchView();
+    }
 }
 
 // Show watch view and render player
-function showWatchView(index) {
+function showWatchView(index, scroll = true) {
     const video = allVideos[index];
     if (!video) return;
 
@@ -194,8 +214,10 @@ function showWatchView(index) {
     watchSection.style.display = 'block';
     catalogHeading.textContent = 'Browse More Episodes';
     
-    // Scroll to player smooth
-    watchSection.scrollIntoView({ behavior: 'smooth' });
+    // Scroll to player smooth if requested
+    if (scroll) {
+        watchSection.scrollIntoView({ behavior: 'smooth' });
+    }
 
     // Populate Details
     watchTitle.textContent = video.title;
@@ -306,12 +328,25 @@ function renderSidebarList(currentPlayingIdx) {
     });
 }
 
-// Format date nicely (RFC2822 to standard locale date string)
+// Format date nicely (RFC2822 to standard locale date/time string)
 function formatDate(dateStr) {
     try {
         const date = new Date(dateStr);
         if (isNaN(date.getTime())) return dateStr;
-        return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+        
+        const datePart = date.toLocaleDateString(undefined, { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric' 
+        });
+        
+        const timePart = date.toLocaleTimeString(undefined, {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+        
+        return `${datePart} at ${timePart}`;
     } catch {
         return dateStr;
     }
@@ -337,6 +372,23 @@ function setupEventListeners() {
         activeFilter = 'All';
         window.location.hash = '';
         loadDatabase();
+    });
+
+    // Layout buttons
+    layoutGridBtn.addEventListener('click', () => {
+        if (catalogLayout === 'grid') return;
+        catalogLayout = 'grid';
+        layoutGridBtn.classList.add('active');
+        layoutListBtn.classList.remove('active');
+        renderCatalogGrid();
+    });
+
+    layoutListBtn.addEventListener('click', () => {
+        if (catalogLayout === 'list') return;
+        catalogLayout = 'list';
+        layoutListBtn.classList.add('active');
+        layoutGridBtn.classList.remove('active');
+        renderCatalogGrid();
     });
 
     // Hash change router
