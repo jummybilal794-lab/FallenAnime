@@ -36,6 +36,10 @@ const genreFilters = document.getElementById('genre-filters');
 const layoutGridBtn = document.getElementById('layout-grid-btn');
 const layoutListBtn = document.getElementById('layout-list-btn');
 
+const scheduleSection = document.getElementById('schedule-section');
+const popularSection = document.getElementById('popular-section');
+const popularCarousel = document.getElementById('popular-carousel');
+
 const dbCount = document.getElementById('db-count');
 const syncStatusIndicator = document.getElementById('sync-status-indicator');
 const lastSyncTime = document.getElementById('last-sync-time');
@@ -70,6 +74,12 @@ async function loadDatabase() {
         
         // Update database count
         dbCount.textContent = `${allVideos.length} Synced Videos`;
+
+        // Render Popular Today carousel
+        renderPopularCarousel();
+
+        // Setup daily schedule buttons
+        setupScheduleButtons();
         
         // Extract filter tags
         generateFilterTags();
@@ -132,7 +142,13 @@ function applyFiltersAndSearch() {
         const matchesCategory = activeFilter === 'All' || 
                                 (video.categories && video.categories.includes(activeFilter));
         
-        return matchesSearch && matchesCategory;
+        // Filter by release day if active
+        let matchesDay = true;
+        if (activeScheduleDay) {
+            matchesDay = video.pubDate && video.pubDate.includes(activeScheduleDay);
+        }
+        
+        return matchesSearch && matchesCategory && matchesDay;
     });
 
     renderCatalogGrid();
@@ -165,19 +181,20 @@ function renderCatalogGrid() {
         card.className = 'video-card';
         card.id = `video-card-${mainIndex}`;
         
-        const badgeText = video.categories && video.categories.length > 0 ? video.categories[0] : 'Donghua';
         const formattedDate = formatDate(video.pubDate);
+        const epText = extractEpisodeText(video.title);
         
         card.innerHTML = `
             <div class="card-thumb-wrapper">
                 <img src="${video.thumbnail || 'https://via.placeholder.com/350x220/0a0b10/d50000?text=FallenAnime'}" alt="${video.title}" loading="lazy">
-                <span class="card-badge">${badgeText}</span>
+                <span class="card-badge-top-left">ONA</span>
+                <span class="card-badge-bottom-left">${epText}</span>
+                <span class="card-badge-bottom-right">Sub</span>
             </div>
             <div class="card-details">
-                <div class="card-time-badge">📅 ${formattedDate}</div>
                 <h3 class="card-title">${video.title}</h3>
                 <div class="card-meta">
-                    <span>🔗 ${video.mirrors ? video.mirrors.length : 0} Mirrors</span>
+                    <span class="card-time-badge">📅 ${formattedDate}</span>
                 </div>
             </div>
         `;
@@ -201,12 +218,8 @@ function handleHashRoute() {
         }
     }
     
-    // Default: Show the latest episode player immediately without jumpy scroll
-    if (allVideos.length > 0) {
-        showWatchView(0, false);
-    } else {
-        hideWatchView();
-    }
+    // Default: Catalog View (Player hidden)
+    hideWatchView();
 }
 
 // Show watch view and render player
@@ -217,6 +230,10 @@ function showWatchView(index, scroll = true) {
     // Show watch section, collapse catalog view spacing
     watchSection.style.display = 'block';
     catalogHeading.textContent = 'Browse More Episodes';
+    
+    // Hide home sections
+    scheduleSection.style.display = 'none';
+    popularSection.style.display = 'none';
     
     // Scroll to player smooth if requested
     if (scroll) {
@@ -280,12 +297,16 @@ function showWatchView(index, scroll = true) {
 // Hide watch section
 function hideWatchView() {
     watchSection.style.display = 'none';
-    catalogHeading.textContent = 'Latest Updates';
+    catalogHeading.textContent = 'Latest Release';
     playerContainer.innerHTML = `
         <div class="player-placeholder">
             <p>Select an episode or mirror to begin playback.</p>
         </div>
     `;
+    
+    // Show home sections
+    scheduleSection.style.display = 'block';
+    popularSection.style.display = 'block';
 }
 
 // Load mirror HTML/Iframe into container
@@ -514,4 +535,120 @@ function logToConsole(message) {
     const line = `[${new Date().toLocaleTimeString()}] ${message}\n`;
     consoleLog.textContent += line;
     consoleLog.scrollTop = consoleLog.scrollHeight;
+}
+
+// ============================================================================
+// REDESIGN HELPERS & HANDLERS
+// ============================================================================
+
+// Extract episode number from title (e.g. "Against the Gods Episode 43" -> "Ep 43")
+function extractEpisodeText(title) {
+    const match = title.match(/Episode\s*(\d+)/i) || title.match(/Ep\s*(\d+)/i);
+    return match ? `Ep ${match[1]}` : 'Ep 1';
+}
+
+// Render the Popular Today carousel
+function renderPopularCarousel() {
+    popularCarousel.innerHTML = '';
+    
+    // Select popular shows (latest episode of each unique popular show title)
+    const popularShowKeywords = [
+        'Against the Gods',
+        'Renegade Immortal',
+        'Shrouding the Heavens',
+        'Perfect World',
+        'Soul Land',
+        'Martial Master',
+        'Big Brother',
+        'Battle Through the Heavens',
+        'Stellar Transformation',
+        'Swallowed Star',
+        'Great Ruler',
+        'Demon Hunter'
+    ];
+    
+    const renderedShows = new Set();
+    const popularVideos = [];
+    
+    for (const video of allVideos) {
+        for (const kw of popularShowKeywords) {
+            if (video.title.toLowerCase().includes(kw.toLowerCase()) && !renderedShows.has(kw)) {
+                popularVideos.push(video);
+                renderedShows.add(kw);
+                break;
+            }
+        }
+        if (popularVideos.length >= 8) break; // Limit to 8 popular shows in carousel
+    }
+    
+    if (popularVideos.length === 0) {
+        popularSection.style.display = 'none';
+        return;
+    }
+    
+    popularSection.style.display = 'block';
+    
+    popularVideos.forEach(video => {
+        const mainIndex = allVideos.indexOf(video);
+        const card = document.createElement('div');
+        card.className = 'popular-card';
+        
+        const epText = extractEpisodeText(video.title);
+        
+        card.innerHTML = `
+            <div class="card-thumb-wrapper">
+                <img src="${video.thumbnail || 'https://via.placeholder.com/350x220/0a0b10/d50000?text=FallenAnime'}" alt="${video.title}" loading="lazy">
+                <span class="card-badge-top-left">ONA</span>
+                <span class="card-badge-bottom-left">${epText}</span>
+                <span class="card-badge-bottom-right">Sub</span>
+            </div>
+            <div class="card-details">
+                <h3 class="card-title">${video.title}</h3>
+            </div>
+        `;
+        
+        card.addEventListener('click', () => {
+            window.location.hash = `#watch?idx=${mainIndex}`;
+        });
+        
+        popularCarousel.appendChild(card);
+    });
+}
+
+let activeScheduleDay = null; // null means no schedule filter active
+
+// Set up daily schedule buttons filter
+function setupScheduleButtons() {
+    const scheduleBtns = document.querySelectorAll('.schedule-btn');
+    
+    scheduleBtns.forEach(btn => {
+        // Remove existing listeners if any by cloning
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        
+        newBtn.addEventListener('click', () => {
+            const day = newBtn.getAttribute('data-day');
+            
+            if (day === 'Random') {
+                // Pick a random episode and play it!
+                if (allVideos.length > 0) {
+                    const randomIdx = Math.floor(Math.random() * allVideos.length);
+                    window.location.hash = `#watch?idx=${randomIdx}`;
+                }
+                return;
+            }
+            
+            // Toggle active state
+            if (activeScheduleDay === day) {
+                activeScheduleDay = null;
+                newBtn.classList.remove('active');
+            } else {
+                document.querySelectorAll('.schedule-btn').forEach(b => b.classList.remove('active'));
+                activeScheduleDay = day;
+                newBtn.classList.add('active');
+            }
+            
+            applyFiltersAndSearch();
+        });
+    });
 }

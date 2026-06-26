@@ -20,6 +20,11 @@
     
     --accent-gradient: linear-gradient(135deg, #e10f1c 0%, #ff5b3a 100%);
     
+    --success: #00c853; /* Bright Green */
+    --success-glow: rgba(0, 200, 83, 0.4);
+    --danger: #e10f1c; /* KashCrop Red */
+    --danger-glow: rgba(225, 15, 28, 0.45);
+    
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 16px;
@@ -533,6 +538,170 @@ a {
     margin-top: 2px;
 }
 
+/* Daily Schedule Layout */
+.schedule-section {
+    margin-bottom: 2.5rem;
+}
+
+.schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+}
+
+.schedule-btn {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.8rem 1rem;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+}
+
+.schedule-btn:hover, .schedule-btn.active {
+    background: var(--accent-gradient);
+    color: white;
+    border-color: var(--accent-red);
+    box-shadow: 0 4px 12px var(--accent-red-glow);
+}
+
+/* Popular Today Carousel */
+.popular-section {
+    margin-bottom: 3.5rem;
+}
+
+.popular-carousel {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    padding: 1rem 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-red) var(--bg-secondary);
+    -webkit-overflow-scrolling: touch;
+}
+
+.popular-carousel::-webkit-scrollbar {
+    height: 6px;
+}
+
+.popular-carousel::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 10px;
+}
+
+.popular-carousel::-webkit-scrollbar-thumb {
+    background: var(--accent-red);
+    border-radius: 10px;
+}
+
+/* Popular Anime Card */
+.popular-card {
+    flex: 0 0 180px; /* Width matching the screenshot */
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+
+.popular-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(225, 15, 28, 0.3);
+    box-shadow: 0 8px 25px var(--accent-red-glow);
+}
+
+.popular-card .card-thumb-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3/4; /* Tall ratio */
+    overflow: hidden;
+    background-color: black;
+}
+
+.popular-card .card-thumb-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.popular-card:hover .card-thumb-wrapper img {
+    transform: scale(1.05);
+}
+
+.popular-card .card-details {
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.popular-card .card-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-top: 0.25rem;
+    height: 2.4rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    color: var(--text-primary);
+}
+
+/* Card Badges (ONA, Sub, Episode badges) */
+.card-badge-top-left {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: var(--accent-red);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.card-badge-bottom-left {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: #00c853; /* Bright Green */
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-top-right-radius: 4px;
+}
+
+.card-badge-bottom-right {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: #ff9100; /* Bright Orange */
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-top-left-radius: 4px;
+}
+
 /* Catalog Section Layout */
 .catalog-section {
     margin-bottom: 4rem;
@@ -673,22 +842,22 @@ a {
 }
 
 .card-details {
-    padding: 1.2rem;
+    padding: 0.75rem;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
 }
 
 .card-title {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     font-weight: 700;
-    line-height: 1.4;
-    margin-bottom: 0.5rem;
+    line-height: 1.3;
+    margin-bottom: 0.4rem;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    height: 2.8rem;
+    height: 2.4rem;
     color: var(--text-primary);
     transition: var(--transition);
 }
@@ -1136,6 +1305,40 @@ a {
     height: 100%;
     border: none;
     background-color: transparent;
+}
+
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        align-items: center;
+    }
+    
+    .logo {
+        font-size: 1.6rem;
+    }
+    
+    .search-box {
+        width: 100%;
+        margin: 0.25rem 0;
+    }
+    
+    .nav {
+        width: 100%;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .nav-link {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .btn {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+    }
 }
 
 @media (max-width: 480px) {
