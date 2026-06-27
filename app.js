@@ -449,12 +449,12 @@ function showWatchView(index, scroll = true) {
             const selectedIdx = mirrorSelect.value;
             const mirror = video.mirrors.find(m => m.index == selectedIdx);
             if (mirror) {
-                loadMirrorPlayer(mirror);
+                loadMirrorPlayer(mirror, video.title);
             }
         };
 
         // Load first mirror as default
-        loadMirrorPlayer(video.mirrors[0]);
+        loadMirrorPlayer(video.mirrors[0], video.title);
 
         // Populate download/source links
         const downloadBox = document.getElementById('download-box');
@@ -748,7 +748,7 @@ function hideWatchView() {
 }
 
 // Load mirror HTML/Iframe into container
-function loadMirrorPlayer(mirror) {
+function loadMirrorPlayer(mirror, videoTitle) {
     if (!mirror) return;
     
     // Inject mirror html safely
@@ -773,11 +773,18 @@ function loadMirrorPlayer(mirror) {
         return;
     }
 
-    // Append FallenAnime watermark overlay to cover baked-in AnimeXin logo
-    const watermark = document.createElement('div');
-    watermark.className = 'player-watermark';
-    watermark.innerHTML = `<span style="color: var(--accent-blue)">Fallen</span>Anime`;
-    playerContainer.appendChild(watermark);
+    // Append FallenAnime custom premium title bar to overlay and mask uploader's logo & text
+    if (videoTitle) {
+        const titleClean = sanitizeTitle(videoTitle);
+        const titleBar = document.createElement('div');
+        titleBar.className = 'player-title-bar';
+        titleBar.innerHTML = `
+            <span class="player-title-logo"><span class="logo-accent">Fallen</span>Anime</span>
+            <span class="player-title-divider">|</span>
+            <span class="player-title-text">${titleClean}</span>
+        `;
+        playerContainer.appendChild(titleBar);
+    }
 }
 
 // Extract base series name from video title
