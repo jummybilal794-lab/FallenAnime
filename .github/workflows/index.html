@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZKC3VTM8QX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-ZKC3VTM8QX');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FallenAnime</title>
+    <meta name="description" id="meta-description" content="Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from FallenAnime.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" id="link-canonical" href="https://jummybilal794-lab.github.io/FallenAnime/">
+    
+    <!-- OpenGraph Social Metadata -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" id="meta-og-title" content="FallenAnime - Watch Free Donghua & Anime Sub">
+    <meta property="og:description" id="meta-og-description" content="Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from FallenAnime.">
+    <meta property="og:image" id="meta-og-image" content="https://jummybilal794-lab.github.io/FallenAnime/wp-content/uploads/2021/04/Lord-of-the-Ancient-God-Grave-Subtitle.webp">
+    <meta property="og:url" id="meta-og-url" content="https://jummybilal794-lab.github.io/FallenAnime/">
+    <meta property="og:site_name" content="FallenAnime">
+    
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" id="meta-tw-title" content="FallenAnime - Watch Free Donghua & Anime Sub">
+    <meta name="twitter:description" id="meta-tw-description" content="Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from FallenAnime.">
+    <meta name="twitter:image" id="meta-tw-image" content="https://jummybilal794-lab.github.io/FallenAnime/wp-content/uploads/2021/04/Lord-of-the-Ancient-God-Grave-Subtitle.webp">
+
+    <!-- Structured Website Schema -->
+    <script type="application/ld+json" id="schema-website">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "FallenAnime",
+      "url": "https://jummybilal794-lab.github.io/FallenAnime/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jummybilal794-lab.github.io/FallenAnime/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Top Header -->
+    <header class="header">
+        <div class="header-container">
+            <a href="#" class="logo" id="logo-btn">
+                <span class="logo-accent">Fallen</span>Anime
+            </a>
+            
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search donghua series or episodes..." aria-label="Search videos">
+                <span class="search-icon">🔍</span>
+            </div>
+            
+            <nav class="nav">
+                <a href="#" class="nav-link active" id="nav-all">All Episodes</a>
+                <button class="btn btn-primary" id="open-sync-btn" style="display: none;">Sync Hub</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        
+        <!-- Live Sync Bar -->
+        <div class="sync-banner" id="sync-banner" style="display: none;">
+            <div class="sync-banner-content">
+                <div class="sync-spinner"></div>
+                <span id="sync-banner-text">Video synchronization is running in the background...</span>
+            </div>
+        </div>
+
+        <!-- Watch Section (Hidden by default, shown when an episode is selected) -->
+        <section class="watch-section" id="watch-section" style="display: none;">
+            <div class="watch-container">
+                <div class="watch-main">
+                    <!-- Video player element -->
+                    <div class="player-wrapper">
+                        <div class="player-container" id="player-container">
+                            <div class="player-placeholder">
+                                <p>Select an episode or mirror to begin playback.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Watch Details -->
+                    <div class="watch-details">
+                        <div class="watch-meta-top">
+                            <h1 class="watch-title" id="watch-title">Episode Title</h1>
+                            <span class="watch-date" id="watch-date">Date Published</span>
+                        </div>
+                        
+                        <!-- Mirror Selector -->
+                        <div class="mirror-selector-box">
+                            <label for="mirror-select" class="mirror-label">Select Mirror Server:</label>
+                            <div class="custom-select-wrapper">
+                                <select id="mirror-select" class="mirror-select" aria-label="Select Video Mirror">
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Direct Link & Download Section -->
+                        <div class="download-box" id="download-box" style="margin-top: 1.5rem; display: none;">
+                            <h3 style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 0.75rem;">📥 Direct Source & Download Links</h3>
+                            <div class="download-links-grid" id="download-links-grid" style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Share Section -->
+                        <div class="share-box" id="share-box" style="margin-top: 1.5rem; display: none;">
+                            <h3 style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 0.75rem;">📢 Share this Episode</h3>
+                            <div class="share-links-grid" id="share-links-grid" style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                        
+                        <div class="watch-desc-box">
+                            <h3>Synopsis & Info</h3>
+                            <p class="watch-description" id="watch-description">Episode description goes here...</p>
+                        </div>
+                        
+                        <div class="watch-categories" id="watch-categories">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Watch Sidebar (Up Next / Recommended) -->
+                <aside class="watch-sidebar">
+                    <h2 class="sidebar-heading">Latest Episodes</h2>
+                    <div class="sidebar-list" id="sidebar-list">
+                        <!-- Populated dynamically -->
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <!-- Daily Schedule Section -->
+        <section class="schedule-section" id="schedule-section">
+            <div class="schedule-grid">
+                <button class="schedule-btn" data-day="Mon">☰ Monday</button>
+                <button class="schedule-btn" data-day="Tue">☰ Tuesday</button>
+                <button class="schedule-btn" data-day="Wed">☰ Wednesday</button>
+                <button class="schedule-btn" data-day="Thu">☰ Thursday</button>
+                <button class="schedule-btn" data-day="Fri">☰ Friday</button>
+                <button class="schedule-btn" data-day="Sat">☰ Saturday</button>
+                <button class="schedule-btn" data-day="Sun">☰ Sunday</button>
+                <button class="schedule-btn" data-day="Random">☰ Random</button>
+            </div>
+        </section>
+
+        <!-- Popular Today Section -->
+        <section class="popular-section" id="popular-section">
+            <h2 class="section-title">Popular Today</h2>
+            <div class="popular-carousel" id="popular-carousel">
+                <!-- Populated dynamically -->
+            </div>
+        </section>
+
+        <!-- Catalog Section -->
+        <section class="catalog-section" id="catalog-section">
+            <div class="section-header">
+                <div class="section-header-top">
+                    <h2 class="section-title" id="catalog-heading">Latest Release</h2>
+                    <div class="layout-toggle">
+                        <button id="layout-grid-btn" class="layout-btn active" title="Grid View" aria-label="Grid View">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        </button>
+                        <button id="layout-list-btn" class="layout-btn" title="List View" aria-label="List View">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="filter-badge-list" id="genre-filters">
+                    <!-- Filter tags populated dynamically -->
+                </div>
+            </div>
+            
+            <div class="catalog-grid" id="catalog-grid">
+                <!-- Video cards loaded dynamically -->
+                <div class="loading-state">
+                    <div class="sync-spinner big"></div>
+                    <p>Loading catalog items...</p>
+                </div>
+            </div>
+            
+            <!-- Load More Episodes Container -->
+            <div class="load-more-container" id="load-more-container" style="text-align: center; margin: 2rem 0; display: none;">
+                <button class="btn btn-primary btn-lg" id="load-more-btn" style="padding: 0.75rem 2rem; border-radius: 50px; font-weight: 700; cursor: pointer; transition: var(--transition);">
+                    Load More Episodes
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Sync Dashboard Overlay -->
+    <div class="overlay" id="sync-overlay">
+        <div class="dashboard-modal">
+            <button class="close-btn" id="close-sync-btn" aria-label="Close Sync Dashboard">&times;</button>
+            <h2 class="modal-title">🔄 Video Synchronization Hub</h2>
+            <p class="modal-desc">This panel manages the synchronization to fetch new episodes directly into your local database.</p>
+            
+            <div class="status-card">
+                <div class="status-item">
+                    <span class="status-label">Database Status:</span>
+                    <span class="status-value highlight" id="db-count">0 Synced Videos</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Updater Agent:</span>
+                    <span class="status-value" id="sync-status-indicator">
+                        <span class="dot dot-green"></span> Idle (Standby)
+                    </span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Last Checked:</span>
+                    <span class="status-value" id="last-sync-time">Never</span>
+                </div>
+            </div>
+            
+            <div class="action-box">
+                <div style="margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <input type="checkbox" id="deep-sync-checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+                    <label for="deep-sync-checkbox" style="font-size: 0.95rem; color: var(--text-primary); cursor: pointer; user-select: none; font-weight: 600;">
+                        Deep Sync (Scrape all historical episodes from sitemaps)
+                    </label>
+                </div>
+                <button class="btn btn-success btn-lg" id="trigger-sync-btn">
+                    Sync New Videos Now
+                </button>
+                <p class="action-note">Running a standard sync checks the RSS feed for new episodes. Deep Sync crawls all sitemaps to fetch all historical episodes in batches of 500.</p>
+            </div>
+            
+            <div class="console-box">
+                <h3>System Updater Log Output</h3>
+                <div class="console-log" id="console-log">
+                    [System] Standby. Waiting for sync trigger...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2026 FallenAnime Portal. All rights reserved.</p>
+            <p class="footer-subtext">Watch high-quality Donghua and Anime with English and Indonesian subtitles.</p>
+        </div>
+    </footer>
+
+    <!-- Floating Chat Button -->
+    <button class="chat-toggle-btn" id="chat-toggle-btn" title="Open Community Chat">
+        <span>💬 FallenAnime Chat</span>
+    </button>
+
+    <!-- Chat Drawer -->
+    <div class="chat-drawer" id="chat-drawer">
+        <div class="chat-drawer-header">
+            <h3>💬 Viewer Chat Room</h3>
+            <button class="chat-close-btn" id="chat-close-btn" aria-label="Close Chat Drawer">&times;</button>
+        </div>
+        <div class="chat-drawer-body">
+            <iframe src="https://chitchatter.im/public/fallenanime-chat?embed=1" allow="camera; microphone; display-capture; fullscreen; clipboard-read; clipboard-write; speaker-selection"></iframe>
+        </div>
+    </div>
+
+    <!-- Script Application -->
+    <script src="app.js"></script>
+</body>
+</html>
