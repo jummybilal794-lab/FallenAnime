@@ -9,6 +9,18 @@ let isSyncing = false;
 let syncIntervalId = null;
 let catalogLayout = 'grid'; // 'grid' or 'list'
 
+let currentPage = 1;
+const itemsPerPage = 24;
+
+function sanitizeTitle(title) {
+    if (!title) return '';
+    return title
+        .replace(/\s*[-–]\s*AnimeXin(?:\.dev)?/gi, '')
+        .replace(/\s*Subtitle\s*[-–]\s*AnimeXin(?:\.dev)?/gi, '')
+        .replace(/AnimeXin(?:\.dev)?/gi, 'FallenAnime')
+        .trim();
+}
+
 // DOM Elements
 const logoBtn = document.getElementById('logo-btn');
 const searchInput = document.getElementById('search-input');
@@ -54,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDatabase();
     setupEventListeners();
     checkSyncStatusOnStart();
+    initChatCounter();
     
     // Admin mode check to display Sync Hub button
     if (window.location.search.includes('admin=true') || window.location.hash.includes('admin')) {
@@ -140,6 +153,7 @@ function generateFilterTags() {
 
 // Apply searches and filter badges
 function applyFiltersAndSearch() {
+    currentPage = 1;
     const keyword = searchInput.value.toLowerCase().trim();
     
     filteredVideos = allVideos.filter(video => {
@@ -236,7 +250,9 @@ function escapeRegExp(string) {
 
 // Render cards grid
 function renderCatalogGrid() {
-    catalogGrid.innerHTML = '';
+    if (currentPage === 1) {
+        catalogGrid.innerHTML = '';
+    }
     
     if (catalogLayout === 'list') {
         catalogGrid.classList.add('list-view');
@@ -250,11 +266,14 @@ function renderCatalogGrid() {
                 <p>🔍 No videos match your current search/filters.</p>
             </div>
         `;
+        const loadMoreContainer = document.getElementById('load-more-container');
+        if (loadMoreContainer) loadMoreContainer.style.display = 'none';
         return;
     }
     
-    filteredVideos.forEach((video, index) => {
-        // Find index in main list for routing
+    const visibleVideos = filteredVideos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    
+    visibleVideos.forEach((video) => {
         const mainIndex = allVideos.indexOf(video);
         
         const card = document.createElement('div');
@@ -263,16 +282,17 @@ function renderCatalogGrid() {
         
         const formattedDate = formatDate(video.pubDate);
         const epText = extractEpisodeText(video.title);
+        const titleClean = sanitizeTitle(video.title);
         
         card.innerHTML = `
             <div class="card-thumb-wrapper">
-                <img src="${video.thumbnail || 'https://via.placeholder.com/350x220/0a0b10/d50000?text=FallenAnime'}" alt="${video.title}" loading="lazy">
+                <img src="${video.thumbnail || 'https://via.placeholder.com/350x220/0a0b10/d50000?text=FallenAnime'}" alt="${titleClean}" loading="lazy">
                 <span class="card-badge-top-left">ONA</span>
                 <span class="card-badge-bottom-left">${epText}</span>
                 <span class="card-badge-bottom-right">Sub</span>
             </div>
             <div class="card-details">
-                <h3 class="card-title">${video.title}</h3>
+                <h3 class="card-title">${titleClean}</h3>
                 <div class="card-meta">
                     <span class="card-time-badge">📅 ${formattedDate}</span>
                 </div>
@@ -285,6 +305,15 @@ function renderCatalogGrid() {
         
         catalogGrid.appendChild(card);
     });
+
+    const loadMoreContainer = document.getElementById('load-more-container');
+    if (loadMoreContainer) {
+        if (currentPage * itemsPerPage < filteredVideos.length) {
+            loadMoreContainer.style.display = 'block';
+        } else {
+            loadMoreContainer.style.display = 'none';
+        }
+    }
 }
 
 // Handle Hash Routing
@@ -312,8 +341,8 @@ function showWatchView(index, scroll = true) {
     catalogHeading.textContent = 'Browse More Episodes';
 
     // Update Document Title and Meta details for SEO
-    const episodeTitle = video.title;
-    const episodeDesc = video.description ? video.description.substring(0, 160).trim() + '...' : `Watch ${episodeTitle} in high quality with English and Indonesian subtitles.`;
+    const episodeTitle = sanitizeTitle(video.title);
+    const episodeDesc = (video.description ? video.description.substring(0, 160).trim() + '...' : `Watch ${episodeTitle} in high quality with English and Indonesian subtitles.`).replace(/AnimeXin/gi, 'FallenAnime');
     const episodeUrl = `${window.location.origin}${window.location.pathname}#watch?idx=${index}`;
     const episodeThumb = video.thumbnail || "https://jummybilal794-lab.github.io/FallenAnime/wp-content/uploads/2021/04/Lord-of-the-Ancient-God-Grave-Subtitle.webp";
 
@@ -363,7 +392,7 @@ function showWatchView(index, scroll = true) {
         "@context": "https://schema.org",
         "@type": "VideoObject",
         "name": episodeTitle,
-        "description": video.description || `Watch ${episodeTitle} on FallenAnime with English and Indonesian subtitles.`,
+        "description": (video.description || `Watch ${episodeTitle} on FallenAnime with English and Indonesian subtitles.`).replace(/AnimeXin/gi, 'FallenAnime'),
         "thumbnailUrl": [
             episodeThumb
         ],
@@ -383,9 +412,9 @@ function showWatchView(index, scroll = true) {
     }
 
     // Populate Details
-    watchTitle.textContent = video.title;
+    watchTitle.textContent = sanitizeTitle(video.title);
     watchDate.textContent = `Published: ${formatDate(video.pubDate)}`;
-    watchDescription.textContent = video.description || 'No synopsis details available.';
+    watchDescription.textContent = (video.description || 'No synopsis details available.').replace(/AnimeXin/gi, 'FallenAnime');
     
     // Highlight currently playing card in grid if visible
     document.querySelectorAll('.video-card').forEach(c => c.classList.remove('playing'));
@@ -433,59 +462,111 @@ function showWatchView(index, scroll = true) {
         if (downloadBox && downloadLinksGrid) {
             downloadLinksGrid.innerHTML = '';
             downloadBox.style.display = 'block';
-            video.mirrors.forEach((mirror) => {
-                const url = mirror.embedUrl || "";
-                if (url) {
-                    const link = document.createElement('a');
-                    link.className = 'btn';
-                    link.target = '_blank';
-                    link.href = url;
-                    link.style.fontSize = '0.85rem';
-                    link.style.padding = '0.5rem 1rem';
-                    link.style.borderRadius = '50px';
-                    link.style.backgroundColor = 'var(--bg-tertiary)';
-                    link.style.border = '1px solid var(--border-color)';
-                    link.style.color = 'var(--text-primary)';
-                    link.style.display = 'inline-flex';
-                    link.style.alignItems = 'center';
-                    link.style.gap = '6px';
-                    link.style.transition = 'var(--transition)';
-                    
-                    let label = mirror.label || "Mirror";
-                    let icon = "🔗";
-                    if (label.toLowerCase().includes('mega')) {
-                        icon = "🔴";
-                    } else if (label.toLowerCase().includes('odysee')) {
-                        icon = "🚀";
-                    } else if (label.toLowerCase().includes('dailymotion')) {
-                        icon = "📺";
-                    } else if (label.toLowerCase().includes('ok.ru')) {
-                        icon = "🆗";
-                    } else if (label.toLowerCase().includes('rumble')) {
-                        icon = "🟢";
-                    } else if (label.toLowerCase().includes('streamwish')) {
-                        icon = "✨";
-                    } else if (label.toLowerCase().includes('dood')) {
-                        icon = "🐶";
+            
+            // Render high-quality direct downloads if present
+            if (video.downloads && video.downloads.length > 0) {
+                video.downloads.forEach((dl) => {
+                    const url = dl.url || "";
+                    if (url) {
+                        const link = document.createElement('a');
+                        link.className = 'btn';
+                        link.target = '_blank';
+                        link.href = url;
+                        link.style.fontSize = '0.85rem';
+                        link.style.padding = '0.5rem 1rem';
+                        link.style.borderRadius = '50px';
+                        link.style.backgroundColor = 'var(--bg-tertiary)';
+                        link.style.border = '1px solid var(--border-color)';
+                        link.style.color = 'var(--text-primary)';
+                        link.style.display = 'inline-flex';
+                        link.style.alignItems = 'center';
+                        link.style.gap = '6px';
+                        link.style.transition = 'var(--transition)';
+                        
+                        let label = dl.label || "Download";
+                        let icon = "📥";
+                        if (label.toLowerCase().includes('mediafire')) {
+                            icon = "🔥";
+                        } else if (label.toLowerCase().includes('terabox')) {
+                            icon = "📦";
+                        } else if (label.toLowerCase().includes('mirror')) {
+                            icon = "🔗";
+                        }
+                        
+                        const langLabel = dl.language ? ` [${dl.language.replace('Subtitle ', '')}]` : '';
+                        link.innerHTML = `<span>${icon}</span> <span>${label}${langLabel}</span>`;
+                        
+                        // Hover animation
+                        link.onmouseenter = () => {
+                            link.style.borderColor = 'var(--accent-red)';
+                            link.style.boxShadow = '0 0 10px var(--accent-red-glow)';
+                            link.style.transform = 'translateY(-2px)';
+                        };
+                        link.onmouseleave = () => {
+                            link.style.borderColor = 'var(--border-color)';
+                            link.style.boxShadow = 'none';
+                            link.style.transform = 'translateY(0)';
+                        };
+                        
+                        downloadLinksGrid.appendChild(link);
                     }
-                    
-                    link.innerHTML = `<span>${icon}</span> <span>Download (${label})</span>`;
-                    
-                    // Hover animation
-                    link.onmouseenter = () => {
-                        link.style.borderColor = 'var(--accent-red)';
-                        link.style.boxShadow = '0 0 10px var(--accent-red-glow)';
-                        link.style.transform = 'translateY(-2px)';
-                    };
-                    link.onmouseleave = () => {
-                        link.style.borderColor = 'var(--border-color)';
-                        link.style.boxShadow = 'none';
-                        link.style.transform = 'translateY(0)';
-                    };
-                    
-                    downloadLinksGrid.appendChild(link);
-                }
-            });
+                });
+            } else {
+                // Fallback to mirrors
+                video.mirrors.forEach((mirror) => {
+                    const url = mirror.embedUrl || "";
+                    if (url) {
+                        const link = document.createElement('a');
+                        link.className = 'btn';
+                        link.target = '_blank';
+                        link.href = url;
+                        link.style.fontSize = '0.85rem';
+                        link.style.padding = '0.5rem 1rem';
+                        link.style.borderRadius = '50px';
+                        link.style.backgroundColor = 'var(--bg-tertiary)';
+                        link.style.border = '1px solid var(--border-color)';
+                        link.style.color = 'var(--text-primary)';
+                        link.style.display = 'inline-flex';
+                        link.style.alignItems = 'center';
+                        link.style.gap = '6px';
+                        link.style.transition = 'var(--transition)';
+                        
+                        let label = mirror.label || "Mirror";
+                        let icon = "🔗";
+                        if (label.toLowerCase().includes('mega')) {
+                            icon = "🔴";
+                        } else if (label.toLowerCase().includes('odysee')) {
+                            icon = "🚀";
+                        } else if (label.toLowerCase().includes('dailymotion')) {
+                            icon = "📺";
+                        } else if (label.toLowerCase().includes('ok.ru')) {
+                            icon = "🆗";
+                        } else if (label.toLowerCase().includes('rumble')) {
+                            icon = "🟢";
+                        } else if (label.toLowerCase().includes('streamwish')) {
+                            icon = "✨";
+                        } else if (label.toLowerCase().includes('dood')) {
+                            icon = "🐶";
+                        }
+                        
+                        link.innerHTML = `<span>${icon}</span> <span>Download (${label})</span>`;
+                        
+                        // Hover animation
+                        link.onmouseenter = () => {
+                            link.style.borderColor = 'var(--accent-red)';
+                            link.style.boxShadow = '0 0 10px var(--accent-red-glow)';
+                            link.style.transform = 'translateY(-2px)';
+                        };
+                        link.onmouseleave = () => {
+                            link.style.borderColor = 'var(--border-color)';
+                            link.style.boxShadow = 'none';
+                            link.style.transform = 'translateY(0)';
+                        };
+                        
+                        downloadLinksGrid.appendChild(link);
+                    }
+                });
+            }
         }
         // Populate share links
         const shareBox = document.getElementById('share-box');
@@ -633,7 +714,7 @@ function hideWatchView() {
     document.title = 'FallenAnime';
     
     const metaDesc = document.getElementById('meta-description');
-    if (metaDesc) metaDesc.setAttribute('content', 'Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from Animexin.dev.');
+    if (metaDesc) metaDesc.setAttribute('content', 'Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from FallenAnime.');
     
     const canonicalLink = document.getElementById('link-canonical');
     if (canonicalLink) canonicalLink.setAttribute('href', 'https://jummybilal794-lab.github.io/FallenAnime/');
@@ -642,7 +723,7 @@ function hideWatchView() {
     if (ogTitle) ogTitle.setAttribute('content', 'FallenAnime - Watch Free Donghua & Anime Sub');
     
     const ogDesc = document.getElementById('meta-og-description');
-    if (ogDesc) ogDesc.setAttribute('content', 'Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from Animexin.dev.');
+    if (ogDesc) ogDesc.setAttribute('content', 'Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from FallenAnime.');
     
     const ogImage = document.getElementById('meta-og-image');
     if (ogImage) ogImage.setAttribute('content', 'https://jummybilal794-lab.github.io/FallenAnime/wp-content/uploads/2021/04/Lord-of-the-Ancient-God-Grave-Subtitle.webp');
@@ -654,7 +735,7 @@ function hideWatchView() {
     if (twTitle) twTitle.setAttribute('content', 'FallenAnime - Watch Free Donghua & Anime Sub');
     
     const twDesc = document.getElementById('meta-tw-description');
-    if (twDesc) twDesc.setAttribute('content', 'Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from Animexin.dev.');
+    if (twDesc) twDesc.setAttribute('content', 'Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from FallenAnime.');
     
     const twImage = document.getElementById('meta-tw-image');
     if (twImage) twImage.setAttribute('content', 'https://jummybilal794-lab.github.io/FallenAnime/wp-content/uploads/2021/04/Lord-of-the-Ancient-God-Grave-Subtitle.webp');
@@ -671,8 +752,20 @@ function loadMirrorPlayer(mirror) {
     if (!mirror) return;
     
     // Inject mirror html safely
-    if (mirror.embedHtml) {
-        playerContainer.innerHTML = mirror.embedHtml;
+    let embedHtml = mirror.embedHtml || '';
+    if (embedHtml) {
+        // Sanitize any instances of AnimeXin in titles/attributes inside iframe
+        embedHtml = embedHtml.replace(/title="([^"]*)"/g, (match, titleContent) => {
+            const sanitizedTitle = titleContent.replace(/AnimeXin(?:\.dev)?/gi, 'FallenAnime');
+            return `title="${sanitizedTitle}"`;
+        });
+        embedHtml = embedHtml.replace(/itemprop="name"\s+content="([^"]*)"/g, (match, content) => {
+            return `itemprop="name" content="${content.replace(/AnimeXin(?:\.dev)?/gi, 'FallenAnime')}"`;
+        });
+        embedHtml = embedHtml.replace(/itemprop="description"\s+content="([^"]*)"/g, (match, content) => {
+            return `itemprop="description" content="${content.replace(/AnimeXin(?:\.dev)?/gi, 'FallenAnime')}"`;
+        });
+        playerContainer.innerHTML = embedHtml;
     } else if (mirror.embedUrl) {
         playerContainer.innerHTML = `<iframe src="${mirror.embedUrl}" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>`;
     } else {
@@ -680,24 +773,80 @@ function loadMirrorPlayer(mirror) {
     }
 }
 
+// Extract base series name from video title
+function getSeriesName(title) {
+    let cleaned = title;
+    const parts = title.split(/(?:Episode|Ep)\s*\d+/i);
+    if (parts.length > 0) {
+        cleaned = parts[0];
+    }
+    cleaned = cleaned.replace(/Season\s*\d+/i, '');
+    cleaned = cleaned.replace(/S\d+/i, '');
+    cleaned = cleaned.trim();
+    cleaned = cleaned.replace(/[\s-–,]+$/, '').trim();
+    return cleaned;
+}
+
+// Extract episode number
+function getEpisodeNumber(title) {
+    const match = title.match(/Episode\s*(\d+(\.\d+)?)/i) || title.match(/Ep\s*(\d+(\.\d+)?)/i);
+    return match ? parseFloat(match[1]) : 0;
+}
+
 // Render sidebar episodes list
 function renderSidebarList(currentPlayingIdx) {
     sidebarList.innerHTML = '';
+    const currentVideo = allVideos[currentPlayingIdx];
+    if (!currentVideo) return;
+
+    const seriesName = getSeriesName(currentVideo.title);
     
-    // Show top 15 latest episodes, excluding the current one if desired, or keep it listed
-    allVideos.slice(0, 15).forEach((video) => {
+    // Filter related episodes from the same series
+    let relatedVideos = [];
+    if (seriesName) {
+        relatedVideos = allVideos.filter(video => {
+            return video.title.toLowerCase().includes(seriesName.toLowerCase());
+        });
+    }
+
+    // Sort related videos by episode number descending
+    relatedVideos.sort((a, b) => {
+        const epA = getEpisodeNumber(a.title);
+        const epB = getEpisodeNumber(b.title);
+        return epB - epA;
+    });
+
+    const sidebarHeading = document.querySelector('.watch-sidebar .sidebar-heading');
+    let isFallback = false;
+    
+    // Fallback if no other related episodes are found
+    if (relatedVideos.length <= 1) {
+        relatedVideos = allVideos.slice(0, 15);
+        isFallback = true;
+    }
+    
+    if (sidebarHeading) {
+        sidebarHeading.textContent = isFallback ? 'Latest Episodes' : 'Related Episodes';
+    }
+    
+    // Render at most 30 items to prevent lag on watch page
+    const visibleRelated = relatedVideos.slice(0, 30);
+    
+    visibleRelated.forEach((video) => {
         const mainIndex = allVideos.indexOf(video);
         const isCurrent = mainIndex === currentPlayingIdx;
         
         const item = document.createElement('div');
         item.className = `sidebar-item ${isCurrent ? 'playing' : ''}`;
         
+        const sanitizedTitle = sanitizeTitle(video.title);
+        
         item.innerHTML = `
             <div class="sidebar-item-thumb">
-                <img src="${video.thumbnail}" alt="${video.title}">
+                <img src="${video.thumbnail}" alt="${sanitizedTitle}">
             </div>
             <div class="sidebar-item-details">
-                <h4 class="sidebar-item-title" style="${isCurrent ? 'color: var(--accent-blue)' : ''}">${video.title}</h4>
+                <h4 class="sidebar-item-title" style="${isCurrent ? 'color: var(--accent-blue)' : ''}">${sanitizedTitle}</h4>
                 <span class="sidebar-item-date">${formatDate(video.pubDate)}</span>
             </div>
         `;
@@ -800,6 +949,15 @@ function setupEventListeners() {
     // Trigger Sync button
     triggerSyncBtn.addEventListener('click', triggerSync);
 
+    // Load More button
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+            currentPage++;
+            renderCatalogGrid();
+        });
+    }
+
     // Chat drawer controls
     chatToggleBtn.addEventListener('click', () => {
         chatDrawer.classList.toggle('active');
@@ -814,12 +972,15 @@ function setupEventListeners() {
 async function triggerSync() {
     if (isSyncing) return;
     
-    logToConsole('[Client] Initiating sync request...');
+    const deepSyncCheckbox = document.getElementById('deep-sync-checkbox');
+    const isDeepSync = deepSyncCheckbox ? deepSyncCheckbox.checked : false;
+    
+    logToConsole(`[Client] Initiating sync request (Mode: ${isDeepSync ? 'Deep Sync' : 'Normal Sync'})...`);
     triggerSyncBtn.disabled = true;
     triggerSyncBtn.textContent = 'Syncing...';
     
     try {
-        const res = await fetch('/api/sync');
+        const res = await fetch(`/api/sync?full=${isDeepSync}`);
         const data = await res.json();
         
         if (data.status === 'started' || data.status === 'running') {
@@ -852,6 +1013,22 @@ async function checkSyncStatusOnStart() {
     }
 }
 
+// Dynamic Chat Viewer Counter
+function initChatCounter() {
+    const chatToggleSpan = document.querySelector('#chat-toggle-btn span');
+    if (!chatToggleSpan) return;
+
+    let baseCount = Math.floor(Math.random() * 15) + 15; // Start with 15-30 people
+    chatToggleSpan.textContent = `💬 FallenAnime Chat 👤 ${baseCount}`;
+
+    setInterval(() => {
+        // Fluctuates by -2, -1, 0, 1, 2
+        const change = Math.floor(Math.random() * 5) - 2;
+        baseCount = Math.max(8, baseCount + change);
+        chatToggleSpan.textContent = `💬 FallenAnime Chat 👤 ${baseCount}`;
+    }, 10000); // Update every 10 seconds
+}
+
 // Start polling for sync completion
 function startPollingSyncStatus() {
     isSyncing = true;
@@ -860,15 +1037,22 @@ function startPollingSyncStatus() {
     
     if (syncIntervalId) clearInterval(syncIntervalId);
     
-    let dots = '';
     syncIntervalId = setInterval(async () => {
         try {
             const res = await fetch('/api/sync-status');
             const data = await res.json();
             
-            // Console loading indicator
-            dots = dots.length >= 3 ? '' : dots + '.';
-            logToConsole(`[Sync Agent] Checking database updates${dots}`);
+            // Fetch live console log from server
+            try {
+                const logRes = await fetch('/api/sync-log');
+                const logData = await logRes.json();
+                if (logData.log) {
+                    consoleLog.textContent = logData.log;
+                    consoleLog.scrollTop = consoleLog.scrollHeight;
+                }
+            } catch (logErr) {
+                console.warn('Failed to fetch sync logs:', logErr);
+            }
             
             if (data.status !== 'running') {
                 clearInterval(syncIntervalId);
@@ -957,16 +1141,17 @@ function renderPopularCarousel() {
         card.className = 'popular-card';
         
         const epText = extractEpisodeText(video.title);
+        const sanitizedTitle = sanitizeTitle(video.title);
         
         card.innerHTML = `
             <div class="card-thumb-wrapper">
-                <img src="${video.thumbnail || 'https://via.placeholder.com/350x220/0a0b10/d50000?text=FallenAnime'}" alt="${video.title}" loading="lazy">
+                <img src="${video.thumbnail || 'https://via.placeholder.com/350x220/0a0b10/d50000?text=FallenAnime'}" alt="${sanitizedTitle}" loading="lazy">
                 <span class="card-badge-top-left">ONA</span>
                 <span class="card-badge-bottom-left">${epText}</span>
                 <span class="card-badge-bottom-right">Sub</span>
             </div>
             <div class="card-details">
-                <h3 class="card-title">${video.title}</h3>
+                <h3 class="card-title">${sanitizedTitle}</h3>
             </div>
         `;
         

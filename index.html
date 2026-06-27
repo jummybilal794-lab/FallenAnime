@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FallenAnime</title>
-    <meta name="description" id="meta-description" content="Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from Animexin.dev.">
+    <meta name="description" id="meta-description" content="Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from FallenAnime.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" id="link-canonical" href="https://jummybilal794-lab.github.io/FallenAnime/">
     
     <!-- OpenGraph Social Metadata -->
     <meta property="og:type" content="website">
     <meta property="og:title" id="meta-og-title" content="FallenAnime - Watch Free Donghua & Anime Sub">
-    <meta property="og:description" id="meta-og-description" content="Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from Animexin.dev.">
+    <meta property="og:description" id="meta-og-description" content="Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from FallenAnime.">
     <meta property="og:image" id="meta-og-image" content="https://jummybilal794-lab.github.io/FallenAnime/wp-content/uploads/2021/04/Lord-of-the-Ancient-God-Grave-Subtitle.webp">
     <meta property="og:url" id="meta-og-url" content="https://jummybilal794-lab.github.io/FallenAnime/">
     <meta property="og:site_name" content="FallenAnime">
-
+    
     <!-- Twitter Card Metadata -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" id="meta-tw-title" content="FallenAnime - Watch Free Donghua & Anime Sub">
-    <meta name="twitter:description" id="meta-tw-description" content="Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from Animexin.dev.">
+    <meta name="twitter:description" id="meta-tw-description" content="Watch high-quality Donghua and Anime with English and Indonesian subtitles. Automatically synced from FallenAnime.">
     <meta name="twitter:image" id="meta-tw-image" content="https://jummybilal794-lab.github.io/FallenAnime/wp-content/uploads/2021/04/Lord-of-the-Ancient-God-Grave-Subtitle.webp">
 
     <!-- Structured Website Schema -->
@@ -189,6 +189,13 @@
                     <p>Loading catalog items...</p>
                 </div>
             </div>
+            
+            <!-- Load More Episodes Container -->
+            <div class="load-more-container" id="load-more-container" style="text-align: center; margin: 2rem 0; display: none;">
+                <button class="btn btn-primary btn-lg" id="load-more-btn" style="padding: 0.75rem 2rem; border-radius: 50px; font-weight: 700; cursor: pointer; transition: var(--transition);">
+                    Load More Episodes
+                </button>
+            </div>
         </section>
 
     </main>
@@ -198,7 +205,7 @@
         <div class="dashboard-modal">
             <button class="close-btn" id="close-sync-btn" aria-label="Close Sync Dashboard">&times;</button>
             <h2 class="modal-title">🔄 Video Synchronization Hub</h2>
-            <p class="modal-desc">This panel manages the connection with animexin.dev to fetch new episodes directly into your local offline database.</p>
+            <p class="modal-desc">This panel manages the synchronization to fetch new episodes directly into your local database.</p>
             
             <div class="status-card">
                 <div class="status-item">
@@ -218,10 +225,16 @@
             </div>
             
             <div class="action-box">
+                <div style="margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <input type="checkbox" id="deep-sync-checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+                    <label for="deep-sync-checkbox" style="font-size: 0.95rem; color: var(--text-primary); cursor: pointer; user-select: none; font-weight: 600;">
+                        Deep Sync (Scrape all historical episodes from sitemaps)
+                    </label>
+                </div>
                 <button class="btn btn-success btn-lg" id="trigger-sync-btn">
                     Sync New Videos Now
                 </button>
-                <p class="action-note">Running a sync checks the WordPress RSS feed and downloads metadata/mirrors for any episodes published since the last update. This takes about 1-2 seconds per episode.</p>
+                <p class="action-note">Running a standard sync checks the RSS feed for new episodes. Deep Sync crawls all sitemaps to fetch all historical episodes in batches of 500.</p>
             </div>
             
             <div class="console-box">
@@ -243,7 +256,7 @@
 
     <!-- Floating Chat Button -->
     <button class="chat-toggle-btn" id="chat-toggle-btn" title="Open Community Chat">
-        <span>💬 FallenAnime Chat 👤 5,134</span>
+        <span>💬 FallenAnime Chat</span>
     </button>
 
     <!-- Chat Drawer -->
