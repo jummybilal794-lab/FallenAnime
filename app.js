@@ -770,7 +770,14 @@ function loadMirrorPlayer(mirror) {
         playerContainer.innerHTML = `<iframe src="${mirror.embedUrl}" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>`;
     } else {
         playerContainer.innerHTML = `<div class="player-placeholder"><p>No play method available for this server.</p></div>`;
+        return;
     }
+
+    // Append FallenAnime watermark overlay to cover baked-in AnimeXin logo
+    const watermark = document.createElement('div');
+    watermark.className = 'player-watermark';
+    watermark.innerHTML = `<span style="color: var(--accent-blue)">Fallen</span>Anime`;
+    playerContainer.appendChild(watermark);
 }
 
 // Extract base series name from video title
