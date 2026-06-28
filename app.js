@@ -12,6 +12,28 @@ let catalogLayout = 'grid'; // 'grid' or 'list'
 let currentPage = 1;
 const itemsPerPage = 24;
 
+// Firebase Configuration (to be filled by the user)
+const firebaseConfig = {
+  apiKey: "AIzaSyAJw32edVN_6VA1Al-BvgN97zAMv34Swm8",
+  authDomain: "fallenanime-20ea1.firebaseapp.com",
+  projectId: "fallenanime-20ea1",
+  storageBucket: "fallenanime-20ea1.firebasestorage.app",
+  messagingSenderId: "737557456886",
+  appId: "1:737557456886:web:8d3cacc26097b6381189d7",
+  measurementId: "G-M0V80EJSPX"
+};
+
+// Global Firebase Instance Pointers
+let firebaseApp = null;
+let auth = null;
+let db = null;
+
+// User Account and History State
+let currentUser = null;
+let userFavorites = [];
+let userWatched = [];
+let activeNavFilter = 'All'; // 'All' or 'Favorites'
+
 function sanitizeTitle(title) {
     if (!title) return '';
     return title
@@ -25,6 +47,7 @@ function sanitizeTitle(title) {
 const logoBtn = document.getElementById('logo-btn');
 const searchInput = document.getElementById('search-input');
 const navAll = document.getElementById('nav-all');
+const navFavorites = document.getElementById('nav-favorites');
 const openSyncBtn = document.getElementById('open-sync-btn');
 const closeSyncBtn = document.getElementById('close-sync-btn');
 const syncOverlay = document.getElementById('sync-overlay');
@@ -63,6 +86,7 @@ const chatDrawer = document.getElementById('chat-drawer');
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
+    initAuth();
     loadDatabase();
     setupEventListeners();
     checkSyncStatusOnStart();
@@ -164,13 +188,15 @@ function applyFiltersAndSearch() {
         const matchesCategory = activeFilter === 'All' || 
                                 (video.categories && video.categories.includes(activeFilter));
         
+        const matchesFavorite = activeNavFilter === 'All' || userFavorites.includes(video.link);
+        
         // Filter by release day if active
         let matchesDay = true;
         if (activeScheduleDay) {
             matchesDay = video.pubDate && video.pubDate.includes(activeScheduleDay);
         }
         
-        return matchesSearch && matchesCategory && matchesDay;
+        return matchesSearch && matchesCategory && matchesDay && matchesFavorite;
     });
 
     // If there is a search keyword, sort results by search relevance score
@@ -284,9 +310,13 @@ function renderCatalogGrid() {
         const epText = extractEpisodeText(video.title);
         const titleClean = sanitizeTitle(video.title);
         
+        const isWatched = userWatched.includes(video.link);
+        const watchedBadge = isWatched ? `<span class="card-badge-watched">✓ Watched</span>` : '';
+        
         card.innerHTML = `
             <div class="card-thumb-wrapper">
                 <img src="${video.thumbnail || 'https://via.placeholder.com/350x220/0a0b10/d50000?text=FallenAnime'}" alt="${titleClean}" loading="lazy">
+                ${watchedBadge}
                 <span class="card-badge-top-left">ONA</span>
                 <span class="card-badge-bottom-left">${epText}</span>
                 <span class="card-badge-bottom-right">Sub</span>
@@ -694,6 +724,12 @@ function showWatchView(index, scroll = true) {
 
     // Populate Sidebar playlist (Up Next)
     renderSidebarList(index);
+
+    // Track watch history and update Favorites Button state
+    if (video.link) {
+        markEpisodeWatched(video.link);
+        updateFavoriteButtonState(video.link);
+    }
 }
 
 // Hide watch section
@@ -1213,4 +1249,378 @@ function setupScheduleButtons() {
             applyFiltersAndSearch();
         });
     });
+}
+
+// Initialize User Auth & Database Connection
+function initAuth() {
+    const authBtn = document.getElementById('auth-btn');
+    const userMenu = document.getElementById('user-menu');
+    const userEmailText = document.getElementById('user-email-text');
+    const userDropdown = document.getElementById('user-dropdown');
+    const menuFavorites = document.getElementById('menu-favorites');
+    const menuLogout = document.getElementById('menu-logout');
+    const authModal = document.getElementById('auth-modal');
+    const authModalClose = document.getElementById('auth-modal-close');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const tabLoginBtn = document.getElementById('tab-login-btn');
+    const tabRegisterBtn = document.getElementById('tab-register-btn');
+    const loginError = document.getElementById('login-error');
+    const registerError = document.getElementById('register-error');
+
+    // 1. Initialize Firebase if config is configured
+    try {
+        if (typeof firebase !== 'undefined' && firebaseConfig && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+            firebaseApp = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.firestore();
+            
+            // Listen for authentication state changes
+            auth.onAuthStateChanged(async (user) => {
+                currentUser = user;
+                if (user) {
+                    // Logged in
+                    if (authBtn) authBtn.style.display = 'none';
+                    if (userMenu) userMenu.style.display = 'inline-block';
+                    if (userEmailText) userEmailText.textContent = user.email.split('@')[0];
+                    if (navFavorites) navFavorites.style.display = 'inline-block';
+                    
+                    // Fetch favorites and history from Firestore
+                    await syncFromFirestore();
+                } else {
+                    // Logged out
+                    if (authBtn) authBtn.style.display = 'inline-block';
+                    if (userMenu) userMenu.style.display = 'none';
+                    if (navFavorites) navFavorites.style.display = 'none';
+                    
+                    // Fall back to local storage
+                    loadFromLocalStorage();
+                }
+                applyFiltersAndSearch();
+            });
+        } else {
+            // No Firebase configured, fall back to Local Storage
+            loadFromLocalStorage();
+            applyFiltersAndSearch();
+        }
+    } catch (e) {
+        console.error("Firebase init error, using LocalStorage:", e);
+        loadFromLocalStorage();
+        applyFiltersAndSearch();
+    }
+
+    // 2. Auth Modal Event Listeners
+    if (authBtn && authModal) {
+        authBtn.addEventListener('click', () => {
+            authModal.style.display = 'flex';
+            showAuthTab('login');
+        });
+    }
+
+    if (authModalClose && authModal) {
+        authModalClose.addEventListener('click', () => {
+            authModal.style.display = 'none';
+        });
+    }
+
+    // Toggle dropdown user menu
+    const userBtnEl = document.getElementById('user-btn');
+    if (userBtnEl && userDropdown) {
+        userBtnEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+        });
+        
+        // Hide dropdown when clicking elsewhere
+        window.addEventListener('click', () => {
+            userDropdown.classList.remove('show');
+        });
+    }
+
+    // Tab Switching
+    if (tabLoginBtn && tabRegisterBtn) {
+        tabLoginBtn.addEventListener('click', () => showAuthTab('login'));
+        tabRegisterBtn.addEventListener('click', () => showAuthTab('register'));
+    }
+
+    // Login Form Submit
+    if (loginForm && authModal && loginError) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            loginError.style.display = 'none';
+
+            if (auth) {
+                try {
+                    await auth.signInWithEmailAndPassword(email, password);
+                    authModal.style.display = 'none';
+                    loginForm.reset();
+                } catch (err) {
+                    loginError.textContent = err.message;
+                    loginError.style.display = 'block';
+                }
+            } else {
+                loginError.textContent = "Authentication server not configured. Please see settings.";
+                loginError.style.display = 'block';
+            }
+        });
+    }
+
+    // Register Form Submit
+    if (registerForm && authModal && registerError) {
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            registerError.style.display = 'none';
+
+            if (password !== confirmPassword) {
+                registerError.textContent = "Passwords do not match!";
+                registerError.style.display = 'block';
+                return;
+            }
+
+            if (auth) {
+                try {
+                    await auth.createUserWithEmailAndPassword(email, password);
+                    authModal.style.display = 'none';
+                    registerForm.reset();
+                } catch (err) {
+                    registerError.textContent = err.message;
+                    registerError.style.display = 'block';
+                }
+            } else {
+                registerError.textContent = "Authentication server not configured. Please see settings.";
+                registerError.style.display = 'block';
+            }
+        });
+    }
+
+    // Logout click
+    if (menuLogout) {
+        menuLogout.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (auth) {
+                auth.signOut();
+            } else {
+                currentUser = null;
+                loadFromLocalStorage();
+                if (authBtn) authBtn.style.display = 'inline-block';
+                if (userMenu) userMenu.style.display = 'none';
+                if (navFavorites) navFavorites.style.display = 'none';
+                applyFiltersAndSearch();
+            }
+        });
+    }
+
+    // Navigation filter for Favorites
+    if (navFavorites) {
+        navFavorites.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (navAll) navAll.classList.remove('active');
+            navFavorites.classList.add('active');
+            activeNavFilter = 'Favorites';
+            activeFilter = 'All';
+            searchInput.value = '';
+            hideWatchView();
+            applyFiltersAndSearch();
+        });
+    }
+    
+    if (navAll) {
+        navAll.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (navFavorites) navFavorites.classList.remove('active');
+            navAll.classList.add('active');
+            activeNavFilter = 'All';
+            applyFiltersAndSearch();
+        });
+    }
+
+    // Favorites Menu Click
+    if (menuFavorites) {
+        menuFavorites.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (navAll) navAll.classList.remove('active');
+            if (navFavorites) navFavorites.classList.add('active');
+            activeNavFilter = 'Favorites';
+            activeFilter = 'All';
+            searchInput.value = '';
+            hideWatchView();
+            applyFiltersAndSearch();
+        });
+    }
+
+    // Favorite Button Click handler
+    const favBtn = document.getElementById('favorite-btn');
+    if (favBtn) {
+        favBtn.addEventListener('click', () => {
+            const currentVideo = getCurrentVideo();
+            if (!currentVideo) return;
+            
+            // If Firebase is active and user is NOT logged in, open Auth modal
+            if (auth && !currentUser) {
+                if (authModal) {
+                    authModal.style.display = 'flex';
+                    showAuthTab('login');
+                }
+                alert("Please Sign In to save your favorites!");
+                return;
+            }
+            
+            const link = currentVideo.link;
+            const index = userFavorites.indexOf(link);
+            if (index > -1) {
+                userFavorites.splice(index, 1);
+            } else {
+                userFavorites.push(link);
+            }
+            
+            saveFavorites();
+            updateFavoriteButtonState(link);
+        });
+    }
+}
+
+// Show specific tab in modal
+function showAuthTab(tab) {
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const tabLoginBtn = document.getElementById('tab-login-btn');
+    const tabRegisterBtn = document.getElementById('tab-register-btn');
+    const loginError = document.getElementById('login-error');
+    const registerError = document.getElementById('register-error');
+
+    if (tab === 'login') {
+        if (tabLoginBtn) tabLoginBtn.classList.add('active');
+        if (tabRegisterBtn) tabRegisterBtn.classList.remove('active');
+        if (loginForm) loginForm.style.display = 'flex';
+        if (registerForm) registerForm.style.display = 'none';
+        if (loginError) loginError.style.display = 'none';
+    } else {
+        if (tabRegisterBtn) tabRegisterBtn.classList.add('active');
+        if (tabLoginBtn) tabLoginBtn.classList.remove('active');
+        if (registerForm) registerForm.style.display = 'flex';
+        if (loginForm) loginForm.style.display = 'none';
+        if (registerError) registerError.style.display = 'none';
+    }
+}
+
+// Helper: Get currently playing video object
+function getCurrentVideo() {
+    const hash = window.location.hash;
+    if (hash.startsWith('#watch?idx=')) {
+        const index = parseInt(hash.split('idx=')[1]);
+        if (!isNaN(index) && allVideos[index]) {
+            return allVideos[index];
+        }
+    }
+    return null;
+}
+
+// Save & Sync favorites list
+async function saveFavorites() {
+    // 1. Save to Local Storage
+    localStorage.setItem('fallenanime_favorites', JSON.stringify(userFavorites));
+    
+    // 2. Sync to Firebase Firestore if logged in
+    if (db && currentUser) {
+        try {
+            await db.collection('users').doc(currentUser.uid).set({
+                favorites: userFavorites
+            }, { merge: true });
+        } catch (err) {
+            console.error("Firestore favorites sync failed:", err);
+        }
+    }
+}
+
+// Mark an episode as watched and save
+async function markEpisodeWatched(link) {
+    if (!link) return;
+    if (!userWatched.includes(link)) {
+        userWatched.push(link);
+        
+        // Save locally
+        localStorage.setItem('fallenanime_watched', JSON.stringify(userWatched));
+        
+        // Sync to Firebase
+        if (db && currentUser) {
+            try {
+                await db.collection('users').doc(currentUser.uid).set({
+                    watched: userWatched
+                }, { merge: true });
+            } catch (err) {
+                console.error("Firestore watched history sync failed:", err);
+            }
+        }
+        
+        // Refresh catalog cards if they are rendered in the background
+        const cardElements = document.querySelectorAll('.video-card');
+        if (cardElements.length > 0) {
+            applyFiltersAndSearch();
+        }
+    }
+}
+
+// Load from LocalStorage fallback
+function loadFromLocalStorage() {
+    const cachedFavs = localStorage.getItem('fallenanime_favorites');
+    userFavorites = cachedFavs ? JSON.parse(cachedFavs) : [];
+    
+    const cachedWatched = localStorage.getItem('fallenanime_watched');
+    userWatched = cachedWatched ? JSON.parse(cachedWatched) : [];
+}
+
+// Sync from Firestore Cloud Database
+async function syncFromFirestore() {
+    if (!db || !currentUser) return;
+    try {
+        const doc = await db.collection('users').doc(currentUser.uid).get();
+        if (doc.exists) {
+            const data = doc.data();
+            
+            // Merge local storage and cloud favorites
+            const cloudFavs = data.favorites || [];
+            userFavorites = Array.from(new Set([...userFavorites, ...cloudFavs]));
+            
+            // Merge local storage and cloud watched list
+            const cloudWatched = data.watched || [];
+            userWatched = Array.from(new Set([...userWatched, ...cloudWatched]));
+            
+            // Save merged back to Firestore & Local Storage
+            await db.collection('users').doc(currentUser.uid).set({
+                favorites: userFavorites,
+                watched: userWatched
+            }, { merge: true });
+            
+            localStorage.setItem('fallenanime_favorites', JSON.stringify(userFavorites));
+            localStorage.setItem('fallenanime_watched', JSON.stringify(userWatched));
+        } else {
+            // First time login - upload current local storage to Firestore
+            await db.collection('users').doc(currentUser.uid).set({
+                favorites: userFavorites,
+                watched: userWatched
+            });
+        }
+    } catch (err) {
+        console.error("Error fetching data from Firestore:", err);
+    }
+}
+
+// Update the visual state of the Favorites button
+function updateFavoriteButtonState(link) {
+    const favBtn = document.getElementById('favorite-btn');
+    if (!favBtn) return;
+    
+    const isFav = userFavorites.includes(link);
+    if (isFav) {
+        favBtn.classList.add('active');
+        favBtn.innerHTML = `<span class="heart-icon">♥</span> Favorited`;
+    } else {
+        favBtn.classList.remove('active');
+        favBtn.innerHTML = `<span class="heart-icon">☆</span> Favorite`;
+    }
 }
