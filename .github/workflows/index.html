@@ -67,7 +67,21 @@
             
             <nav class="nav">
                 <a href="#" class="nav-link active" id="nav-all">All Episodes</a>
+                <a href="#" class="nav-link" id="nav-favorites" style="display: none;">My Favorites</a>
                 <button class="btn btn-primary" id="open-sync-btn" style="display: none;">Sync Hub</button>
+                <div class="user-auth-section">
+                    <button class="btn btn-outline" id="auth-btn">Sign In</button>
+                    <div class="user-menu" id="user-menu" style="display: none;">
+                        <button class="user-btn" id="user-btn">
+                            <span class="user-avatar">👤</span>
+                            <span class="user-email-text" id="user-email-text">Profile</span>
+                        </button>
+                        <div class="dropdown-menu" id="user-dropdown">
+                            <a href="#" id="menu-favorites">💖 My Favorites</a>
+                            <a href="#" id="menu-logout" class="text-danger">Logout</a>
+                        </div>
+                    </div>
+                </div>
             </nav>
         </div>
     </header>
@@ -99,7 +113,12 @@
                     <!-- Watch Details -->
                     <div class="watch-details">
                         <div class="watch-meta-top">
-                            <h1 class="watch-title" id="watch-title">Episode Title</h1>
+                            <div class="watch-title-row">
+                                <h1 class="watch-title" id="watch-title">Episode Title</h1>
+                                <button class="btn-favorite" id="favorite-btn" aria-label="Add to Favorites">
+                                    <span class="heart-icon">☆</span> Favorite
+                                </button>
+                            </div>
                             <span class="watch-date" id="watch-date">Date Published</span>
                         </div>
                         
@@ -278,6 +297,55 @@
             <iframe src="https://chitchatter.im/public/fallenanime-chat?embed=1" allow="camera; microphone; display-capture; fullscreen; clipboard-read; clipboard-write; speaker-selection"></iframe>
         </div>
     </div>
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="auth-modal" style="display: none;">
+        <div class="auth-modal-card">
+            <button class="modal-close" id="auth-modal-close" aria-label="Close modal">&times;</button>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" id="tab-login-btn">Login</button>
+                <button class="auth-tab-btn" id="tab-register-btn">Create Account</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form">
+                <div class="form-group">
+                    <label for="login-email">Email Address</label>
+                    <input type="email" id="login-email" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required placeholder="Enter your password">
+                </div>
+                <div class="form-error" id="login-error"></div>
+                <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            </form>
+            
+            <!-- Register Form -->
+            <form id="register-form" class="auth-form" style="display: none;">
+                <div class="form-group">
+                    <label for="register-email">Email Address</label>
+                    <input type="email" id="register-email" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" required minlength="6" placeholder="At least 6 characters">
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm-password">Confirm Password</label>
+                    <input type="password" id="register-confirm-password" required minlength="6" placeholder="Confirm your password">
+                </div>
+                <div class="form-error" id="register-error"></div>
+                <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (Compat Version) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <!-- Script Application -->
     <script src="app.js"></script>
