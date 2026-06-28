@@ -14,12 +14,13 @@ const itemsPerPage = 24;
 
 // Firebase Configuration (to be filled by the user)
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyAJw32edVN_6VA1Al-BvgN97zAMv34Swm8",
+  authDomain: "fallenanime-20ea1.firebaseapp.com",
+  projectId: "fallenanime-20ea1",
+  storageBucket: "fallenanime-20ea1.firebasestorage.app",
+  messagingSenderId: "737557456886",
+  appId: "1:737557456886:web:8d3cacc26097b6381189d7",
+  measurementId: "G-M0V80EJSPX"
 };
 
 // Global Firebase Instance Pointers
