@@ -276,9 +276,7 @@ function escapeRegExp(string) {
 
 // Render cards grid
 function renderCatalogGrid() {
-    if (currentPage === 1) {
-        catalogGrid.innerHTML = '';
-    }
+    catalogGrid.innerHTML = '';
     
     if (catalogLayout === 'list') {
         catalogGrid.classList.add('list-view');
@@ -286,14 +284,15 @@ function renderCatalogGrid() {
         catalogGrid.classList.remove('list-view');
     }
     
+    const paginationContainer = document.getElementById('pagination-container');
+    
     if (filteredVideos.length === 0) {
         catalogGrid.innerHTML = `
             <div class="loading-state">
                 <p>🔍 No videos match your current search/filters.</p>
             </div>
         `;
-        const loadMoreContainer = document.getElementById('load-more-container');
-        if (loadMoreContainer) loadMoreContainer.style.display = 'none';
+        if (paginationContainer) paginationContainer.style.display = 'none';
         return;
     }
     
@@ -336,13 +335,15 @@ function renderCatalogGrid() {
         catalogGrid.appendChild(card);
     });
 
-    const loadMoreContainer = document.getElementById('load-more-container');
-    if (loadMoreContainer) {
-        if (currentPage * itemsPerPage < filteredVideos.length) {
-            loadMoreContainer.style.display = 'block';
-        } else {
-            loadMoreContainer.style.display = 'none';
+    // Render Pagination
+    const totalPages = Math.ceil(filteredVideos.length / itemsPerPage);
+    if (totalPages > 1) {
+        if (paginationContainer) {
+            paginationContainer.style.display = 'flex';
+            renderPaginationControls(totalPages);
         }
+    } else {
+        if (paginationContainer) paginationContainer.style.display = 'none';
     }
 }
 
@@ -729,6 +730,7 @@ function showWatchView(index, scroll = true) {
     if (video.link) {
         markEpisodeWatched(video.link);
         updateFavoriteButtonState(video.link);
+        loadCommentsForEpisode(video.link);
     }
 }
 
@@ -1278,12 +1280,18 @@ function initAuth() {
             // Listen for authentication state changes
             auth.onAuthStateChanged(async (user) => {
                 currentUser = user;
+                const commentFormContainer = document.getElementById('comment-form-container');
+                const commentLoginPrompt = document.getElementById('comment-login-prompt');
+                
                 if (user) {
                     // Logged in
                     if (authBtn) authBtn.style.display = 'none';
                     if (userMenu) userMenu.style.display = 'inline-block';
-                    if (userEmailText) userEmailText.textContent = user.email.split('@')[0];
+                    if (userEmailText) userEmailText.textContent = user.displayName ? user.displayName : user.email.split('@')[0];
                     if (navFavorites) navFavorites.style.display = 'inline-block';
+                    
+                    if (commentFormContainer) commentFormContainer.style.display = 'block';
+                    if (commentLoginPrompt) commentLoginPrompt.style.display = 'none';
                     
                     // Fetch favorites and history from Firestore
                     await syncFromFirestore();
@@ -1293,10 +1301,19 @@ function initAuth() {
                     if (userMenu) userMenu.style.display = 'none';
                     if (navFavorites) navFavorites.style.display = 'none';
                     
+                    if (commentFormContainer) commentFormContainer.style.display = 'none';
+                    if (commentLoginPrompt) commentLoginPrompt.style.display = 'block';
+                    
                     // Fall back to local storage
                     loadFromLocalStorage();
                 }
                 applyFiltersAndSearch();
+                
+                // Refresh comments if watch page is currently active
+                const currentVideo = getCurrentVideo();
+                if (currentVideo) {
+                    loadCommentsForEpisode(currentVideo.link);
+                }
             });
         } else {
             // No Firebase configured, fall back to Local Storage
@@ -1482,6 +1499,55 @@ function initAuth() {
             updateFavoriteButtonState(link);
         });
     }
+
+    // Google Sign-In button click listener
+    const btnGoogleSignin = document.getElementById('btn-google-signin');
+    if (btnGoogleSignin) {
+        btnGoogleSignin.addEventListener('click', async () => {
+            if (auth) {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                try {
+                    await auth.signInWithPopup(provider);
+                    if (authModal) authModal.style.display = 'none';
+                } catch (err) {
+                    console.error("Google SSO failed:", err);
+                    alert("Google Sign-In failed: " + err.message);
+                }
+            } else {
+                alert("Authentication server not configured.");
+            }
+        });
+    }
+
+    // Comment Login prompt link click handler
+    const commentLoginLink = document.getElementById('comment-login-link');
+    if (commentLoginLink) {
+        commentLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (authModal) {
+                authModal.style.display = 'flex';
+                showAuthTab('login');
+            }
+        });
+    }
+
+    // Comment Form Submission listener
+    const commentForm = document.getElementById('comment-form');
+    if (commentForm) {
+        commentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const textarea = document.getElementById('comment-textarea');
+            if (!textarea) return;
+            const content = textarea.value.trim();
+            if (!content) return;
+            
+            const currentVideo = getCurrentVideo();
+            if (!currentVideo) return;
+            
+            await postCommentForEpisode(currentVideo.link, content);
+            textarea.value = '';
+        });
+    }
 }
 
 // Show specific tab in modal
@@ -1623,4 +1689,162 @@ function updateFavoriteButtonState(link) {
         favBtn.classList.remove('active');
         favBtn.innerHTML = `<span class="heart-icon">☆</span> Favorite`;
     }
+}
+
+// Render dynamic pagination control buttons
+function renderPaginationControls(totalPages) {
+    const container = document.getElementById('pagination-container');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    // Helper to create a page button
+    function createButton(text, pageNum, className = '', disabled = false) {
+        const btn = document.createElement('button');
+        btn.className = `page-btn ${className}`;
+        if (disabled) btn.classList.add('disabled');
+        btn.innerHTML = text;
+        
+        if (!disabled) {
+            btn.addEventListener('click', () => {
+                currentPage = pageNum;
+                renderCatalogGrid();
+                const catSection = document.getElementById('catalog-section');
+                if (catSection) {
+                    catSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+        return btn;
+    }
+    
+    // 1. Prev Button
+    container.appendChild(createButton('‹ Prev', currentPage - 1, '', currentPage === 1));
+    
+    // Smart page numbers display
+    const range = 2; // Show active page +/- 2 pages
+    
+    // Always show First Page (Page 1)
+    container.appendChild(createButton('1', 1, currentPage === 1 ? 'active' : ''));
+    
+    if (currentPage - range > 2) {
+        const dots = document.createElement('span');
+        dots.className = 'page-ellipsis';
+        dots.textContent = '...';
+        container.appendChild(dots);
+    }
+    
+    // Middle Pages
+    const start = Math.max(2, currentPage - range);
+    const end = Math.min(totalPages - 1, currentPage + range);
+    
+    for (let i = start; i <= end; i++) {
+        container.appendChild(createButton(i.toString(), i, currentPage === i ? 'active' : ''));
+    }
+    
+    if (currentPage + range < totalPages - 1) {
+        const dots = document.createElement('span');
+        dots.className = 'page-ellipsis';
+        dots.textContent = '...';
+        container.appendChild(dots);
+    }
+    
+    // Always show Last Page
+    if (totalPages > 1) {
+        container.appendChild(createButton(totalPages.toString(), totalPages, currentPage === totalPages ? 'active' : ''));
+    }
+    
+    // 2. Next Button
+    container.appendChild(createButton('Next ›', currentPage + 1, '', currentPage === totalPages));
+}
+
+// Global Firestore Comments Listener unsubscriber pointer
+let commentsUnsubscribe = null;
+
+// Fetch and listen to comments for a specific episode in real-time
+function loadCommentsForEpisode(videoLink) {
+    const commentsList = document.getElementById('comments-list');
+    if (!commentsList) return;
+    
+    // Unsubscribe from previous listener if active
+    if (commentsUnsubscribe) {
+        commentsUnsubscribe();
+        commentsUnsubscribe = null;
+    }
+    
+    if (!db) {
+        commentsList.innerHTML = `<p class="no-comments-prompt">Comments are only available when Firebase is configured.</p>`;
+        return;
+    }
+    
+    // Hash or encode the link to create a safe document ID
+    const episodeId = btoa(videoLink).replace(/=/g, '').substring(0, 100);
+    
+    commentsList.innerHTML = `<div class="loading-comments" style="text-align: center; color: var(--text-secondary); padding: 1rem 0;">Loading comments...</div>`;
+    
+    // Query comments ordered by timestamp descending (newest comments first)
+    commentsUnsubscribe = db.collection('episodes').doc(episodeId).collection('comments')
+        .orderBy('timestamp', 'desc')
+        .onSnapshot((snapshot) => {
+            commentsList.innerHTML = '';
+            
+            if (snapshot.empty) {
+                commentsList.innerHTML = `<p class="no-comments-prompt">No comments yet. Be the first to share your thoughts!</p>`;
+                return;
+            }
+            
+            snapshot.forEach((doc) => {
+                const comment = doc.data();
+                const card = document.createElement('div');
+                card.className = 'comment-card';
+                
+                const initials = comment.username ? comment.username.charAt(0).toUpperCase() : '?';
+                const formattedDate = comment.timestamp ? new Date(comment.timestamp.seconds * 1000).toLocaleString() : 'Just now';
+                
+                card.innerHTML = `
+                    <div class="comment-avatar">${initials}</div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-username">${comment.username || 'Anonymous User'}</span>
+                            <span class="comment-date">🕒 ${formattedDate}</span>
+                        </div>
+                        <p class="comment-body">${escapeHtml(comment.body)}</p>
+                    </div>
+                `;
+                commentsList.appendChild(card);
+            });
+        }, (error) => {
+            console.error("Firestore comments subscription failed:", error);
+            commentsList.innerHTML = `<p class="no-comments-prompt">Failed to load comments: ${error.message}</p>`;
+        });
+}
+
+// Post a new comment
+async function postCommentForEpisode(videoLink, content) {
+    if (!db || !currentUser) return;
+    
+    const episodeId = btoa(videoLink).replace(/=/g, '').substring(0, 100);
+    const username = currentUser.displayName || currentUser.email.split('@')[0];
+    
+    try {
+        await db.collection('episodes').doc(episodeId).collection('comments').add({
+            username: username,
+            uid: currentUser.uid,
+            body: content,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    } catch (err) {
+        console.error("Failed to post comment:", err);
+        alert("Failed to post comment: " + err.message);
+    }
+}
+
+// Simple HTML Escaper helper
+function escapeHtml(text) {
+    if (!text) return '';
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }

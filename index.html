@@ -166,6 +166,31 @@
                         <!-- Populated dynamically -->
                     </div>
                 </aside>
+                
+                <!-- Episode Comments / Discussion Section -->
+                <div class="comments-section" id="comments-section">
+                    <h3 class="comments-heading">💬 Discussion & Feedback</h3>
+                    
+                    <!-- Comment Form (only shown if logged in) -->
+                    <div class="comment-form-container" id="comment-form-container" style="display: none;">
+                        <form id="comment-form">
+                            <textarea id="comment-textarea" placeholder="Add a public comment or feedback..." required></textarea>
+                            <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem;">
+                                <button type="submit" class="btn btn-primary" id="btn-post-comment">Post Comment</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Login Prompt (shown if logged out) -->
+                    <div class="comment-login-prompt" id="comment-login-prompt">
+                        <p>🔑 Please <a href="#" id="comment-login-link" style="color: var(--accent-red); font-weight: 700; text-decoration: underline;">Sign In</a> to write a comment or give feedback.</p>
+                    </div>
+                    
+                    <!-- Comments List -->
+                    <div class="comments-list" id="comments-list">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -218,11 +243,9 @@
                 </div>
             </div>
             
-            <!-- Load More Episodes Container -->
-            <div class="load-more-container" id="load-more-container" style="text-align: center; margin: 2rem 0; display: none;">
-                <button class="btn btn-primary btn-lg" id="load-more-btn" style="padding: 0.75rem 2rem; border-radius: 50px; font-weight: 700; cursor: pointer; transition: var(--transition);">
-                    Load More Episodes
-                </button>
+            <!-- Pagination Container -->
+            <div class="pagination-container" id="pagination-container" style="display: none;">
+                <!-- Dynamically populated page buttons (Prev, 1, 2, 3... Next) -->
             </div>
         </section>
 
@@ -339,6 +362,15 @@
                 <div class="form-error" id="register-error"></div>
                 <button type="submit" class="btn btn-primary btn-block">Create Account</button>
             </form>
+            
+            <div class="auth-divider">
+                <span>OR</span>
+            </div>
+            
+            <button class="btn btn-google btn-block" id="btn-google-signin">
+                <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google Logo">
+                Sign In with Google
+            </button>
         </div>
     </div>
 
