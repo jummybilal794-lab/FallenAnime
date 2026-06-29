@@ -19,7 +19,7 @@ jobs:
       - name: Run synchronization script
         shell: pwsh
         run: |
-          ./sync-videos.ps1 -MaxPages 5
+          ./sync-videos.ps1 -Full -Limit 250
           
       - name: Generate updated sitemap
         shell: pwsh
