@@ -1429,7 +1429,14 @@ function initAuth() {
                     if (userEmailText) userEmailText.textContent = user.displayName ? user.displayName : user.email.split('@')[0];
                     if (navFavorites) navFavorites.style.display = 'inline-block';
                     if (navHistory) navHistory.style.display = 'inline-block';
-                    if (navbarUserAvatar) navbarUserAvatar.textContent = user.photoURL || "👤";
+                    if (navbarUserAvatar) {
+                        const avatarVal = user.photoURL || "👤";
+                        if (avatarVal.startsWith('http')) {
+                            navbarUserAvatar.innerHTML = `<img src="${avatarVal}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                        } else {
+                            navbarUserAvatar.textContent = avatarVal;
+                        }
+                    }
                     
                     if (commentFormContainer) commentFormContainer.style.display = 'block';
                     if (commentLoginPrompt) commentLoginPrompt.style.display = 'none';
@@ -1776,7 +1783,13 @@ function initAuth() {
                     await currentUser.updateProfile({
                         photoURL: selectedAvatar
                     });
-                    if (navbarUserAvatar) navbarUserAvatar.textContent = selectedAvatar;
+                    if (navbarUserAvatar) {
+                        if (selectedAvatar.startsWith('http')) {
+                            navbarUserAvatar.innerHTML = `<img src="${selectedAvatar}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                        } else {
+                            navbarUserAvatar.textContent = selectedAvatar;
+                        }
+                    }
                     avatarModal.style.display = 'none';
                     alert("Profile avatar updated successfully to: " + selectedAvatar);
                 } catch (err) {
@@ -2127,7 +2140,11 @@ function loadCommentsForEpisode(videoLink) {
                 
                 let avatarHtml = '';
                 if (comment.avatar) {
-                    avatarHtml = `<div class="comment-avatar">${comment.avatar}</div>`;
+                    if (comment.avatar.startsWith('http')) {
+                        avatarHtml = `<div class="comment-avatar"><img src="${comment.avatar}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;"></div>`;
+                    } else {
+                        avatarHtml = `<div class="comment-avatar">${comment.avatar}</div>`;
+                    }
                 } else {
                     const initials = comment.username ? comment.username.charAt(0).toUpperCase() : '?';
                     avatarHtml = `<div class="comment-avatar">${initials}</div>`;
