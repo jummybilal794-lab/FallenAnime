@@ -1267,6 +1267,7 @@ function initAuth() {
     const registerForm = document.getElementById('register-form');
     const tabLoginBtn = document.getElementById('tab-login-btn');
     const tabRegisterBtn = document.getElementById('tab-register-btn');
+    const tabGoogleBtn = document.getElementById('tab-google-btn');
     const loginError = document.getElementById('login-error');
     const registerError = document.getElementById('register-error');
 
@@ -1355,9 +1356,14 @@ function initAuth() {
     }
 
     // Tab Switching
-    if (tabLoginBtn && tabRegisterBtn) {
+    if (tabLoginBtn && tabRegisterBtn && tabGoogleBtn) {
         tabLoginBtn.addEventListener('click', () => showAuthTab('login'));
         tabRegisterBtn.addEventListener('click', () => showAuthTab('register'));
+        tabGoogleBtn.addEventListener('click', () => {
+            // Google tab triggers click on the main Google SSO button
+            const btnGoogle = document.getElementById('btn-google-signin');
+            if (btnGoogle) btnGoogle.click();
+        });
     }
 
     // Login Form Submit
@@ -1370,7 +1376,34 @@ function initAuth() {
 
             if (auth) {
                 try {
-                    await auth.signInWithEmailAndPassword(email, password);
+                    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+                    
+                    // Enforce email verification check
+                    if (!user.emailVerified) {
+                        loginError.innerHTML = `Your email is not verified! Please click the verification link in your inbox. <a href="#" id="resend-verification" style="color: var(--accent-red); font-weight: 700; text-decoration: underline; margin-left: 5px;">Resend Verification Link</a>`;
+                        loginError.style.display = 'block';
+                        
+                        // Bind resend click handler
+                        setTimeout(() => {
+                            const resendBtn = document.getElementById('resend-verification');
+                            if (resendBtn) {
+                                resendBtn.addEventListener('click', async (evt) => {
+                                    evt.preventDefault();
+                                    try {
+                                        await user.sendEmailVerification();
+                                        alert("Verification link resent to your email inbox!");
+                                    } catch (resendErr) {
+                                        alert("Error resending verification link: " + resendErr.message);
+                                    }
+                                });
+                            }
+                        }, 100);
+                        
+                        await auth.signOut();
+                        return;
+                    }
+                    
                     authModal.style.display = 'none';
                     loginForm.reset();
                 } catch (err) {
@@ -1401,7 +1434,16 @@ function initAuth() {
 
             if (auth) {
                 try {
-                    await auth.createUserWithEmailAndPassword(email, password);
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+                    
+                    // Send verification email on account creation
+                    await user.sendEmailVerification();
+                    alert("Account created successfully! A verification email has been sent. Please verify your email before logging in.");
+                    
+                    // Log out immediately until verified
+                    await auth.signOut();
+                    
                     authModal.style.display = 'none';
                     registerForm.reset();
                 } catch (err) {
@@ -1556,18 +1598,21 @@ function showAuthTab(tab) {
     const registerForm = document.getElementById('register-form');
     const tabLoginBtn = document.getElementById('tab-login-btn');
     const tabRegisterBtn = document.getElementById('tab-register-btn');
+    const tabGoogleBtn = document.getElementById('tab-google-btn');
     const loginError = document.getElementById('login-error');
     const registerError = document.getElementById('register-error');
 
     if (tab === 'login') {
         if (tabLoginBtn) tabLoginBtn.classList.add('active');
         if (tabRegisterBtn) tabRegisterBtn.classList.remove('active');
+        if (tabGoogleBtn) tabGoogleBtn.classList.remove('active');
         if (loginForm) loginForm.style.display = 'flex';
         if (registerForm) registerForm.style.display = 'none';
         if (loginError) loginError.style.display = 'none';
     } else {
         if (tabRegisterBtn) tabRegisterBtn.classList.add('active');
         if (tabLoginBtn) tabLoginBtn.classList.remove('active');
+        if (tabGoogleBtn) tabGoogleBtn.classList.remove('active');
         if (registerForm) registerForm.style.display = 'flex';
         if (loginForm) loginForm.style.display = 'none';
         if (registerError) registerError.style.display = 'none';
