@@ -955,6 +955,17 @@ function setupEventListeners() {
             }
         }
     });
+
+    // Search button click scroll trigger
+    const searchBtn = document.getElementById('search-btn');
+    if (searchBtn) {
+        searchBtn.addEventListener('click', () => {
+            const catalogSection = document.getElementById('catalog-section');
+            if (catalogSection) {
+                catalogSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }
     
     // Logo / Brand clicks
     logoBtn.addEventListener('click', (e) => {
