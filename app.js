@@ -48,6 +48,7 @@ const logoBtn = document.getElementById('logo-btn');
 const searchInput = document.getElementById('search-input');
 const navAll = document.getElementById('nav-all');
 const navFavorites = document.getElementById('nav-favorites');
+const navHistory = document.getElementById('nav-history');
 const openSyncBtn = document.getElementById('open-sync-btn');
 const closeSyncBtn = document.getElementById('close-sync-btn');
 const syncOverlay = document.getElementById('sync-overlay');
@@ -188,7 +189,12 @@ function applyFiltersAndSearch() {
         const matchesCategory = activeFilter === 'All' || 
                                 (video.categories && video.categories.includes(activeFilter));
         
-        const matchesFavorite = activeNavFilter === 'All' || userFavorites.includes(video.link);
+        let matchesNavFilter = true;
+        if (activeNavFilter === 'Favorites') {
+            matchesNavFilter = userFavorites.includes(video.link);
+        } else if (activeNavFilter === 'History') {
+            matchesNavFilter = userWatched.includes(video.link);
+        }
         
         // Filter by release day if active
         let matchesDay = true;
@@ -196,7 +202,7 @@ function applyFiltersAndSearch() {
             matchesDay = video.pubDate && video.pubDate.includes(activeScheduleDay);
         }
         
-        return matchesSearch && matchesCategory && matchesDay && matchesFavorite;
+        return matchesSearch && matchesCategory && matchesDay && matchesNavFilter;
     });
 
     // If there is a search keyword, sort results by search relevance score
@@ -1301,6 +1307,7 @@ function initAuth() {
                     if (userMenu) userMenu.style.display = 'inline-block';
                     if (userEmailText) userEmailText.textContent = user.displayName ? user.displayName : user.email.split('@')[0];
                     if (navFavorites) navFavorites.style.display = 'inline-block';
+                    if (navHistory) navHistory.style.display = 'inline-block';
                     if (navbarUserAvatar) navbarUserAvatar.textContent = user.photoURL || "👤";
                     
                     if (commentFormContainer) commentFormContainer.style.display = 'block';
@@ -1313,6 +1320,7 @@ function initAuth() {
                     if (authBtn) authBtn.style.display = 'inline-block';
                     if (userMenu) userMenu.style.display = 'none';
                     if (navFavorites) navFavorites.style.display = 'none';
+                    if (navHistory) navHistory.style.display = 'none';
                     if (navbarUserAvatar) navbarUserAvatar.textContent = "👤";
                     
                     if (commentFormContainer) commentFormContainer.style.display = 'none';
@@ -1492,8 +1500,24 @@ function initAuth() {
         navFavorites.addEventListener('click', (e) => {
             e.preventDefault();
             if (navAll) navAll.classList.remove('active');
+            if (navHistory) navHistory.classList.remove('active');
             navFavorites.classList.add('active');
             activeNavFilter = 'Favorites';
+            activeFilter = 'All';
+            searchInput.value = '';
+            hideWatchView();
+            applyFiltersAndSearch();
+        });
+    }
+    
+    // Navigation filter for Watch History
+    if (navHistory) {
+        navHistory.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (navAll) navAll.classList.remove('active');
+            if (navFavorites) navFavorites.classList.remove('active');
+            navHistory.classList.add('active');
+            activeNavFilter = 'History';
             activeFilter = 'All';
             searchInput.value = '';
             hideWatchView();
@@ -1505,6 +1529,7 @@ function initAuth() {
         navAll.addEventListener('click', (e) => {
             e.preventDefault();
             if (navFavorites) navFavorites.classList.remove('active');
+            if (navHistory) navHistory.classList.remove('active');
             navAll.classList.add('active');
             activeNavFilter = 'All';
             applyFiltersAndSearch();
@@ -1516,8 +1541,25 @@ function initAuth() {
         menuFavorites.addEventListener('click', (e) => {
             e.preventDefault();
             if (navAll) navAll.classList.remove('active');
+            if (navHistory) navHistory.classList.remove('active');
             if (navFavorites) navFavorites.classList.add('active');
             activeNavFilter = 'Favorites';
+            activeFilter = 'All';
+            searchInput.value = '';
+            hideWatchView();
+            applyFiltersAndSearch();
+        });
+    }
+    
+    // Watch History Menu Click
+    const menuHistory = document.getElementById('menu-history');
+    if (menuHistory) {
+        menuHistory.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (navAll) navAll.classList.remove('active');
+            if (navFavorites) navFavorites.classList.remove('active');
+            if (navHistory) navHistory.classList.add('active');
+            activeNavFilter = 'History';
             activeFilter = 'All';
             searchInput.value = '';
             hideWatchView();
