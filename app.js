@@ -842,6 +842,9 @@ function getSeriesName(title) {
     cleaned = cleaned.replace(/S\d+/i, '');
     cleaned = cleaned.trim();
     cleaned = cleaned.replace(/[\s-–,]+$/, '').trim();
+    return cleaned;
+}
+
 // Extract episode number
 function getEpisodeNumber(title) {
     const match = title.match(/Episode\s*(\d+(\.\d+)?)/i) || title.match(/Ep\s*(\d+(\.\d+)?)/i);
