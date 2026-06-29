@@ -842,19 +842,25 @@ function getSeriesName(title) {
     cleaned = cleaned.replace(/S\d+/i, '');
     cleaned = cleaned.trim();
     cleaned = cleaned.replace(/[\s-–,]+$/, '').trim();
-    return cleaned;
-}
-
 // Extract episode number
 function getEpisodeNumber(title) {
     const match = title.match(/Episode\s*(\d+(\.\d+)?)/i) || title.match(/Ep\s*(\d+(\.\d+)?)/i);
     return match ? parseFloat(match[1]) : 0;
 }
 
+// Global state for sidebar pagination
+let currentPlayingIndexForSidebar = null;
+let currentSidebarPage = 1;
+const sidebarItemsPerPage = 20;
+
 // Render sidebar episodes list
 function renderSidebarList(currentPlayingIdx) {
+    if (currentPlayingIdx !== undefined) {
+        currentPlayingIndexForSidebar = currentPlayingIdx;
+    }
+    
     sidebarList.innerHTML = '';
-    const currentVideo = allVideos[currentPlayingIdx];
+    const currentVideo = allVideos[currentPlayingIndexForSidebar];
     if (!currentVideo) return;
 
     const seriesName = getSeriesName(currentVideo.title);
@@ -879,7 +885,7 @@ function renderSidebarList(currentPlayingIdx) {
     
     // Fallback if no other related episodes are found
     if (relatedVideos.length <= 1) {
-        relatedVideos = allVideos.slice(0, 15);
+        relatedVideos = allVideos.slice(0, 100);
         isFallback = true;
     }
     
@@ -887,12 +893,22 @@ function renderSidebarList(currentPlayingIdx) {
         sidebarHeading.textContent = isFallback ? 'Latest Episodes' : 'Related Episodes';
     }
     
-    // Render at most 30 items to prevent lag on watch page
-    const visibleRelated = relatedVideos.slice(0, 30);
+    // Calculate pagination details
+    const totalItems = relatedVideos.length;
+    const totalPages = Math.ceil(totalItems / sidebarItemsPerPage);
+    
+    // Ensure current page is in bounds
+    if (currentSidebarPage > totalPages) currentSidebarPage = totalPages;
+    if (currentSidebarPage < 1) currentSidebarPage = 1;
+
+    // Slice for current page
+    const startIdx = (currentSidebarPage - 1) * sidebarItemsPerPage;
+    const endIdx = startIdx + sidebarItemsPerPage;
+    const visibleRelated = relatedVideos.slice(startIdx, endIdx);
     
     visibleRelated.forEach((video) => {
         const mainIndex = allVideos.indexOf(video);
-        const isCurrent = mainIndex === currentPlayingIdx;
+        const isCurrent = mainIndex === currentPlayingIndexForSidebar;
         
         const item = document.createElement('div');
         item.className = `sidebar-item ${isCurrent ? 'playing' : ''}`;
@@ -910,11 +926,92 @@ function renderSidebarList(currentPlayingIdx) {
         `;
         
         item.addEventListener('click', () => {
-            window.location.hash = `#watch?idx=${mainIndex}`;
+            playVideo(mainIndex);
+            currentSidebarPage = 1; // Reset to page 1 on new video click
         });
         
         sidebarList.appendChild(item);
     });
+
+    // Render sidebar pagination controls
+    renderSidebarPagination(totalPages);
+}
+
+// Render pagination buttons in watch sidebar
+function renderSidebarPagination(totalPages) {
+    const container = document.getElementById('sidebar-pagination');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // If only 1 page, don't show pagination controls
+    if (totalPages <= 1) return;
+
+    // Helper to create page button
+    function createSidebarPageBtn(text, pageNum, className = '', disabled = false) {
+        const btn = document.createElement('button');
+        btn.className = `page-btn ${className}`;
+        if (disabled) btn.classList.add('disabled');
+        btn.innerHTML = text;
+        btn.style.padding = '0.35rem 0.75rem';
+        btn.style.fontSize = '0.8rem';
+        
+        if (!disabled) {
+            btn.addEventListener('click', () => {
+                currentSidebarPage = pageNum;
+                renderSidebarList(); // Re-render sidebar list
+                
+                // Scroll watch sidebar section header into view smoothly
+                const watchSidebar = document.querySelector('.watch-sidebar');
+                if (watchSidebar) {
+                    watchSidebar.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+        return btn;
+    }
+
+    // Prev Button
+    container.appendChild(createSidebarPageBtn('‹', currentSidebarPage - 1, 'prev-btn', currentSidebarPage === 1));
+
+    // Page numbers
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentSidebarPage - 2);
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    if (startPage > 1) {
+        container.appendChild(createSidebarPageBtn('1', 1, currentSidebarPage === 1 ? 'active' : ''));
+        if (startPage > 2) {
+            const dots = document.createElement('span');
+            dots.textContent = '...';
+            dots.className = 'page-dots';
+            dots.style.color = 'var(--text-muted)';
+            dots.style.alignSelf = 'center';
+            container.appendChild(dots);
+        }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        container.appendChild(createSidebarPageBtn(i.toString(), i, currentSidebarPage === i ? 'active' : ''));
+    }
+
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            const dots = document.createElement('span');
+            dots.textContent = '...';
+            dots.className = 'page-dots';
+            dots.style.color = 'var(--text-muted)';
+            dots.style.alignSelf = 'center';
+            container.appendChild(dots);
+        }
+        container.appendChild(createSidebarPageBtn(totalPages.toString(), totalPages, currentSidebarPage === totalPages ? 'active' : ''));
+    }
+
+    // Next Button
+    container.appendChild(createSidebarPageBtn('›', currentSidebarPage + 1, 'next-btn', currentSidebarPage === totalPages));
 }
 
 // Format date nicely (RFC2822 to standard locale date/time string)
