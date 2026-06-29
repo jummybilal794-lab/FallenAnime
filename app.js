@@ -940,6 +940,16 @@ function setupEventListeners() {
     // Search
     searchInput.addEventListener('input', applyFiltersAndSearch);
     
+    // Search Enter key scroll trigger
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const catalogSection = document.getElementById('catalog-section');
+            if (catalogSection) {
+                catalogSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    });
+    
     // Logo / Brand clicks
     logoBtn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -1509,6 +1519,42 @@ function initAuth() {
             searchInput.value = '';
             hideWatchView();
             applyFiltersAndSearch();
+        });
+    }
+
+    // Change Username click handler
+    const menuChangeUsername = document.getElementById('menu-change-username');
+    if (menuChangeUsername) {
+        menuChangeUsername.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (!currentUser) {
+                alert("Please Sign In to change your username!");
+                return;
+            }
+            
+            const newUsername = prompt("Enter your new username:", currentUser.displayName || currentUser.email.split('@')[0]);
+            if (newUsername === null) return; // User cancelled
+            
+            const cleanedUsername = newUsername.trim();
+            if (!cleanedUsername) {
+                alert("Username cannot be empty!");
+                return;
+            }
+            
+            if (auth && currentUser) {
+                try {
+                    await currentUser.updateProfile({
+                        displayName: cleanedUsername
+                    });
+                    if (userEmailText) userEmailText.textContent = cleanedUsername;
+                    alert("Username updated successfully to: " + cleanedUsername);
+                } catch (err) {
+                    console.error("Failed to update username:", err);
+                    alert("Failed to update username: " + err.message);
+                }
+            } else {
+                alert("Authentication server not configured.");
+            }
         });
     }
 
