@@ -73,11 +73,12 @@
                     <button class="btn btn-outline" id="auth-btn">Sign In</button>
                     <div class="user-menu" id="user-menu" style="display: none;">
                         <button class="user-btn" id="user-btn">
-                            <span class="user-avatar">👤</span>
+                            <span class="user-avatar" id="navbar-user-avatar">👤</span>
                             <span class="user-email-text" id="user-email-text">Profile</span>
                         </button>
                         <div class="dropdown-menu" id="user-dropdown">
                             <a href="#" id="menu-change-username">👤 Change Username</a>
+                            <a href="#" id="menu-change-avatar">🖼️ Select Avatar</a>
                             <a href="#" id="menu-favorites">💖 My Favorites</a>
                             <a href="#" id="menu-logout" class="text-danger">Logout</a>
                         </div>
@@ -373,6 +374,28 @@
                 <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google Logo">
                 Sign In with Google
             </button>
+        </div>
+    </div>
+
+    <!-- Avatar Selection Modal -->
+    <div class="modal-overlay" id="avatar-modal" style="display: none;">
+        <div class="auth-modal-card" style="max-width: 360px;">
+            <button class="modal-close" id="avatar-modal-close" aria-label="Close modal">&times;</button>
+            <h2 style="font-size: 1.2rem; margin-bottom: 0.75rem; color: var(--text-primary); text-align: center; font-weight: 700;">🖼️ Choose Profile Avatar</h2>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); text-align: center; margin-bottom: 1.25rem;">Select your favorite character avatar below:</p>
+            
+            <div class="avatar-grid">
+                <button class="avatar-option" data-avatar="🥷" aria-label="Ninja">🥷</button>
+                <button class="avatar-option" data-avatar="🦊" aria-label="Fox">🦊</button>
+                <button class="avatar-option" data-avatar="🐉" aria-label="Dragon">🐉</button>
+                <button class="avatar-option" data-avatar="🧝" aria-label="Elf">🧝</button>
+                <button class="avatar-option" data-avatar="🦸" aria-label="Hero">🦸</button>
+                <button class="avatar-option" data-avatar="🐯" aria-label="Tiger">🐯</button>
+                <button class="avatar-option" data-avatar="🐼" aria-label="Panda">🐼</button>
+                <button class="avatar-option" data-avatar="🥽" aria-label="Gamer">🥽</button>
+            </div>
+            
+            <button class="btn btn-primary btn-block" id="btn-save-avatar" style="margin-top: 1.25rem;">Save Avatar</button>
         </div>
     </div>
 

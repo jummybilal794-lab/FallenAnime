@@ -1953,3 +1953,35 @@ a {
     user-select: none;
     font-size: 0.85rem;
 }
+
+/* Avatar Picker Styles */
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 1.5rem;
+}
+.avatar-option {
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    font-size: 1.8rem;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    padding: 0;
+}
+.avatar-option:hover {
+    border-color: var(--accent-red);
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px var(--accent-red-glow);
+}
+.avatar-option.selected {
+    border-color: var(--accent-red);
+    background: rgba(213, 0, 0, 0.1);
+    box-shadow: 0 0 15px var(--accent-red-glow);
+    transform: scale(1.08);
+}

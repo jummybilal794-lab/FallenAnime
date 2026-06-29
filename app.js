@@ -1293,6 +1293,7 @@ function initAuth() {
                 currentUser = user;
                 const commentFormContainer = document.getElementById('comment-form-container');
                 const commentLoginPrompt = document.getElementById('comment-login-prompt');
+                const navbarUserAvatar = document.getElementById('navbar-user-avatar');
                 
                 if (user) {
                     // Logged in
@@ -1300,6 +1301,7 @@ function initAuth() {
                     if (userMenu) userMenu.style.display = 'inline-block';
                     if (userEmailText) userEmailText.textContent = user.displayName ? user.displayName : user.email.split('@')[0];
                     if (navFavorites) navFavorites.style.display = 'inline-block';
+                    if (navbarUserAvatar) navbarUserAvatar.textContent = user.photoURL || "👤";
                     
                     if (commentFormContainer) commentFormContainer.style.display = 'block';
                     if (commentLoginPrompt) commentLoginPrompt.style.display = 'none';
@@ -1311,6 +1313,7 @@ function initAuth() {
                     if (authBtn) authBtn.style.display = 'inline-block';
                     if (userMenu) userMenu.style.display = 'none';
                     if (navFavorites) navFavorites.style.display = 'none';
+                    if (navbarUserAvatar) navbarUserAvatar.textContent = "👤";
                     
                     if (commentFormContainer) commentFormContainer.style.display = 'none';
                     if (commentLoginPrompt) commentLoginPrompt.style.display = 'block';
@@ -1551,6 +1554,71 @@ function initAuth() {
                 } catch (err) {
                     console.error("Failed to update username:", err);
                     alert("Failed to update username: " + err.message);
+                }
+            } else {
+                alert("Authentication server not configured.");
+            }
+        });
+    }
+
+    // Change Avatar click handler and modal listeners
+    const menuChangeAvatar = document.getElementById('menu-change-avatar');
+    const avatarModal = document.getElementById('avatar-modal');
+    const avatarModalClose = document.getElementById('avatar-modal-close');
+    const btnSaveAvatar = document.getElementById('btn-save-avatar');
+    const avatarOptions = document.querySelectorAll('.avatar-option');
+    const navbarUserAvatar = document.getElementById('navbar-user-avatar');
+    let selectedAvatar = "👤";
+
+    if (menuChangeAvatar && avatarModal && avatarModalClose && btnSaveAvatar) {
+        menuChangeAvatar.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!currentUser) {
+                alert("Please Sign In to choose your profile avatar!");
+                return;
+            }
+            
+            selectedAvatar = currentUser.photoURL || "👤";
+            
+            // Highlight current selected avatar in modal
+            avatarOptions.forEach(opt => {
+                if (opt.getAttribute('data-avatar') === selectedAvatar) {
+                    opt.classList.add('selected');
+                } else {
+                    opt.classList.remove('selected');
+                }
+            });
+            
+            avatarModal.style.display = 'flex';
+        });
+
+        // Close modal
+        avatarModalClose.addEventListener('click', () => {
+            avatarModal.style.display = 'none';
+        });
+
+        // Handle selection within grid
+        avatarOptions.forEach(opt => {
+            opt.addEventListener('click', () => {
+                avatarOptions.forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+                selectedAvatar = opt.getAttribute('data-avatar');
+            });
+        });
+
+        // Save selected avatar
+        btnSaveAvatar.addEventListener('click', async () => {
+            if (auth && currentUser) {
+                try {
+                    await currentUser.updateProfile({
+                        photoURL: selectedAvatar
+                    });
+                    if (navbarUserAvatar) navbarUserAvatar.textContent = selectedAvatar;
+                    avatarModal.style.display = 'none';
+                    alert("Profile avatar updated successfully to: " + selectedAvatar);
+                } catch (err) {
+                    console.error("Failed to update avatar:", err);
+                    alert("Failed to update avatar: " + err.message);
                 }
             } else {
                 alert("Authentication server not configured.");
@@ -1888,11 +1956,18 @@ function loadCommentsForEpisode(videoLink) {
                 const card = document.createElement('div');
                 card.className = 'comment-card';
                 
-                const initials = comment.username ? comment.username.charAt(0).toUpperCase() : '?';
+                let avatarHtml = '';
+                if (comment.avatar) {
+                    avatarHtml = `<div class="comment-avatar">${comment.avatar}</div>`;
+                } else {
+                    const initials = comment.username ? comment.username.charAt(0).toUpperCase() : '?';
+                    avatarHtml = `<div class="comment-avatar">${initials}</div>`;
+                }
+                
                 const formattedDate = comment.timestamp ? new Date(comment.timestamp.seconds * 1000).toLocaleString() : 'Just now';
                 
                 card.innerHTML = `
-                    <div class="comment-avatar">${initials}</div>
+                    ${avatarHtml}
                     <div class="comment-content">
                         <div class="comment-header">
                             <span class="comment-username">${comment.username || 'Anonymous User'}</span>
@@ -1915,12 +1990,14 @@ async function postCommentForEpisode(videoLink, content) {
     
     const episodeId = btoa(videoLink).replace(/=/g, '').substring(0, 100);
     const username = currentUser.displayName || currentUser.email.split('@')[0];
+    const userAvatar = currentUser.photoURL || "👤";
     
     try {
         await db.collection('episodes').doc(episodeId).collection('comments').add({
             username: username,
             uid: currentUser.uid,
             body: content,
+            avatar: userAvatar,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
     } catch (err) {
