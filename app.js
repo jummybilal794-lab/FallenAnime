@@ -946,13 +946,25 @@ function setupEventListeners() {
     // Search
     searchInput.addEventListener('input', applyFiltersAndSearch);
     
+    // Helper to scroll to catalog section cleanly without overlapping fixed header
+    const scrollToCatalog = () => {
+        const catalogSection = document.getElementById('catalog-section');
+        if (catalogSection) {
+            const header = document.querySelector('.header');
+            const headerHeight = header ? header.offsetHeight : 80;
+            const offset = catalogSection.getBoundingClientRect().top + window.pageYOffset - headerHeight - 15;
+            window.scrollTo({
+                top: offset,
+                behavior: 'smooth'
+            });
+        }
+    };
+    
     // Search Enter key scroll trigger
     searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
-            const catalogSection = document.getElementById('catalog-section');
-            if (catalogSection) {
-                catalogSection.scrollIntoView({ behavior: 'smooth' });
-            }
+            applyFiltersAndSearch();
+            scrollToCatalog();
         }
     });
 
@@ -960,10 +972,8 @@ function setupEventListeners() {
     const searchBtn = document.getElementById('search-btn');
     if (searchBtn) {
         searchBtn.addEventListener('click', () => {
-            const catalogSection = document.getElementById('catalog-section');
-            if (catalogSection) {
-                catalogSection.scrollIntoView({ behavior: 'smooth' });
-            }
+            applyFiltersAndSearch();
+            scrollToCatalog();
         });
     }
     
@@ -1922,7 +1932,13 @@ function renderPaginationControls(totalPages) {
                 renderCatalogGrid();
                 const catSection = document.getElementById('catalog-section');
                 if (catSection) {
-                    catSection.scrollIntoView({ behavior: 'smooth' });
+                    const header = document.querySelector('.header');
+                    const headerHeight = header ? header.offsetHeight : 80;
+                    const offset = catSection.getBoundingClientRect().top + window.pageYOffset - headerHeight - 15;
+                    window.scrollTo({
+                        top: offset,
+                        behavior: 'smooth'
+                    });
                 }
             });
         }
