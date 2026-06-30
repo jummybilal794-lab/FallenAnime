@@ -56,6 +56,9 @@
     <!-- Top Header -->
     <header class="header">
         <div class="header-container">
+            <button class="hamburger-menu" id="hamburger-menu-btn" aria-label="Open Navigation Menu">
+                <span>☰</span>
+            </button>
             <a href="#" class="logo" id="logo-btn">
                 <span class="logo-accent">Fallen</span>Anime
             </a>
@@ -135,6 +138,13 @@
                                     <!-- Populated dynamically -->
                                 </select>
                             </div>
+                        </div>
+                        
+                        <!-- Episode Navigation Bar -->
+                        <div class="episode-nav-container" style="display: flex; gap: 0.5rem; margin-top: 1.5rem; margin-bottom: 0.5rem;">
+                            <button class="ep-nav-btn prev" id="ep-prev-btn" title="Previous Episode" style="flex: 1; height: 48px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary); font-size: 1.25rem; font-weight: 700; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition);">‹</button>
+                            <button class="ep-nav-btn list" id="ep-list-btn" title="Scroll to Episodes List" style="flex: 1; height: 48px; background: var(--accent-red); border: none; color: white; font-size: 1.25rem; font-weight: 700; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition);">☰</button>
+                            <button class="ep-nav-btn next" id="ep-next-btn" title="Next Episode" style="flex: 1; height: 48px; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary); font-size: 1.25rem; font-weight: 700; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition);">›</button>
                         </div>
                         
                         <!-- Direct Link & Download Section -->
@@ -402,6 +412,36 @@
             </div>
             
             <button class="btn btn-primary btn-block" id="btn-save-avatar" style="margin-top: 1.25rem;">Save Avatar</button>
+        </div>
+    </div>
+
+    <!-- Left Sidebar Navigation Drawer -->
+    <div class="nav-drawer-overlay" id="nav-drawer-overlay"></div>
+    <div class="nav-drawer" id="nav-drawer">
+        <div class="nav-drawer-header">
+            <span><span class="logo-accent">Fallen</span>Anime</span>
+            <button class="nav-drawer-close" id="nav-drawer-close-btn">&times;</button>
+        </div>
+        <div class="nav-drawer-body">
+            <!-- User Profile Section in Drawer -->
+            <div class="drawer-profile" id="drawer-profile" style="display: none;">
+                <div class="drawer-avatar" id="drawer-user-avatar">??</div>
+                <div class="drawer-user-info">
+                    <h4 class="drawer-username" id="drawer-username">User</h4>
+                    <span class="drawer-email" id="drawer-user-email">email@domain.com</span>
+                </div>
+            </div>
+            
+            <nav class="drawer-nav">
+                <a href="#" class="drawer-nav-link active" id="drawer-nav-all">🏠 All Episodes</a>
+                <a href="#" class="drawer-nav-link" id="drawer-nav-favorites">⭐ My Favorites</a>
+                <a href="#" class="drawer-nav-link" id="drawer-nav-history">🕒 Watch History</a>
+                <a href="#" class="drawer-nav-link" id="drawer-nav-sync" style="display: none;">⚙️ Sync Hub</a>
+            </nav>
+        </div>
+        <div class="nav-drawer-footer">
+            <button class="btn btn-outline btn-block" id="drawer-auth-btn">Sign In</button>
+            <button class="btn btn-danger btn-block" id="drawer-logout-btn" style="display: none;">Logout</button>
         </div>
     </div>
 

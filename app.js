@@ -4,6 +4,9 @@
 // Global State
 let allVideos = [];
 let filteredVideos = [];
+let fullVideoDetails = [];
+let isFullDetailsLoaded = false;
+let isFullDetailsLoading = false;
 let activeFilter = 'All';
 let isSyncing = false;
 let syncIntervalId = null;
@@ -102,12 +105,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Load catalog data from local videos.json
+// Load catalog data from local catalog.json (Fast Initial Load)
 async function loadDatabase() {
     try {
-        const response = await fetch('videos.json?t=' + new Date().getTime());
+        const response = await fetch('catalog.json?t=' + new Date().getTime());
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            // Fallback to videos.json if catalog.json is missing
+            return await loadDatabaseFallback();
         }
         allVideos = await response.json();
         
@@ -135,8 +139,36 @@ async function loadDatabase() {
         
         // Handle initial hash routing
         handleHashRoute();
+
+        // Lazily fetch the full videos.json database in the background
+        lazyLoadFullDetails();
     } catch (error) {
-        console.error('Failed to load videos database:', error);
+        console.error('Failed to load catalog database, falling back:', error);
+        await loadDatabaseFallback();
+    }
+}
+
+async function loadDatabaseFallback() {
+    try {
+        const response = await fetch('videos.json?t=' + new Date().getTime());
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        allVideos = await response.json();
+        allVideos.sort((a, b) => {
+            const dateA = new Date(a.pubDate);
+            const dateB = new Date(b.pubDate);
+            return (isNaN(dateB.getTime()) ? 0 : dateB) - (isNaN(dateA.getTime()) ? 0 : dateA);
+        });
+        dbCount.textContent = `${allVideos.length} Synced Videos`;
+        renderPopularCarousel();
+        setupScheduleButtons();
+        generateFilterTags();
+        applyFiltersAndSearch();
+        handleHashRoute();
+        fullVideoDetails = allVideos;
+        isFullDetailsLoaded = true;
+    } catch (err) {
         catalogGrid.innerHTML = `
             <div class="loading-state">
                 <p style="color: var(--danger)">❌ Failed to load local database.</p>
@@ -144,6 +176,35 @@ async function loadDatabase() {
             </div>
         `;
     }
+}
+
+function lazyLoadFullDetails() {
+    if (isFullDetailsLoaded || isFullDetailsLoading) return;
+    isFullDetailsLoading = true;
+    
+    fetch('videos.json?t=' + new Date().getTime())
+        .then(res => {
+            if (!res.ok) throw new Error("Failed to load details");
+            return res.json();
+        })
+        .then(data => {
+            fullVideoDetails = data;
+            isFullDetailsLoaded = true;
+            isFullDetailsLoading = false;
+            
+            // If the user is currently on the watch page, reload player details to show mirrors/description
+            const hash = window.location.hash;
+            if (hash.startsWith('#watch?idx=')) {
+                const index = parseInt(hash.split('idx=')[1]);
+                if (!isNaN(index) && allVideos[index]) {
+                    showWatchView(index, false); // Reload without resetting scroll
+                }
+            }
+        })
+        .catch(err => {
+            console.error("Failed to lazy load full video details:", err);
+            isFullDetailsLoading = false;
+        });
 }
 
 // Generate category tags from the video list dynamically
@@ -200,7 +261,18 @@ function applyFiltersAndSearch() {
         // Filter by release day if active
         let matchesDay = true;
         if (activeScheduleDay) {
-            matchesDay = video.pubDate && video.pubDate.includes(activeScheduleDay);
+            if (video.pubDate) {
+                const dateObj = new Date(video.pubDate);
+                if (!isNaN(dateObj.getTime())) {
+                    const daysMap = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                    const videoDayName = daysMap[dateObj.getDay()];
+                    matchesDay = (videoDayName === activeScheduleDay);
+                } else {
+                    matchesDay = false;
+                }
+            } else {
+                matchesDay = false;
+            }
         }
         
         return matchesSearch && matchesCategory && matchesDay && matchesNavFilter;
@@ -378,16 +450,32 @@ function showWatchView(index, scroll = true) {
     watchSection.style.display = 'block';
     catalogHeading.textContent = 'Browse More Episodes';
 
+    // Find detailed video with mirrors and description from lazy loaded details
+    let detailedVideo = null;
+    if (isFullDetailsLoaded && fullVideoDetails && fullVideoDetails.length > index) {
+        if (fullVideoDetails[index] && fullVideoDetails[index].link === video.link) {
+            detailedVideo = fullVideoDetails[index];
+        } else {
+            detailedVideo = fullVideoDetails.find(v => v.link === video.link);
+        }
+    } else if (video.mirrors) {
+        // Fallback if videos.json was loaded directly
+        detailedVideo = video;
+    }
+
     // Update Document Title and Meta details for SEO
     const episodeTitle = sanitizeTitle(video.title);
-    const episodeDesc = (video.description ? video.description.substring(0, 160).trim() + '...' : `Watch ${episodeTitle} in high quality with English and Indonesian subtitles.`).replace(/AnimeXin/gi, 'FallenAnime');
+    const episodeDesc = detailedVideo && detailedVideo.description 
+        ? detailedVideo.description.substring(0, 160).trim() + '...' 
+        : `Watch ${episodeTitle} in high quality with English and Indonesian subtitles.`;
+    const cleanedDesc = episodeDesc.replace(/AnimeXin/gi, 'FallenAnime');
     const episodeUrl = `${window.location.origin}${window.location.pathname}#watch?idx=${index}`;
     const episodeThumb = video.thumbnail || "https://jummybilal794-lab.github.io/FallenAnime/wp-content/uploads/2021/04/Lord-of-the-Ancient-God-Grave-Subtitle.webp";
 
     document.title = `${episodeTitle} - FallenAnime`;
     
     const metaDesc = document.getElementById('meta-description');
-    if (metaDesc) metaDesc.setAttribute('content', episodeDesc);
+    if (metaDesc) metaDesc.setAttribute('content', cleanedDesc);
     
     const canonicalLink = document.getElementById('link-canonical');
     if (canonicalLink) canonicalLink.setAttribute('href', episodeUrl);
@@ -397,7 +485,7 @@ function showWatchView(index, scroll = true) {
     if (ogTitle) ogTitle.setAttribute('content', `${episodeTitle} - FallenAnime`);
     
     const ogDesc = document.getElementById('meta-og-description');
-    if (ogDesc) ogDesc.setAttribute('content', episodeDesc);
+    if (ogDesc) ogDesc.setAttribute('content', cleanedDesc);
     
     const ogImage = document.getElementById('meta-og-image');
     if (ogImage) ogImage.setAttribute('content', episodeThumb);
@@ -410,7 +498,7 @@ function showWatchView(index, scroll = true) {
     if (twTitle) twTitle.setAttribute('content', `${episodeTitle} - FallenAnime`);
     
     const twDesc = document.getElementById('meta-tw-description');
-    if (twDesc) twDesc.setAttribute('content', episodeDesc);
+    if (twDesc) twDesc.setAttribute('content', cleanedDesc);
     
     const twImage = document.getElementById('meta-tw-image');
     if (twImage) twImage.setAttribute('content', episodeThumb);
@@ -424,13 +512,17 @@ function showWatchView(index, scroll = true) {
         document.head.appendChild(schemaScript);
     }
     
-    const defaultEmbedUrl = video.mirrors && video.mirrors.length > 0 ? (video.mirrors[0].embedUrl || "") : "";
+    const defaultEmbedUrl = detailedVideo && detailedVideo.mirrors && detailedVideo.mirrors.length > 0 
+        ? (detailedVideo.mirrors[0].embedUrl || "") 
+        : "";
     
     const videoSchema = {
         "@context": "https://schema.org",
         "@type": "VideoObject",
         "name": episodeTitle,
-        "description": (video.description || `Watch ${episodeTitle} on FallenAnime with English and Indonesian subtitles.`).replace(/AnimeXin/gi, 'FallenAnime'),
+        "description": detailedVideo && detailedVideo.description 
+            ? detailedVideo.description.replace(/AnimeXin/gi, 'FallenAnime') 
+            : `Watch ${episodeTitle} on FallenAnime with English and Indonesian subtitles.`,
         "thumbnailUrl": [
             episodeThumb
         ],
@@ -452,7 +544,9 @@ function showWatchView(index, scroll = true) {
     // Populate Details
     watchTitle.textContent = sanitizeTitle(video.title);
     watchDate.textContent = `Published: ${formatDate(video.pubDate)}`;
-    watchDescription.textContent = (video.description || 'No synopsis details available.').replace(/AnimeXin/gi, 'FallenAnime');
+    watchDescription.textContent = detailedVideo 
+        ? (detailedVideo.description || 'No synopsis details available.').replace(/AnimeXin/gi, 'FallenAnime')
+        : 'Loading synopsis details...';
     
     // Highlight currently playing card in grid if visible
     document.querySelectorAll('.video-card').forEach(c => c.classList.remove('playing'));
@@ -472,10 +566,25 @@ function showWatchView(index, scroll = true) {
         });
     }
 
-    // Populate Mirrors dropdown
+    // Populate Mirrors dropdown & Player
     mirrorSelect.innerHTML = '';
-    if (video.mirrors && video.mirrors.length > 0) {
-        video.mirrors.forEach((mirror) => {
+    
+    if (!detailedVideo) {
+        // Show Loading State
+        mirrorSelect.innerHTML = '<option>Loading video mirrors...</option>';
+        const downloadBox = document.getElementById('download-box');
+        if (downloadBox) downloadBox.style.display = 'none';
+        const shareBox = document.getElementById('share-box');
+        if (shareBox) shareBox.style.display = 'none';
+        
+        playerContainer.innerHTML = `
+            <div class="player-placeholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 360px;">
+                <div style="width: 40px; height: 40px; border: 4px solid rgba(229, 9, 20, 0.1); border-top-color: var(--accent-red); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1.25rem;"></div>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; font-weight: 600;">Loading video players and mirrors... Please wait a moment.</p>
+            </div>
+        `;
+    } else if (detailedVideo.mirrors && detailedVideo.mirrors.length > 0) {
+        detailedVideo.mirrors.forEach((mirror) => {
             const opt = document.createElement('option');
             opt.value = mirror.index;
             opt.textContent = mirror.label;
@@ -485,14 +594,14 @@ function showWatchView(index, scroll = true) {
         // Listen to mirror changes
         mirrorSelect.onchange = () => {
             const selectedIdx = mirrorSelect.value;
-            const mirror = video.mirrors.find(m => m.index == selectedIdx);
+            const mirror = detailedVideo.mirrors.find(m => m.index == selectedIdx);
             if (mirror) {
-                loadMirrorPlayer(mirror, video.title);
+                loadMirrorPlayer(mirror, detailedVideo.title);
             }
         };
 
         // Load first mirror as default
-        loadMirrorPlayer(video.mirrors[0], video.title);
+        loadMirrorPlayer(detailedVideo.mirrors[0], detailedVideo.title);
 
         // Populate download/source links
         const downloadBox = document.getElementById('download-box');
@@ -502,8 +611,8 @@ function showWatchView(index, scroll = true) {
             downloadBox.style.display = 'block';
             
             // Render high-quality direct downloads if present
-            if (video.downloads && video.downloads.length > 0) {
-                video.downloads.forEach((dl) => {
+            if (detailedVideo.downloads && detailedVideo.downloads.length > 0) {
+                detailedVideo.downloads.forEach((dl) => {
                     const url = dl.url || "";
                     if (url) {
                         const link = document.createElement('a');
@@ -550,8 +659,8 @@ function showWatchView(index, scroll = true) {
                     }
                 });
             } else {
-                // Fallback to mirrors
-                video.mirrors.forEach((mirror) => {
+                // Fallback to mirrors for download
+                detailedVideo.mirrors.forEach((mirror) => {
                     const url = mirror.embedUrl || "";
                     if (url) {
                         const link = document.createElement('a');
@@ -606,6 +715,7 @@ function showWatchView(index, scroll = true) {
                 });
             }
         }
+
         // Populate share links
         const shareBox = document.getElementById('share-box');
         const shareLinksGrid = document.getElementById('share-links-grid');
@@ -614,7 +724,7 @@ function showWatchView(index, scroll = true) {
             shareBox.style.display = 'block';
             
             const currentUrl = encodeURIComponent(window.location.href);
-            const shareText = encodeURIComponent(`Watch ${video.title} on FallenAnime!`);
+            const shareText = encodeURIComponent(`Watch ${detailedVideo.title} on FallenAnime!`);
             
             const platforms = [
                 {
@@ -732,6 +842,78 @@ function showWatchView(index, scroll = true) {
 
     // Populate Sidebar playlist (Up Next)
     renderSidebarList(index);
+
+    // Setup Episode Navigation (Prev / Next)
+    const epPrevBtn = document.getElementById('ep-prev-btn');
+    const epListBtn = document.getElementById('ep-list-btn');
+    const epNextBtn = document.getElementById('ep-next-btn');
+
+    if (epPrevBtn && epListBtn && epNextBtn) {
+        // Clone buttons to clear existing listeners
+        const newPrev = epPrevBtn.cloneNode(true);
+        const newNext = epNextBtn.cloneNode(true);
+        const newList = epListBtn.cloneNode(true);
+        
+        epPrevBtn.parentNode.replaceChild(newPrev, epPrevBtn);
+        epNextBtn.parentNode.replaceChild(newNext, epNextBtn);
+        epListBtn.parentNode.replaceChild(newList, epListBtn);
+
+        // Find related videos from same series
+        const seriesName = getSeriesName(video.title);
+        let relatedVideos = [];
+        if (seriesName) {
+            relatedVideos = allVideos.filter(v => {
+                return v.title.toLowerCase().includes(seriesName.toLowerCase());
+            });
+        }
+        
+        // Sort related videos by episode number descending (Newest first, e.g. Ep 3, Ep 2, Ep 1)
+        relatedVideos.sort((a, b) => {
+            const epA = getEpisodeNumber(a.title);
+            const epB = getEpisodeNumber(b.title);
+            return epB - epA;
+        });
+
+        // Find current video index in series list
+        const currentIdxInRelated = relatedVideos.findIndex(v => v.link === video.link);
+
+        if (currentIdxInRelated !== -1) {
+            // Next Episode (higher number, index decreases in descending list)
+            const nextVideoObj = relatedVideos[currentIdxInRelated - 1];
+            if (nextVideoObj) {
+                newNext.disabled = false;
+                newNext.onclick = () => {
+                    const mainIndex = allVideos.findIndex(v => v.link === nextVideoObj.link);
+                    if (mainIndex !== -1) window.location.hash = `#watch?idx=${mainIndex}`;
+                };
+            } else {
+                newNext.disabled = true;
+            }
+
+            // Previous Episode (lower number, index increases in descending list)
+            const prevVideoObj = relatedVideos[currentIdxInRelated + 1];
+            if (prevVideoObj) {
+                newPrev.disabled = false;
+                newPrev.onclick = () => {
+                    const mainIndex = allVideos.findIndex(v => v.link === prevVideoObj.link);
+                    if (mainIndex !== -1) window.location.hash = `#watch?idx=${mainIndex}`;
+                };
+            } else {
+                newPrev.disabled = true;
+            }
+        } else {
+            newPrev.disabled = true;
+            newNext.disabled = true;
+        }
+
+        // List button scroll to sidebar
+        newList.onclick = () => {
+            const sidebarSection = document.querySelector('.watch-sidebar');
+            if (sidebarSection) {
+                sidebarSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        };
+    }
 
     // Track watch history and update Favorites Button state
     if (video.link) {
@@ -1042,6 +1224,69 @@ function formatDate(dateStr) {
     }
 }
 
+function syncActiveNavState(filterName) {
+    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+    document.querySelectorAll('.drawer-nav-link').forEach(link => link.classList.remove('active'));
+    
+    if (filterName === 'All') {
+        if (navAll) navAll.classList.add('active');
+        const dAll = document.getElementById('drawer-nav-all');
+        if (dAll) dAll.classList.add('active');
+    } else if (filterName === 'Favorites') {
+        if (navFavorites) navFavorites.classList.add('active');
+        const dFav = document.getElementById('drawer-nav-favorites');
+        if (dFav) dFav.classList.add('active');
+    } else if (filterName === 'History') {
+        if (navHistory) navHistory.classList.add('active');
+        const dHist = document.getElementById('drawer-nav-history');
+        if (dHist) dHist.classList.add('active');
+    }
+}
+
+function updateDrawerAuthState(user) {
+    const drawerProfile = document.getElementById('drawer-profile');
+    const drawerUsername = document.getElementById('drawer-username');
+    const drawerUserEmail = document.getElementById('drawer-user-email');
+    const drawerUserAvatar = document.getElementById('drawer-user-avatar');
+    const drawerNavFavorites = document.getElementById('drawer-nav-favorites');
+    const drawerNavHistory = document.getElementById('drawer-nav-history');
+    const drawerNavSync = document.getElementById('drawer-nav-sync');
+    const drawerAuthBtn = document.getElementById('drawer-auth-btn');
+    const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
+
+    if (user) {
+        if (drawerProfile) drawerProfile.style.display = 'flex';
+        if (drawerUsername) drawerUsername.textContent = user.displayName ? user.displayName : user.email.split('@')[0];
+        if (drawerUserEmail) drawerUserEmail.textContent = user.email;
+        if (drawerUserAvatar) {
+            const avatarVal = user.photoURL || "👤";
+            if (avatarVal.startsWith('http')) {
+                drawerUserAvatar.innerHTML = `<img src="${avatarVal}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+            } else {
+                drawerUserAvatar.textContent = avatarVal;
+            }
+        }
+        if (drawerNavFavorites) drawerNavFavorites.style.display = 'flex';
+        if (drawerNavHistory) drawerNavHistory.style.display = 'flex';
+        if (drawerNavSync) {
+            if (window.location.search.includes('admin=true') || window.location.hash.includes('admin')) {
+                drawerNavSync.style.display = 'flex';
+            } else {
+                drawerNavSync.style.display = 'none';
+            }
+        }
+        if (drawerAuthBtn) drawerAuthBtn.style.display = 'none';
+        if (drawerLogoutBtn) drawerLogoutBtn.style.display = 'block';
+    } else {
+        if (drawerProfile) drawerProfile.style.display = 'none';
+        if (drawerNavFavorites) drawerNavFavorites.style.display = 'none';
+        if (drawerNavHistory) drawerNavHistory.style.display = 'none';
+        if (drawerNavSync) drawerNavSync.style.display = 'none';
+        if (drawerAuthBtn) drawerAuthBtn.style.display = 'block';
+        if (drawerLogoutBtn) drawerLogoutBtn.style.display = 'none';
+    }
+}
+
 // Set up UI Event listeners
 function setupEventListeners() {
     // Search
@@ -1060,6 +1305,84 @@ function setupEventListeners() {
             });
         }
     };
+    
+    // Hamburger Menu Drawer Event Listeners
+    const hamburgerBtn = document.getElementById('hamburger-menu-btn');
+    const drawer = document.getElementById('nav-drawer');
+    const drawerOverlay = document.getElementById('nav-drawer-overlay');
+    const drawerCloseBtn = document.getElementById('nav-drawer-close-btn');
+    
+    const openDrawer = () => {
+        if (drawer) drawer.classList.add('active');
+        if (drawerOverlay) drawerOverlay.classList.add('active');
+    };
+    
+    const closeDrawer = () => {
+        if (drawer) drawer.classList.remove('active');
+        if (drawerOverlay) drawerOverlay.classList.remove('active');
+    };
+    
+    if (hamburgerBtn) hamburgerBtn.addEventListener('click', openDrawer);
+    if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeDrawer);
+    if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawer);
+
+    const drawerNavAll = document.getElementById('drawer-nav-all');
+    const drawerNavFavorites = document.getElementById('drawer-nav-favorites');
+    const drawerNavHistory = document.getElementById('drawer-nav-history');
+    const drawerNavSync = document.getElementById('drawer-nav-sync');
+    const drawerAuthBtn = document.getElementById('drawer-auth-btn');
+    const drawerLogoutBtn = document.getElementById('drawer-logout-btn');
+
+    if (drawerNavAll) {
+        drawerNavAll.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeDrawer();
+            navAll.click();
+            syncActiveNavState('All');
+        });
+    }
+
+    if (drawerNavFavorites) {
+        drawerNavFavorites.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeDrawer();
+            navFavorites.click();
+            syncActiveNavState('Favorites');
+        });
+    }
+
+    if (drawerNavHistory) {
+        drawerNavHistory.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeDrawer();
+            navHistory.click();
+            syncActiveNavState('History');
+        });
+    }
+
+    if (drawerNavSync) {
+        drawerNavSync.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeDrawer();
+            openSyncBtn.click();
+        });
+    }
+
+    if (drawerAuthBtn) {
+        drawerAuthBtn.addEventListener('click', () => {
+            closeDrawer();
+            const authBtnHeader = document.getElementById('auth-btn');
+            if (authBtnHeader) authBtnHeader.click();
+        });
+    }
+
+    if (drawerLogoutBtn) {
+        drawerLogoutBtn.addEventListener('click', () => {
+            closeDrawer();
+            const menuLogoutHeader = document.getElementById('menu-logout');
+            if (menuLogoutHeader) menuLogoutHeader.click();
+        });
+    }
     
     // Search Enter key scroll trigger
     searchInput.addEventListener('keypress', (e) => {
@@ -1494,6 +1817,7 @@ function initAuth() {
                     // Fall back to local storage
                     loadFromLocalStorage();
                 }
+                updateDrawerAuthState(user);
                 applyFiltersAndSearch();
                 
                 // Refresh comments if watch page is currently active
@@ -1664,9 +1988,7 @@ function initAuth() {
     if (navFavorites) {
         navFavorites.addEventListener('click', (e) => {
             e.preventDefault();
-            if (navAll) navAll.classList.remove('active');
-            if (navHistory) navHistory.classList.remove('active');
-            navFavorites.classList.add('active');
+            syncActiveNavState('Favorites');
             activeNavFilter = 'Favorites';
             activeFilter = 'All';
             searchInput.value = '';
@@ -1679,9 +2001,7 @@ function initAuth() {
     if (navHistory) {
         navHistory.addEventListener('click', (e) => {
             e.preventDefault();
-            if (navAll) navAll.classList.remove('active');
-            if (navFavorites) navFavorites.classList.remove('active');
-            navHistory.classList.add('active');
+            syncActiveNavState('History');
             activeNavFilter = 'History';
             activeFilter = 'All';
             searchInput.value = '';
@@ -1693,9 +2013,7 @@ function initAuth() {
     if (navAll) {
         navAll.addEventListener('click', (e) => {
             e.preventDefault();
-            if (navFavorites) navFavorites.classList.remove('active');
-            if (navHistory) navHistory.classList.remove('active');
-            navAll.classList.add('active');
+            syncActiveNavState('All');
             activeNavFilter = 'All';
             applyFiltersAndSearch();
         });
@@ -1705,9 +2023,7 @@ function initAuth() {
     if (menuFavorites) {
         menuFavorites.addEventListener('click', (e) => {
             e.preventDefault();
-            if (navAll) navAll.classList.remove('active');
-            if (navHistory) navHistory.classList.remove('active');
-            if (navFavorites) navFavorites.classList.add('active');
+            syncActiveNavState('Favorites');
             activeNavFilter = 'Favorites';
             activeFilter = 'All';
             searchInput.value = '';
@@ -1721,9 +2037,7 @@ function initAuth() {
     if (menuHistory) {
         menuHistory.addEventListener('click', (e) => {
             e.preventDefault();
-            if (navAll) navAll.classList.remove('active');
-            if (navFavorites) navFavorites.classList.remove('active');
-            if (navHistory) navHistory.classList.add('active');
+            syncActiveNavState('History');
             activeNavFilter = 'History';
             activeFilter = 'All';
             searchInput.value = '';
