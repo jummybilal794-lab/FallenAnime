@@ -3,7 +3,7 @@
 
 $videosPath = Join-Path $PSScriptRoot "videos.json"
 $sitemapPath = Join-Path $PSScriptRoot "sitemap.xml"
-$baseUrl = "https://jummybilal794-lab.github.io/FallenAnime/"
+$baseUrl = "https://fallenanime.xyz/"
 
 if (-not (Test-Path $videosPath)) {
     Write-Warning "videos.json not found. Cannot generate sitemap."
@@ -31,10 +31,17 @@ for ($i = 0; $i -lt $count; $i++) {
     $v = $videos[$i]
     $loc = "${baseUrl}#watch?idx=$i"
     
-    # Use syncedAt or format current time if missing
+    # Format date strictly to W3C datetime standard (yyyy-MM-ddTHH:mm:ssZ)
     $dateStr = ""
     if ($v.syncedAt) {
-        $dateStr = $v.syncedAt
+        # Check if it matches old MM/dd/yyyy HH:mm:ss format
+        if ($v.syncedAt -match '(\d{2})/(\d{2})/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})') {
+            $dateStr = "$($Matches[3])-$($Matches[1])-$($Matches[2])T$($Matches[4]):$($Matches[5]):$($Matches[6])Z"
+        } elseif ($v.syncedAt -match '^\d{4}-\d{2}-\d{2}T') {
+            $dateStr = $v.syncedAt
+        } else {
+            $dateStr = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ")
+        }
     } else {
         $dateStr = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ")
     }
@@ -52,6 +59,7 @@ for ($i = 0; $i -lt $count; $i++) {
 
 $xml += "`n</urlset>"
 
-# Write to sitemap.xml
-[System.IO.File]::WriteAllText($sitemapPath, $xml, [System.Text.Encoding]::UTF8)
-Write-Host "Successfully generated sitemap.xml with $($count + 1) URLs."
+# Write to sitemap.xml strictly in UTF-8 WITHOUT Byte Order Mark (BOM)
+$utf8WithoutBom = New-Object System.Text.UTF8Encoding($false)
+[System.IO.File]::WriteAllText($sitemapPath, $xml, $utf8WithoutBom)
+Write-Host "Successfully generated sitemap.xml with $($count + 1) URLs without UTF-8 BOM."
