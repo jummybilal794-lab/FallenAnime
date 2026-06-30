@@ -213,29 +213,47 @@ function lazyLoadFullDetails() {
 
 // Generate category tags from the video list dynamically
 function generateFilterTags() {
+    // Helper to decode HTML entities
+    const decodeHTMLEntities = (str) => {
+        if (!str) return '';
+        const txt = document.createElement('textarea');
+        txt.innerHTML = str;
+        return txt.value;
+    };
+
     // Build a set of all base series names to exclude them from main category badges
     const seriesNamesSet = new Set();
     allVideos.forEach(v => {
         const sName = getSeriesName(v.title);
         if (sName) {
-            seriesNamesSet.add(sName.toLowerCase().trim());
+            const decodedName = decodeHTMLEntities(sName).trim().toLowerCase();
+            seriesNamesSet.add(decodedName);
         }
     });
 
     const categoriesSet = new Set();
+    const REAL_GENRES = new Set([
+        'action', 'adventure', 'comedy', 'cultivation', 'demon', 'demon hunter', 
+        'donghua', 'drama', 'fantasy', 'game', 'historical', 'isekai', 'magic', 
+        'martial arts', 'movie', 'mystery', 'ona', 'ova', 'reincarnation', 
+        'romance', 'school', 'sci-fi', 'supernatural', 'special', 'slice of life', 
+        'thriller', 'mecha', 'military', 'music', 'system', 'xianxia', 
+        'xuanhuan', 'harem'
+    ]);
+
     allVideos.forEach(v => {
         if (v.categories && Array.isArray(v.categories)) {
             v.categories.forEach(c => {
                 if (c && typeof c === 'string' && c.trim().length > 0) {
-                    const cleanTag = c.trim();
-                    const cleanTagLower = cleanTag.toLowerCase();
+                    const decodedTag = decodeHTMLEntities(c).trim();
+                    const decodedTagLower = decodedTag.toLowerCase();
                     
-                    // Keep tags clean (avoid long tags, episode/subtitle tags, and series name tags)
-                    if (cleanTag.length < 25 && 
-                        !cleanTag.includes('Episode') && 
-                        !cleanTag.includes('Subtitle') &&
-                        !seriesNamesSet.has(cleanTagLower)) {
-                        categoriesSet.add(cleanTag);
+                    // Keep tags clean and whitelist actual genres
+                    if (decodedTag.length < 25 && 
+                        !decodedTag.includes('Episode') && 
+                        !decodedTag.includes('Subtitle') &&
+                        REAL_GENRES.has(decodedTagLower)) {
+                        categoriesSet.add(decodedTag);
                     }
                 }
             });
@@ -1316,6 +1334,14 @@ function populateDrawerAccordions() {
     genresContent.innerHTML = '';
     donghuasContent.innerHTML = '';
 
+    // Helper to decode HTML entities
+    const decodeHTMLEntities = (str) => {
+        if (!str) return '';
+        const txt = document.createElement('textarea');
+        txt.innerHTML = str;
+        return txt.value;
+    };
+
     // Helper to close drawer
     const closeDrawer = () => {
         const drawer = document.getElementById('nav-drawer');
@@ -1338,12 +1364,50 @@ function populateDrawerAccordions() {
         }
     };
 
-    // 1. Extract Unique Genres
+    // Build a clean, unique set of all series names first (decoded)
+    const seriesNamesSet = new Set();
+    const seriesListDecoded = new Set();
+    const seriesThumbnails = {};
+    
+    allVideos.forEach(v => {
+        const sName = getSeriesName(v.title);
+        if (sName) {
+            const decodedName = decodeHTMLEntities(sName).trim();
+            if (decodedName.length > 0) {
+                seriesNamesSet.add(decodedName.toLowerCase());
+                seriesListDecoded.add(decodedName);
+                if (!seriesThumbnails[decodedName]) {
+                    seriesThumbnails[decodedName] = v.thumbnail;
+                }
+            }
+        }
+    });
+
+    // 1. Extract Unique Genres (excluding series names, episode names, and subtitles)
     const genres = new Set();
+    const REAL_GENRES = new Set([
+        'action', 'adventure', 'comedy', 'cultivation', 'demon', 'demon hunter', 
+        'donghua', 'drama', 'fantasy', 'game', 'historical', 'isekai', 'magic', 
+        'martial arts', 'movie', 'mystery', 'ona', 'ova', 'reincarnation', 
+        'romance', 'school', 'sci-fi', 'supernatural', 'special', 'slice of life', 
+        'thriller', 'mecha', 'military', 'music', 'system', 'xianxia', 
+        'xuanhuan', 'harem'
+    ]);
+
     allVideos.forEach(v => {
         if (v.categories && Array.isArray(v.categories)) {
             v.categories.forEach(c => {
-                if (c && c.trim().length > 0) genres.add(c.trim());
+                if (c && typeof c === 'string' && c.trim().length > 0) {
+                    const decodedTag = decodeHTMLEntities(c).trim();
+                    const decodedTagLower = decodedTag.toLowerCase();
+                    
+                    if (decodedTag.length < 25 && 
+                        !decodedTag.includes('Episode') && 
+                        !decodedTag.includes('Subtitle') &&
+                        REAL_GENRES.has(decodedTagLower)) {
+                        genres.add(decodedTag);
+                    }
+                }
             });
         }
     });
@@ -1374,22 +1438,28 @@ function populateDrawerAccordions() {
         genresContent.appendChild(btn);
     });
 
-    // 2. Extract Unique Series Names (Donghuas)
-    const seriesSet = new Set();
-    allVideos.forEach(v => {
-        const seriesName = getSeriesName(v.title);
-        if (seriesName && seriesName.trim().length > 0) {
-            seriesSet.add(seriesName.trim());
-        }
-    });
-
-    // Convert to sorted array
-    const sortedSeries = Array.from(seriesSet).sort();
+    // 2. Extract Unique Series Names (Donghuas) with Thumbnails
+    const sortedSeries = Array.from(seriesListDecoded).sort();
     sortedSeries.forEach(series => {
-        const btn = document.createElement('button');
-        btn.className = 'drawer-sub-item';
-        btn.textContent = series;
-        btn.addEventListener('click', () => {
+        const card = document.createElement('div');
+        card.className = 'drawer-series-card';
+        
+        // Thumbnail Image
+        const img = document.createElement('img');
+        img.src = seriesThumbnails[series] || 'placeholder.png';
+        img.alt = series;
+        img.className = 'drawer-series-thumb';
+        img.loading = 'lazy';
+        
+        // Title Text
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'drawer-series-title';
+        titleSpan.textContent = series;
+        
+        card.appendChild(img);
+        card.appendChild(titleSpan);
+        
+        card.addEventListener('click', () => {
             closeDrawer();
             // Set search bar to this series name and filter
             searchInput.value = series;
@@ -1401,7 +1471,7 @@ function populateDrawerAccordions() {
             applyFiltersAndSearch();
             scrollToCatalog();
         });
-        donghuasContent.appendChild(btn);
+        donghuasContent.appendChild(card);
     });
 }
 
