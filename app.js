@@ -929,7 +929,7 @@ function renderSidebarList(currentPlayingIdx) {
         `;
         
         item.addEventListener('click', () => {
-            playVideo(mainIndex);
+            window.location.hash = `#watch?idx=${mainIndex}`;
             currentSidebarPage = 1; // Reset to page 1 on new video click
         });
         
@@ -1063,8 +1063,13 @@ function setupEventListeners() {
     // Search Enter key scroll trigger
     searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
+            if (window.location.hash.startsWith('#watch')) {
+                window.location.hash = '';
+            }
             applyFiltersAndSearch();
-            scrollToCatalog();
+            setTimeout(() => {
+                scrollToCatalog();
+            }, 100);
         }
     });
 
@@ -1072,8 +1077,13 @@ function setupEventListeners() {
     const searchBtn = document.getElementById('search-btn');
     if (searchBtn) {
         searchBtn.addEventListener('click', () => {
+            if (window.location.hash.startsWith('#watch')) {
+                window.location.hash = '';
+            }
             applyFiltersAndSearch();
-            scrollToCatalog();
+            setTimeout(() => {
+                scrollToCatalog();
+            }, 100);
         });
     }
     
