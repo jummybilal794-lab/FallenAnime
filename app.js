@@ -134,6 +134,9 @@ async function loadDatabase() {
         // Extract filter tags
         generateFilterTags();
         
+        // Populate navigation drawer accordions (Genres and Donghuas)
+        populateDrawerAccordions();
+        
         // Render initial UI
         applyFiltersAndSearch();
         
@@ -164,6 +167,7 @@ async function loadDatabaseFallback() {
         renderPopularCarousel();
         setupScheduleButtons();
         generateFilterTags();
+        populateDrawerAccordions();
         applyFiltersAndSearch();
         handleHashRoute();
         fullVideoDetails = allVideos;
@@ -209,13 +213,30 @@ function lazyLoadFullDetails() {
 
 // Generate category tags from the video list dynamically
 function generateFilterTags() {
+    // Build a set of all base series names to exclude them from main category badges
+    const seriesNamesSet = new Set();
+    allVideos.forEach(v => {
+        const sName = getSeriesName(v.title);
+        if (sName) {
+            seriesNamesSet.add(sName.toLowerCase().trim());
+        }
+    });
+
     const categoriesSet = new Set();
     allVideos.forEach(v => {
         if (v.categories && Array.isArray(v.categories)) {
             v.categories.forEach(c => {
-                // Keep tags clean (avoid long tags or title tags)
-                if (c && typeof c === 'string' && c.trim().length > 0 && c.length < 25 && !c.includes('Episode') && !c.includes('Subtitle')) {
-                    categoriesSet.add(c.trim());
+                if (c && typeof c === 'string' && c.trim().length > 0) {
+                    const cleanTag = c.trim();
+                    const cleanTagLower = cleanTag.toLowerCase();
+                    
+                    // Keep tags clean (avoid long tags, episode/subtitle tags, and series name tags)
+                    if (cleanTag.length < 25 && 
+                        !cleanTag.includes('Episode') && 
+                        !cleanTag.includes('Subtitle') &&
+                        !seriesNamesSet.has(cleanTagLower)) {
+                        categoriesSet.add(cleanTag);
+                    }
                 }
             });
         }
@@ -1287,6 +1308,103 @@ function updateDrawerAuthState(user) {
     }
 }
 
+function populateDrawerAccordions() {
+    const genresContent = document.getElementById('drawer-genres-content');
+    const donghuasContent = document.getElementById('drawer-donghuas-content');
+    if (!genresContent || !donghuasContent) return;
+
+    genresContent.innerHTML = '';
+    donghuasContent.innerHTML = '';
+
+    // Helper to close drawer
+    const closeDrawer = () => {
+        const drawer = document.getElementById('nav-drawer');
+        const drawerOverlay = document.getElementById('nav-drawer-overlay');
+        if (drawer) drawer.classList.remove('active');
+        if (drawerOverlay) drawerOverlay.classList.remove('active');
+    };
+
+    // Helper to scroll to catalog section cleanly without overlapping fixed header
+    const scrollToCatalog = () => {
+        const catalogSection = document.getElementById('catalog-section');
+        if (catalogSection) {
+            const header = document.querySelector('.header');
+            const headerHeight = header ? header.offsetHeight : 80;
+            const offset = catalogSection.getBoundingClientRect().top + window.pageYOffset - headerHeight - 15;
+            window.scrollTo({
+                top: offset,
+                behavior: 'smooth'
+            });
+        }
+    };
+
+    // 1. Extract Unique Genres
+    const genres = new Set();
+    allVideos.forEach(v => {
+        if (v.categories && Array.isArray(v.categories)) {
+            v.categories.forEach(c => {
+                if (c && c.trim().length > 0) genres.add(c.trim());
+            });
+        }
+    });
+    
+    // Convert to sorted array
+    const sortedGenres = Array.from(genres).sort();
+    sortedGenres.forEach(genre => {
+        const btn = document.createElement('button');
+        btn.className = 'drawer-sub-item';
+        btn.textContent = genre;
+        btn.addEventListener('click', () => {
+            closeDrawer();
+            // Filter by this genre
+            activeFilter = genre;
+            activeNavFilter = 'All';
+            activeScheduleDay = null;
+            document.querySelectorAll('.schedule-btn').forEach(b => b.classList.remove('active'));
+            
+            // Highlight active state in genre badge list
+            document.querySelectorAll('.filter-badge').forEach(b => {
+                if (b.textContent === genre) b.classList.add('active');
+                else b.classList.remove('active');
+            });
+            
+            applyFiltersAndSearch();
+            scrollToCatalog();
+        });
+        genresContent.appendChild(btn);
+    });
+
+    // 2. Extract Unique Series Names (Donghuas)
+    const seriesSet = new Set();
+    allVideos.forEach(v => {
+        const seriesName = getSeriesName(v.title);
+        if (seriesName && seriesName.trim().length > 0) {
+            seriesSet.add(seriesName.trim());
+        }
+    });
+
+    // Convert to sorted array
+    const sortedSeries = Array.from(seriesSet).sort();
+    sortedSeries.forEach(series => {
+        const btn = document.createElement('button');
+        btn.className = 'drawer-sub-item';
+        btn.textContent = series;
+        btn.addEventListener('click', () => {
+            closeDrawer();
+            // Set search bar to this series name and filter
+            searchInput.value = series;
+            activeFilter = 'All';
+            activeNavFilter = 'All';
+            activeScheduleDay = null;
+            document.querySelectorAll('.schedule-btn').forEach(b => b.classList.remove('active'));
+            
+            applyFiltersAndSearch();
+            scrollToCatalog();
+        });
+        donghuasContent.appendChild(btn);
+    });
+}
+
 // Set up UI Event listeners
 function setupEventListeners() {
     // Search
@@ -1381,6 +1499,26 @@ function setupEventListeners() {
             closeDrawer();
             const menuLogoutHeader = document.getElementById('menu-logout');
             if (menuLogoutHeader) menuLogoutHeader.click();
+        });
+    }
+
+    // Drawer Accordion Toggles
+    const genresToggle = document.getElementById('drawer-genres-toggle');
+    const genresContent = document.getElementById('drawer-genres-content');
+    const donghuasToggle = document.getElementById('drawer-donghuas-toggle');
+    const donghuasContent = document.getElementById('drawer-donghuas-content');
+    
+    if (genresToggle && genresContent) {
+        genresToggle.addEventListener('click', () => {
+            genresToggle.classList.toggle('active');
+            genresContent.classList.toggle('active');
+        });
+    }
+    
+    if (donghuasToggle && donghuasContent) {
+        donghuasToggle.addEventListener('click', () => {
+            donghuasToggle.classList.toggle('active');
+            donghuasContent.classList.toggle('active');
         });
     }
     
