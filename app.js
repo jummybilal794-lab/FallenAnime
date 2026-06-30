@@ -1,6 +1,15 @@
 /* app.js */
 /* Frontend Script for AnimeXin Cloned Portal */
 
+// Global helper to decode HTML entities efficiently (reusing a single element to avoid DOM thrashing)
+const tempTextArea = document.createElement('textarea');
+function decodeHTMLEntities(str) {
+    if (!str) return '';
+    if (!str.includes('&')) return str; // Fast path for strings without entities
+    tempTextArea.innerHTML = str;
+    return tempTextArea.value;
+}
+
 // Global State
 let allVideos = [];
 let filteredVideos = [];
@@ -115,12 +124,8 @@ async function loadDatabase() {
         }
         allVideos = await response.json();
         
-        // Sort by publication date descending (newest first)
-        allVideos.sort((a, b) => {
-            const dateA = new Date(a.pubDate);
-            const dateB = new Date(b.pubDate);
-            return (isNaN(dateB.getTime()) ? 0 : dateB) - (isNaN(dateA.getTime()) ? 0 : dateA);
-        });
+        // Sort by publication date descending (newest first) using fast string comparison
+        allVideos.sort((a, b) => (b.pubDate || '').localeCompare(a.pubDate || ''));
         
         // Update database count
         dbCount.textContent = `${allVideos.length} Synced Videos`;
@@ -158,11 +163,8 @@ async function loadDatabaseFallback() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         allVideos = await response.json();
-        allVideos.sort((a, b) => {
-            const dateA = new Date(a.pubDate);
-            const dateB = new Date(b.pubDate);
-            return (isNaN(dateB.getTime()) ? 0 : dateB) - (isNaN(dateA.getTime()) ? 0 : dateA);
-        });
+        // Sort by publication date descending (newest first) using fast string comparison
+        allVideos.sort((a, b) => (b.pubDate || '').localeCompare(a.pubDate || ''));
         dbCount.textContent = `${allVideos.length} Synced Videos`;
         renderPopularCarousel();
         setupScheduleButtons();
@@ -213,13 +215,6 @@ function lazyLoadFullDetails() {
 
 // Generate category tags from the video list dynamically
 function generateFilterTags() {
-    // Helper to decode HTML entities
-    const decodeHTMLEntities = (str) => {
-        if (!str) return '';
-        const txt = document.createElement('textarea');
-        txt.innerHTML = str;
-        return txt.value;
-    };
 
     // Build a set of all base series names to exclude them from main category badges
     const seriesNamesSet = new Set();
@@ -241,6 +236,15 @@ function generateFilterTags() {
         'xuanhuan', 'harem'
     ]);
 
+    // Helper to format string to Title Case (e.g. "martial arts" -> "Martial Arts")
+    const toTitleCase = (str) => {
+        if (!str) return '';
+        return str.split(' ').map(word => {
+            if (!word) return '';
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        }).join(' ');
+    };
+
     allVideos.forEach(v => {
         if (v.categories && Array.isArray(v.categories)) {
             v.categories.forEach(c => {
@@ -253,7 +257,7 @@ function generateFilterTags() {
                         !decodedTag.includes('Episode') && 
                         !decodedTag.includes('Subtitle') &&
                         REAL_GENRES.has(decodedTagLower)) {
-                        categoriesSet.add(decodedTag);
+                        categoriesSet.add(toTitleCase(decodedTag));
                     }
                 }
             });
@@ -1334,13 +1338,6 @@ function populateDrawerAccordions() {
     genresContent.innerHTML = '';
     donghuasContent.innerHTML = '';
 
-    // Helper to decode HTML entities
-    const decodeHTMLEntities = (str) => {
-        if (!str) return '';
-        const txt = document.createElement('textarea');
-        txt.innerHTML = str;
-        return txt.value;
-    };
 
     // Helper to close drawer
     const closeDrawer = () => {
@@ -1362,6 +1359,15 @@ function populateDrawerAccordions() {
                 behavior: 'smooth'
             });
         }
+    };
+
+    // Helper to format string to Title Case (e.g. "martial arts" -> "Martial Arts")
+    const toTitleCase = (str) => {
+        if (!str) return '';
+        return str.split(' ').map(word => {
+            if (!word) return '';
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        }).join(' ');
     };
 
     // Build a clean, unique set of all series names first (decoded)
@@ -1405,7 +1411,7 @@ function populateDrawerAccordions() {
                         !decodedTag.includes('Episode') && 
                         !decodedTag.includes('Subtitle') &&
                         REAL_GENRES.has(decodedTagLower)) {
-                        genres.add(decodedTag);
+                        genres.add(toTitleCase(decodedTag));
                     }
                 }
             });

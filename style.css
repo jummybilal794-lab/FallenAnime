@@ -2352,3 +2352,8 @@ a {
     text-overflow: ellipsis;
     display: block;
 }
+
+/* Hide Watch History link from the homepage header tabs */
+#nav-history {
+    display: none !important;
+}
