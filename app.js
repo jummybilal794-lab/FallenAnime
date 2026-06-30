@@ -1065,11 +1065,12 @@ function setupEventListeners() {
         if (e.key === 'Enter') {
             if (window.location.hash.startsWith('#watch')) {
                 window.location.hash = '';
+                hideWatchView();
             }
             applyFiltersAndSearch();
             setTimeout(() => {
                 scrollToCatalog();
-            }, 100);
+            }, 50);
         }
     });
 
@@ -1079,11 +1080,12 @@ function setupEventListeners() {
         searchBtn.addEventListener('click', () => {
             if (window.location.hash.startsWith('#watch')) {
                 window.location.hash = '';
+                hideWatchView();
             }
             applyFiltersAndSearch();
             setTimeout(() => {
                 scrollToCatalog();
-            }, 100);
+            }, 50);
         });
     }
     
