@@ -124,8 +124,11 @@ async function loadDatabase() {
         }
         allVideos = await response.json();
         
-        // Sort by publication date descending (newest first) using fast string comparison
-        allVideos.sort((a, b) => (b.pubDate || '').localeCompare(a.pubDate || ''));
+        // Pre-parse publication dates once for fast, accurate chronological sorting
+        allVideos.forEach(v => {
+            v._timestamp = v.pubDate ? (Date.parse(v.pubDate) || 0) : 0;
+        });
+        allVideos.sort((a, b) => b._timestamp - a._timestamp);
         
         // Update database count
         dbCount.textContent = `${allVideos.length} Synced Videos`;
@@ -163,8 +166,11 @@ async function loadDatabaseFallback() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         allVideos = await response.json();
-        // Sort by publication date descending (newest first) using fast string comparison
-        allVideos.sort((a, b) => (b.pubDate || '').localeCompare(a.pubDate || ''));
+        // Pre-parse publication dates once for fast, accurate chronological sorting
+        allVideos.forEach(v => {
+            v._timestamp = v.pubDate ? (Date.parse(v.pubDate) || 0) : 0;
+        });
+        allVideos.sort((a, b) => b._timestamp - a._timestamp);
         dbCount.textContent = `${allVideos.length} Synced Videos`;
         renderPopularCarousel();
         setupScheduleButtons();
