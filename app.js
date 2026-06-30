@@ -63,6 +63,7 @@ const watchDate = document.getElementById('watch-date');
 const mirrorSelect = document.getElementById('mirror-select');
 const watchDescription = document.getElementById('watch-description');
 const watchCategories = document.getElementById('watch-categories');
+const floatingScrollDownBtn = document.getElementById('floating-scroll-down-btn');
 const sidebarList = document.getElementById('sidebar-list');
 
 const catalogSection = document.getElementById('catalog-section');
@@ -1068,6 +1069,7 @@ function setupEventListeners() {
                 hideWatchView();
             }
             applyFiltersAndSearch();
+            if (floatingScrollDownBtn) floatingScrollDownBtn.style.display = 'flex';
             setTimeout(() => {
                 scrollToCatalog();
             }, 50);
@@ -1083,9 +1085,30 @@ function setupEventListeners() {
                 hideWatchView();
             }
             applyFiltersAndSearch();
+            if (floatingScrollDownBtn) floatingScrollDownBtn.style.display = 'flex';
             setTimeout(() => {
                 scrollToCatalog();
             }, 50);
+        });
+    }
+
+    // Floating Scroll Down Button Handler
+    if (floatingScrollDownBtn) {
+        floatingScrollDownBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: document.documentElement.scrollHeight,
+                behavior: 'smooth'
+            });
+            floatingScrollDownBtn.style.display = 'none';
+        });
+
+        // Hide when scrolled near the bottom (within 150px)
+        window.addEventListener('scroll', () => {
+            if (floatingScrollDownBtn.style.display === 'flex') {
+                if ((window.innerHeight + window.pageYOffset) >= document.documentElement.scrollHeight - 150) {
+                    floatingScrollDownBtn.style.display = 'none';
+                }
+            }
         });
     }
     
@@ -1098,6 +1121,7 @@ function setupEventListeners() {
         document.querySelectorAll('.schedule-btn').forEach(b => b.classList.remove('active'));
         window.location.hash = '';
         hideWatchView();
+        if (floatingScrollDownBtn) floatingScrollDownBtn.style.display = 'none';
         applyFiltersAndSearch();
     });
     
@@ -1109,6 +1133,7 @@ function setupEventListeners() {
         document.querySelectorAll('.schedule-btn').forEach(b => b.classList.remove('active'));
         window.location.hash = '';
         hideWatchView();
+        if (floatingScrollDownBtn) floatingScrollDownBtn.style.display = 'none';
         applyFiltersAndSearch();
     });
 

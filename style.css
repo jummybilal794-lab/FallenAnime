@@ -2021,3 +2021,39 @@ a {
     box-shadow: 0 0 15px var(--accent-red-glow);
     transform: scale(1.08);
 }
+
+/* Floating Scroll Down Button Styles */
+.floating-scroll-btn {
+    position: fixed;
+    bottom: 80px; /* Elevated to prevent blocking mobile chrome bar / elements */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(229, 9, 20, 0.95);
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+    cursor: pointer;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: floatingPulse 2s infinite ease-in-out;
+}
+.floating-scroll-btn:hover {
+    background: #ff1f2d;
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 6px 20px rgba(229, 9, 20, 0.6);
+}
+@keyframes floatingPulse {
+    0%, 100% {
+        transform: translateX(-50%) scale(1);
+    }
+    50% {
+        transform: translateX(-50%) scale(1.04);
+    }
+}
