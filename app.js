@@ -127,7 +127,7 @@ async function loadDatabase() {
         // Pre-parse publication dates once for fast, accurate chronological sorting
         allVideos.forEach(v => {
             if (v.title) {
-                v.title = v.title.replace(/[\u2019’]|\?\?|\?\?/g, "'");
+                v.title = v.title.replace(/[\u2019’]|â\u0080\u0099|â|\?\?/g, "'");
             }
             v._timestamp = v.pubDate ? (Date.parse(v.pubDate) || 0) : 0;
         });
@@ -169,7 +169,7 @@ async function loadDatabaseFallback() {
         // Pre-parse publication dates once for fast, accurate chronological sorting
         allVideos.forEach(v => {
             if (v.title) {
-                v.title = v.title.replace(/[\u2019’]|\?\?|\?\?/g, "'");
+                v.title = v.title.replace(/[\u2019’]|â\u0080\u0099|â|\?\?/g, "'");
             }
             v._timestamp = v.pubDate ? (Date.parse(v.pubDate) || 0) : 0;
         });
@@ -1074,7 +1074,7 @@ function loadMirrorPlayer(mirror, videoTitle) {
 function getSeriesName(title) {
     let cleaned = title;
     // Normalize apostrophes
-    cleaned = cleaned.replace(/[\u2019’]|\?\?|\?\?/g, "'");
+    cleaned = cleaned.replace(/[\u2019’]|â\u0080\u0099|â|\?\?/g, "'");
     const parts = cleaned.split(/(?:Episode|Ep)\s*\d+/i);
     if (parts.length > 0) {
         cleaned = parts[0];
