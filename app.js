@@ -150,9 +150,6 @@ async function loadDatabase() {
         
         // Handle initial hash routing
         handleHashRoute();
-
-        // Lazily fetch the full videos.json database in the background
-        lazyLoadFullDetails();
     } catch (error) {
         console.error('Failed to load catalog database, falling back:', error);
         await loadDatabaseFallback();
@@ -190,34 +187,7 @@ async function loadDatabaseFallback() {
     }
 }
 
-function lazyLoadFullDetails() {
-    if (isFullDetailsLoaded || isFullDetailsLoading) return;
-    isFullDetailsLoading = true;
-    
-    fetch('videos.json?t=' + new Date().getTime())
-        .then(res => {
-            if (!res.ok) throw new Error("Failed to load details");
-            return res.json();
-        })
-        .then(data => {
-            fullVideoDetails = data;
-            isFullDetailsLoaded = true;
-            isFullDetailsLoading = false;
-            
-            // If the user is currently on the watch page, reload player details to show mirrors/description
-            const hash = window.location.hash;
-            if (hash.startsWith('#watch?idx=')) {
-                const index = parseInt(hash.split('idx=')[1]);
-                if (!isNaN(index) && allVideos[index]) {
-                    showWatchView(index, false); // Reload without resetting scroll
-                }
-            }
-        })
-        .catch(err => {
-            console.error("Failed to lazy load full video details:", err);
-            isFullDetailsLoading = false;
-        });
-}
+
 
 // Generate category tags from the video list dynamically
 function generateFilterTags() {
@@ -499,17 +469,48 @@ function showWatchView(index, scroll = true) {
     watchSection.style.display = 'block';
     catalogHeading.textContent = 'Browse More Episodes';
 
-    // Find detailed video with mirrors and description from lazy loaded details
+    // Find detailed video with mirrors and description from dynamic loading
     let detailedVideo = null;
-    if (isFullDetailsLoaded && fullVideoDetails && fullVideoDetails.length > index) {
-        if (fullVideoDetails[index] && fullVideoDetails[index].link === video.link) {
-            detailedVideo = fullVideoDetails[index];
-        } else {
-            detailedVideo = fullVideoDetails.find(v => v.link === video.link);
-        }
-    } else if (video.mirrors) {
-        // Fallback if videos.json was loaded directly
+    if (video.mirrors) {
         detailedVideo = video;
+    }
+
+    if (!video.mirrors && !video._isLoadingMirrors) {
+        video._isLoadingMirrors = true;
+        const slug = video.link.replace('https://animexin.dev/', '').replace(/\/$/, '');
+        fetch(`episodes/${slug}.json`)
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to load episode details");
+                return res.json();
+            })
+            .then(data => {
+                video.mirrors = data.mirrors || [];
+                video.downloads = data.downloads || [];
+                video.description = data.description || "";
+                video._isLoadingMirrors = false;
+                
+                // If user is still on this watch page, refresh watch view
+                const currentHash = window.location.hash;
+                if (currentHash.startsWith('#watch?idx=')) {
+                    const currentIdx = parseInt(currentHash.split('idx=')[1]);
+                    if (currentIdx === index) {
+                        showWatchView(index, false); // Re-render watch view without resetting scroll
+                    }
+                }
+            })
+            .catch(err => {
+                console.error("Error loading episode details:", err);
+                video._isLoadingMirrors = false;
+                if (mirrorSelect) mirrorSelect.innerHTML = '<option>Failed to load players</option>';
+                if (playerContainer) {
+                    playerContainer.innerHTML = `
+                        <div class="player-placeholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 360px;">
+                            <p style="color: var(--danger); font-size: 0.95rem; font-weight: 600;">❌ Failed to load players and mirrors for this episode.</p>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 5px;">Please try reloading the page or select another episode.</p>
+                        </div>
+                    `;
+                }
+            });
     }
 
     // Update Document Title and Meta details for SEO
