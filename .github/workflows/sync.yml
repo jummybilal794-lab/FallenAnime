@@ -26,16 +26,18 @@ jobs:
         run: |
           ./generate-sitemap.ps1
 
-      - name: Check if database or sitemap changed
+      - name: Check for changes
         id: git-check
         run: |
-          git diff --quiet videos.json sitemap.xml || echo "changes=true" >> $GITHUB_OUTPUT
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
           
       - name: Commit and Push changes
         if: steps.git-check.outputs.changes == 'true'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add videos.json sitemap.xml
+          git add catalog.json sitemap.xml episodes/
           git commit -m "System: Auto-synced latest episodes and updated sitemap"
           git push
