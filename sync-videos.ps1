@@ -52,12 +52,46 @@ if (Test-Path $videosPath) {
         } else {
             $videos = ConvertFrom-Json $jsonContent
         }
+        
+        # Auto-generate catalog.json if missing on start
+        $catalogPath = Join-Path $PSScriptRoot "catalog.json"
+        if (-not (Test-Path $catalogPath) -and $videos.Count -gt 0) {
+            Log-Message "catalog.json not found. Generating initial catalog.json..."
+            $catalog = foreach ($v in $videos) {
+                [PSCustomObject]@{
+                    title      = $v.title
+                    link       = $v.link
+                    pubDate    = $v.pubDate
+                    categories = $v.categories
+                    thumbnail  = $v.thumbnail
+                }
+            }
+            $catalogJson = $catalog | ConvertTo-Json -Compress -Depth 5
+            [System.IO.File]::WriteAllText($catalogPath, $catalogJson, [System.Text.Encoding]::UTF8)
+            Log-Message "Initial catalog.json generated successfully."
+        }
     } catch {
         Log-Message "Failed to parse videos.json, starting fresh. Error: $_" "warning"
         $videos = @()
     }
 } else {
-    $videos = @()
+    $catalogPath = Join-Path $PSScriptRoot "catalog.json"
+    if (Test-Path $catalogPath) {
+        Log-Message "videos.json not found. Loading existing video entries from catalog.json..."
+        try {
+            $jsonContent = Get-Content $catalogPath -Raw -Encoding utf8
+            if ([string]::IsNullOrWhiteSpace($jsonContent)) {
+                $videos = @()
+            } else {
+                $videos = ConvertFrom-Json $jsonContent
+            }
+        } catch {
+            Log-Message "Failed to parse catalog.json: $_" "warning"
+            $videos = @()
+        }
+    } else {
+        $videos = @()
+    }
 }
 
 Log-Message "Loaded $($videos.Count) existing videos from local database."
@@ -191,7 +225,21 @@ function Save-Database($newVideos) {
             $originalVideos = @()
         }
     } else {
-        $originalVideos = @()
+        $catalogPath = Join-Path $PSScriptRoot "catalog.json"
+        if (Test-Path $catalogPath) {
+            try {
+                $jsonContent = Get-Content $catalogPath -Raw -Encoding utf8
+                if (-not [string]::IsNullOrWhiteSpace($jsonContent)) {
+                    $originalVideos = ConvertFrom-Json $jsonContent
+                } else {
+                    $originalVideos = @()
+                }
+            } catch {
+                $originalVideos = @()
+            }
+        } else {
+            $originalVideos = @()
+        }
     }
     
     $existingMergedLinks = @{}
@@ -212,6 +260,44 @@ function Save-Database($newVideos) {
             $updatedJson = $updatedVideos | ConvertTo-Json -Depth 5
             [System.IO.File]::WriteAllText($videosPath, $updatedJson, [System.Text.Encoding]::UTF8)
             Log-Message "Checkpoint: Saved $($filteredNew.Count) new items to videos.json (Total database: $($updatedVideos.Count) items)."
+            
+            # Save individual episode files
+            $episodesDir = Join-Path $PSScriptRoot "episodes"
+            if (-not (Test-Path $episodesDir)) {
+                New-Item -ItemType Directory -Path $episodesDir -Force | Out-Null
+            }
+            foreach ($v in $filteredNew) {
+                if ($v.link) {
+                    $slug = $v.link.Replace("https://animexin.dev/", "").Replace("/", "")
+                    if ($slug) {
+                        $epFile = Join-Path $episodesDir "$slug.json"
+                        $epData = [PSCustomObject]@{
+                            title = $v.title
+                            link = $v.link
+                            description = $v.description
+                            mirrors = $v.mirrors
+                            downloads = $v.downloads
+                        }
+                        $json = $epData | ConvertTo-Json -Depth 10
+                        [System.IO.File]::WriteAllText($epFile, $json, [System.Text.Encoding]::UTF8)
+                    }
+                }
+            }
+            
+            # Generate and save lightweight catalog.json (minified)
+            $catalog = foreach ($v in $updatedVideos) {
+                [PSCustomObject]@{
+                    title      = $v.title
+                    link       = $v.link
+                    pubDate    = $v.pubDate
+                    categories = $v.categories
+                    thumbnail  = $v.thumbnail
+                }
+            }
+            $catalogJson = $catalog | ConvertTo-Json -Compress -Depth 5
+            $catalogPath = Join-Path $PSScriptRoot "catalog.json"
+            [System.IO.File]::WriteAllText($catalogPath, $catalogJson, [System.Text.Encoding]::UTF8)
+            Log-Message "Checkpoint: Generated and saved catalog.json (Size: $(([System.IO.FileInfo]$catalogPath).Length / 1KB -as [int]) KB)."
         } catch {
             Log-Message "Error writing checkpoint database: $_" "error"
         }
