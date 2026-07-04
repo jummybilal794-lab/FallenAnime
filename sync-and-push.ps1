@@ -24,7 +24,8 @@ Write-Host "Starting video database sync..."
 Write-Host "Copying updated files to repository..."
 Copy-Item -Path "$devPath\catalog.json" -Destination "$repoPath\catalog.json" -Force
 if (Test-Path "$devPath\episodes") {
-    Copy-Item -Path "$devPath\episodes\*" -Destination "$repoPath\episodes" -Recurse -Force
+    # Robocopy is significantly faster than Copy-Item for 11,000+ files
+    robocopy "$devPath\episodes" "$repoPath\episodes" /XO /NJH /NJS /NDL /NC /NS /R:0 /W:0 | Out-Null
 }
 Copy-Item -Path "$devPath\sitemap.xml" -Destination "$repoPath\sitemap.xml" -Force
 if (Test-Path "$devPath\logo.png") { Copy-Item -Path "$devPath\logo.png" -Destination "$repoPath\logo.png" -Force }

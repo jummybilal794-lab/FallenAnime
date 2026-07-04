@@ -2,17 +2,22 @@
 # Script to generate sitemap.xml based on the videos.json database
 
 $videosPath = Join-Path $PSScriptRoot "videos.json"
+$catalogPath = Join-Path $PSScriptRoot "catalog.json"
 $sitemapPath = Join-Path $PSScriptRoot "sitemap.xml"
 $baseUrl = "https://fallenanime.xyz/"
 
-if (-not (Test-Path $videosPath)) {
-    Write-Warning "videos.json not found. Cannot generate sitemap."
+if (Test-Path $videosPath) {
+    Write-Host "Reading videos.json to generate sitemap..."
+    $rawJson = Get-Content -Raw -Path $videosPath -Encoding utf8
+    $videos = ConvertFrom-Json $rawJson
+} elseif (Test-Path $catalogPath) {
+    Write-Host "videos.json not found. Reading catalog.json to generate sitemap..."
+    $rawJson = Get-Content -Raw -Path $catalogPath -Encoding utf8
+    $videos = ConvertFrom-Json $rawJson
+} else {
+    Write-Warning "Neither videos.json nor catalog.json was found. Cannot generate sitemap."
     exit 1
 }
-
-Write-Host "Reading database to generate sitemap..."
-$rawJson = Get-Content -Raw -Path $videosPath -Encoding utf8
-$videos = ConvertFrom-Json $rawJson
 
 # Start XML structure
 $xml = @"
@@ -32,13 +37,21 @@ for ($i = 0; $i -lt $count; $i++) {
     $loc = "${baseUrl}#watch?idx=$i"
     
     # Format date strictly to W3C datetime standard (yyyy-MM-ddTHH:mm:ssZ)
+    $dateValue = $v.syncedAt
+    if (-not $dateValue) { $dateValue = $v.pubDate }
+    
     $dateStr = ""
-    if ($v.syncedAt) {
+    if ($dateValue) {
         # Check if it matches old MM/dd/yyyy HH:mm:ss format
-        if ($v.syncedAt -match '(\d{2})/(\d{2})/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})') {
+        if ($dateValue -match '(\d{2})/(\d{2})/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})') {
             $dateStr = "$($Matches[3])-$($Matches[1])-$($Matches[2])T$($Matches[4]):$($Matches[5]):$($Matches[6])Z"
-        } elseif ($v.syncedAt -match '^\d{4}-\d{2}-\d{2}T') {
-            $dateStr = $v.syncedAt
+        } elseif ($dateValue -match '^\d{4}-\d{2}-\d{2}') {
+            # Normalize to include T and Z if it's just a date
+            if ($dateValue -match '^\d{4}-\d{2}-\d{2}$') {
+                $dateStr = "${dateValue}T00:00:00Z"
+            } else {
+                $dateStr = $dateValue
+            }
         } else {
             $dateStr = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ")
         }
