@@ -2,7 +2,7 @@ name: Sync Videos
 
 on:
   schedule:
-    - cron: '0 */4 * * *' # Triggers automatically every 4 hours
+    - cron: '17 */4 * * *' # Triggers automatically every 4 hours (17 minutes past the hour to avoid peak delays)
   workflow_dispatch: # Allows you to trigger the sync manually from your GitHub Actions tab
 
 permissions:
@@ -19,7 +19,7 @@ jobs:
       - name: Run synchronization script
         shell: pwsh
         run: |
-          ./sync-videos.ps1 -Full -Limit 250
+          ./sync-videos.ps1 -Limit 250
           
       - name: Generate updated sitemap
         shell: pwsh
