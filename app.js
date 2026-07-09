@@ -1644,6 +1644,40 @@ function setupEventListeners() {
             };
 
             let scheduleHtml = '';
+            
+            // 1. Generate "Today's Releases" section first at the top
+            const todaySchedule = releaseSchedule.find(item => item.day === todayName);
+            if (todaySchedule && todaySchedule.series.length > 0) {
+                scheduleHtml += `
+                    <div class="schedule-today-box">
+                        <h3 class="schedule-today-title">🔥 Uploading Today (${todayName})</h3>
+                        <ul class="schedule-series-list">
+                `;
+                todaySchedule.series.forEach(s => {
+                    const localTime = getLocalReleaseTime(s.time);
+                    scheduleHtml += `
+                        <li class="schedule-series-item" style="border-bottom: 1px solid rgba(239, 68, 68, 0.15); padding: 12px 15px;">
+                            <span class="schedule-series-name" style="font-weight: bold; color: white;">${s.name}</span>
+                            <span class="schedule-series-time" style="background: var(--accent-red); color: white; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);">${localTime}</span>
+                        </li>
+                    `;
+                });
+                scheduleHtml += `
+                        </ul>
+                    </div>
+                `;
+            } else {
+                scheduleHtml += `
+                    <div class="schedule-today-box" style="background: rgba(255, 255, 255, 0.02); border-color: var(--border-color); box-shadow: none; padding: 12px 15px;">
+                        <h3 class="schedule-today-title" style="color: var(--text-muted);">📅 Uploading Today (${todayName})</h3>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); padding: 5px 0;">
+                            No new episodes scheduled to release today. Check the weekly list below!
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 2. Generate weekly list below it
             releaseSchedule.forEach(item => {
                 const isToday = item.day === todayName;
                 const todayHeaderClass = isToday ? 'schedule-day-header today' : 'schedule-day-header';
@@ -1658,15 +1692,23 @@ function setupEventListeners() {
                         <ul class="schedule-series-list">
                 `;
 
-                item.series.forEach(s => {
-                    const localTime = getLocalReleaseTime(s.time);
+                if (item.series.length > 0) {
+                    item.series.forEach(s => {
+                        const localTime = getLocalReleaseTime(s.time);
+                        scheduleHtml += `
+                            <li class="schedule-series-item">
+                                <span class="schedule-series-name">${s.name}</span>
+                                <span class="schedule-series-time">${localTime}</span>
+                            </li>
+                        `;
+                    });
+                } else {
                     scheduleHtml += `
-                        <li class="schedule-series-item">
-                            <span class="schedule-series-name">${s.name}</span>
-                            <span class="schedule-series-time">${localTime}</span>
+                        <li class="schedule-series-item" style="color: var(--text-muted); font-style: italic; font-size: 0.85rem; padding: 12px 15px;">
+                            No releases scheduled
                         </li>
                     `;
-                });
+                }
 
                 scheduleHtml += `
                         </ul>

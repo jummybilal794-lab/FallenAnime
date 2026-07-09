@@ -2435,3 +2435,25 @@ a {
     padding: 2px 8px;
     border-radius: 4px;
 }
+
+.schedule-today-box {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1.5px solid var(--accent-red);
+    border-radius: var(--radius-md);
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.1);
+}
+
+.schedule-today-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #f87171;
+    margin-top: 0;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
