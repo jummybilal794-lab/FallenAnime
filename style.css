@@ -2357,3 +2357,81 @@ a {
 #nav-history {
     display: none !important;
 }
+
+/* Release Schedule Modal Styles */
+.schedule-modal-card {
+    max-width: 600px !important;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.schedule-container {
+    overflow-y: auto;
+    padding-right: 5px;
+    max-height: 55vh;
+}
+
+.schedule-day-block {
+    margin-bottom: 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.schedule-day-header {
+    background: var(--border-color);
+    padding: 8px 15px;
+    font-weight: 700;
+    color: var(--accent-red);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.schedule-day-header.today {
+    background: rgba(239, 68, 68, 0.15);
+    border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+    color: #f87171;
+}
+
+.schedule-series-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.schedule-series-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    transition: background 0.2s ease;
+}
+
+.schedule-series-item:last-child {
+    border-bottom: none;
+}
+
+.schedule-series-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.schedule-series-name {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-normal);
+}
+
+.schedule-series-time {
+    font-size: 0.85rem;
+    color: var(--accent-red);
+    font-weight: 600;
+    background: rgba(239, 68, 68, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+}

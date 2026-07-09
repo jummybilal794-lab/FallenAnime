@@ -1593,6 +1593,88 @@ function setupEventListeners() {
         });
     }
 
+    // Release Schedule Event Listener
+    const drawerNavSchedule = document.getElementById('drawer-nav-schedule');
+    const scheduleModal = document.getElementById('schedule-modal');
+    const scheduleModalClose = document.getElementById('schedule-modal-close');
+    const scheduleList = document.getElementById('schedule-list');
+
+    if (drawerNavSchedule && scheduleModal && scheduleList) {
+        drawerNavSchedule.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeDrawer();
+            
+            // Build the schedule list HTML
+            const releaseSchedule = [
+                { day: 'Monday', series: [ { name: 'Renegade Immortal', time: '02:00' } ] },
+                { day: 'Tuesday', series: [ { name: 'Martial Master', time: '02:30' } ] },
+                { day: 'Wednesday', series: [ { name: 'A Will Eternal', time: '02:00' } ] },
+                { day: 'Thursday', series: [ { name: 'Throne of Seal', time: '02:00' }, { name: 'Beyond Time\'s Gaze', time: '02:30' } ] },
+                { day: 'Friday', series: [ { name: 'Perfect World', time: '02:00' }, { name: 'Martial Master', time: '02:30' }, { name: 'The Great Ruler', time: '02:00' } ] },
+                { day: 'Saturday', series: [ { name: 'Soul Land 2: The Peerless Tang Sect', time: '02:00' }, { name: 'Tales of Herding Gods', time: '02:30' } ] },
+                { day: 'Sunday', series: [ { name: 'Battle Through the Heavens', time: '02:00' } ] }
+            ];
+
+            const now = new Date();
+            const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const todayName = daysOfWeek[now.getDay()];
+
+            // Helper to get local time
+            const getLocalReleaseTime = (utcTimeStr) => {
+                const [hours, minutes] = utcTimeStr.split(':').map(Number);
+                const utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), hours, minutes));
+                return utcDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            };
+
+            let scheduleHtml = '';
+            releaseSchedule.forEach(item => {
+                const isToday = item.day === todayName;
+                const todayHeaderClass = isToday ? 'schedule-day-header today' : 'schedule-day-header';
+                const todayIndicator = isToday ? '<span style="font-size: 0.75rem; background: var(--accent-red); color: white; padding: 2px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase;">Today</span>' : '';
+                
+                scheduleHtml += `
+                    <div class="schedule-day-block">
+                        <div class="${todayHeaderClass}">
+                            <span>${item.day}</span>
+                            ${todayIndicator}
+                        </div>
+                        <ul class="schedule-series-list">
+                `;
+
+                item.series.forEach(s => {
+                    const localTime = getLocalReleaseTime(s.time);
+                    scheduleHtml += `
+                        <li class="schedule-series-item">
+                            <span class="schedule-series-name">${s.name}</span>
+                            <span class="schedule-series-time">${localTime}</span>
+                        </li>
+                    `;
+                });
+
+                scheduleHtml += `
+                        </ul>
+                    </div>
+                `;
+            });
+
+            scheduleList.innerHTML = scheduleHtml;
+            scheduleModal.style.display = 'flex';
+        });
+    }
+
+    if (scheduleModalClose && scheduleModal) {
+        scheduleModalClose.addEventListener('click', () => {
+            scheduleModal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside card
+        scheduleModal.addEventListener('click', (e) => {
+            if (e.target === scheduleModal) {
+                scheduleModal.style.display = 'none';
+            }
+        });
+    }
+
     // Drawer Accordion Toggles
     const genresToggle = document.getElementById('drawer-genres-toggle');
     const genresContent = document.getElementById('drawer-genres-content');
