@@ -1608,27 +1608,27 @@ function setupEventListeners() {
             const releaseSchedule = [
                 { day: 'Monday', series: [] },
                 { day: 'Tuesday', series: [
-                    { name: 'Martial Master', time: '03:15' },
-                    { name: 'Shrouding the Heavens', time: '13:00' }
+                    { name: 'Martial Master', time: '03:15', syncTime: '04:17' },
+                    { name: 'Shrouding the Heavens', time: '13:00', syncTime: '16:17' }
                 ] },
                 { day: 'Wednesday', series: [
-                    { name: 'A Will Eternal', time: '05:00' },
-                    { name: 'Throne of Seal', time: '13:00' }
+                    { name: 'A Will Eternal', time: '05:00', syncTime: '08:17' },
+                    { name: 'Throne of Seal', time: '13:00', syncTime: '16:17' }
                 ] },
                 { day: 'Thursday', series: [] },
                 { day: 'Friday', series: [
-                    { name: 'The Great Ruler', time: '01:30' },
-                    { name: 'Perfect World', time: '02:30' },
-                    { name: 'Soul Land 2: The Peerless Tang Sect', time: '13:00' }
+                    { name: 'The Great Ruler', time: '01:30', syncTime: '04:17' },
+                    { name: 'Perfect World', time: '02:30', syncTime: '04:17' },
+                    { name: 'Soul Land 2: The Peerless Tang Sect', time: '13:00', syncTime: '16:17' }
                 ] },
                 { day: 'Saturday', series: [
-                    { name: 'Battle Through the Heavens', time: '12:00' }
+                    { name: 'Battle Through the Heavens', time: '12:00', syncTime: '12:17' }
                 ] },
                 { day: 'Sunday', series: [
-                    { name: 'Beyond Time\'s Gaze', time: '02:30' },
-                    { name: 'Martial Master', time: '03:15' },
-                    { name: 'Tales of Herding Gods', time: '04:00' },
-                    { name: 'Renegade Immortal', time: '12:00' }
+                    { name: 'Beyond Time\'s Gaze', time: '02:30', syncTime: '04:17' },
+                    { name: 'Martial Master', time: '03:15', syncTime: '04:17' },
+                    { name: 'Tales of Herding Gods', time: '04:00', syncTime: '04:17' },
+                    { name: 'Renegade Immortal', time: '12:00', syncTime: '12:17' }
                 ] }
             ];
 
@@ -1655,10 +1655,14 @@ function setupEventListeners() {
                 `;
                 todaySchedule.series.forEach(s => {
                     const localTime = getLocalReleaseTime(s.time);
+                    const localSync = getLocalReleaseTime(s.syncTime);
                     scheduleHtml += `
-                        <li class="schedule-series-item" style="border-bottom: 1px solid rgba(239, 68, 68, 0.15); padding: 12px 15px;">
+                        <li class="schedule-series-item" style="border-bottom: 1px solid rgba(239, 68, 68, 0.15); padding: 12px 15px; flex-wrap: wrap; gap: 8px;">
                             <span class="schedule-series-name" style="font-weight: bold; color: white;">${s.name}</span>
-                            <span class="schedule-series-time" style="background: var(--accent-red); color: white; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);">${localTime}</span>
+                            <div style="display: flex; gap: 10px; align-items: center; margin-left: auto;">
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">Released: <strong style="color: var(--text-normal);">${localTime}</strong></span>
+                                <span class="schedule-series-time" style="background: var(--accent-red); color: white; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);">On Site: ${localSync}</span>
+                            </div>
                         </li>
                     `;
                 });
@@ -1695,10 +1699,14 @@ function setupEventListeners() {
                 if (item.series.length > 0) {
                     item.series.forEach(s => {
                         const localTime = getLocalReleaseTime(s.time);
+                        const localSync = getLocalReleaseTime(s.syncTime);
                         scheduleHtml += `
-                            <li class="schedule-series-item">
+                            <li class="schedule-series-item" style="flex-wrap: wrap; gap: 8px;">
                                 <span class="schedule-series-name">${s.name}</span>
-                                <span class="schedule-series-time">${localTime}</span>
+                                <div style="display: flex; gap: 10px; align-items: center; margin-left: auto;">
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);">Released: <strong style="color: var(--text-normal);">${localTime}</strong></span>
+                                    <span class="schedule-series-time">On Site: ${localSync}</span>
+                                </div>
                             </li>
                         `;
                     });
