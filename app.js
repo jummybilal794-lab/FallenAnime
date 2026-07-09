@@ -1606,13 +1606,30 @@ function setupEventListeners() {
             
             // Build the schedule list HTML
             const releaseSchedule = [
-                { day: 'Monday', series: [ { name: 'Renegade Immortal', time: '02:00' } ] },
-                { day: 'Tuesday', series: [ { name: 'Martial Master', time: '02:30' } ] },
-                { day: 'Wednesday', series: [ { name: 'A Will Eternal', time: '02:00' } ] },
-                { day: 'Thursday', series: [ { name: 'Throne of Seal', time: '02:00' }, { name: 'Beyond Time\'s Gaze', time: '02:30' } ] },
-                { day: 'Friday', series: [ { name: 'Perfect World', time: '02:00' }, { name: 'Martial Master', time: '02:30' }, { name: 'The Great Ruler', time: '02:00' } ] },
-                { day: 'Saturday', series: [ { name: 'Soul Land 2: The Peerless Tang Sect', time: '02:00' }, { name: 'Tales of Herding Gods', time: '02:30' } ] },
-                { day: 'Sunday', series: [ { name: 'Battle Through the Heavens', time: '02:00' } ] }
+                { day: 'Monday', series: [] },
+                { day: 'Tuesday', series: [
+                    { name: 'Martial Master', time: '03:15' },
+                    { name: 'Shrouding the Heavens', time: '13:00' }
+                ] },
+                { day: 'Wednesday', series: [
+                    { name: 'A Will Eternal', time: '05:00' },
+                    { name: 'Throne of Seal', time: '13:00' }
+                ] },
+                { day: 'Thursday', series: [] },
+                { day: 'Friday', series: [
+                    { name: 'The Great Ruler', time: '01:30' },
+                    { name: 'Perfect World', time: '02:30' },
+                    { name: 'Soul Land 2: The Peerless Tang Sect', time: '13:00' }
+                ] },
+                { day: 'Saturday', series: [
+                    { name: 'Battle Through the Heavens', time: '12:00' }
+                ] },
+                { day: 'Sunday', series: [
+                    { name: 'Beyond Time\'s Gaze', time: '02:30' },
+                    { name: 'Martial Master', time: '03:15' },
+                    { name: 'Tales of Herding Gods', time: '04:00' },
+                    { name: 'Renegade Immortal', time: '12:00' }
+                ] }
             ];
 
             const now = new Date();
