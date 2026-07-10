@@ -2,7 +2,7 @@ name: Sync Videos
 
 on:
   schedule:
-    - cron: '17 */4 * * *' # Triggers automatically every 4 hours (17 minutes past the hour to avoid peak delays)
+    - cron: '17 * * * *' # Triggers automatically every hour (17 minutes past the hour to minimize delays)
   workflow_dispatch: # Allows you to trigger the sync manually from your GitHub Actions tab
 
 permissions:

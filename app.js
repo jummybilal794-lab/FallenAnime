@@ -1608,25 +1608,25 @@ function setupEventListeners() {
             const releaseSchedule = [
                 { day: 'Monday', series: [] },
                 { day: 'Tuesday', series: [
-                    { name: 'Martial Master', time: '03:15', syncTime: '04:17' },
-                    { name: 'Shrouding the Heavens', time: '13:00', syncTime: '16:17' }
+                    { name: 'Martial Master', time: '03:15', syncTime: '03:17' },
+                    { name: 'Shrouding the Heavens', time: '13:00', syncTime: '13:17' }
                 ] },
                 { day: 'Wednesday', series: [
-                    { name: 'A Will Eternal', time: '05:00', syncTime: '08:17' },
-                    { name: 'Throne of Seal', time: '13:00', syncTime: '16:17' }
+                    { name: 'A Will Eternal', time: '05:00', syncTime: '05:17' },
+                    { name: 'Throne of Seal', time: '13:00', syncTime: '13:17' }
                 ] },
                 { day: 'Thursday', series: [] },
                 { day: 'Friday', series: [
-                    { name: 'The Great Ruler', time: '01:30', syncTime: '04:17' },
-                    { name: 'Perfect World', time: '02:30', syncTime: '04:17' },
-                    { name: 'Soul Land 2: The Peerless Tang Sect', time: '13:00', syncTime: '16:17' }
+                    { name: 'The Great Ruler', time: '01:30', syncTime: '02:17' },
+                    { name: 'Perfect World', time: '02:30', syncTime: '03:17' },
+                    { name: 'Soul Land 2: The Peerless Tang Sect', time: '13:00', syncTime: '13:17' }
                 ] },
                 { day: 'Saturday', series: [
                     { name: 'Battle Through the Heavens', time: '12:00', syncTime: '12:17' }
                 ] },
                 { day: 'Sunday', series: [
-                    { name: 'Beyond Time\'s Gaze', time: '02:30', syncTime: '04:17' },
-                    { name: 'Martial Master', time: '03:15', syncTime: '04:17' },
+                    { name: 'Beyond Time\'s Gaze', time: '02:30', syncTime: '03:17' },
+                    { name: 'Martial Master', time: '03:15', syncTime: '03:17' },
                     { name: 'Tales of Herding Gods', time: '04:00', syncTime: '04:17' },
                     { name: 'Renegade Immortal', time: '12:00', syncTime: '12:17' }
                 ] }
