@@ -1,17 +1,32 @@
-﻿[09:16:20] ==========================================
-[09:16:20] Starting Video Sync: 07/13/2026 09:16:20
-[09:16:20] Mode: Incremental Sync (RSS)
-[09:16:20] ==========================================
-[09:16:26] Loaded 10861 existing videos from local database.
-[09:16:33] [Animexin] Fetching RSS feed page 1 from: https://animexin.dev/feed/
-[09:16:34] [Animexin] Fetching RSS feed page 2 from: https://animexin.dev/feed/?paged=2
-[09:16:35] [Animexin] Fetching RSS feed page 3 from: https://animexin.dev/feed/?paged=3
-[09:16:36] [Animexin] Fetching RSS feed page 4 from: https://animexin.dev/feed/?paged=4
-[09:16:38] [Animexin] Fetching RSS feed page 5 from: https://animexin.dev/feed/?paged=5
-[09:16:39] [LuciferDonghua] Fetching RSS feed page 1 from: https://luciferdonghua.in/feed/
-[09:16:40] [LuciferDonghua] Fetching RSS feed page 2 from: https://luciferdonghua.in/feed/?paged=2
-[09:16:40] [LuciferDonghua] Fetching RSS feed page 3 from: https://luciferdonghua.in/feed/?paged=3
-[09:16:40] [LuciferDonghua] Fetching RSS feed page 4 from: https://luciferdonghua.in/feed/?paged=4
-[09:16:40] [LuciferDonghua] Fetching RSS feed page 5 from: https://luciferdonghua.in/feed/?paged=5
-[09:16:40] Found 100 items in all feeds. Checking for updates...
-[09:16:40] No new episodes found. Database is up to date.
+﻿[09:24:32] ==========================================
+[09:24:32] Starting Video Sync: 07/13/2026 09:24:32
+[09:24:32] Mode: Incremental Sync (RSS)
+[09:24:32] ==========================================
+[09:24:32] videos.json not found. Loading existing video entries from catalog.json...
+[09:24:33] Loaded 11888 existing videos from local database.
+[09:24:41] Cleaned up 1028 duplicate episode entries from the database.
+[09:24:45] [Animexin] Fetching RSS feed page 1 from: https://animexin.dev/feed/
+[09:24:46] [Animexin] Fetching RSS feed page 2 from: https://animexin.dev/feed/?paged=2
+[09:24:47] [Animexin] Fetching RSS feed page 3 from: https://animexin.dev/feed/?paged=3
+[09:24:48] [Animexin] Fetching RSS feed page 4 from: https://animexin.dev/feed/?paged=4
+[09:24:49] [Animexin] Fetching RSS feed page 5 from: https://animexin.dev/feed/?paged=5
+[09:24:50] [LuciferDonghua] Fetching RSS feed page 1 from: https://luciferdonghua.in/feed/
+[09:24:50] [LuciferDonghua] Fetching RSS feed page 2 from: https://luciferdonghua.in/feed/?paged=2
+[09:24:51] [LuciferDonghua] Fetching RSS feed page 3 from: https://luciferdonghua.in/feed/?paged=3
+[09:24:51] [LuciferDonghua] Fetching RSS feed page 4 from: https://luciferdonghua.in/feed/?paged=4
+[09:24:52] [LuciferDonghua] Fetching RSS feed page 5 from: https://luciferdonghua.in/feed/?paged=5
+[09:24:53] Found 100 items in all feeds. Checking for updates...
+[09:24:53] Found 1 new episodes to scrape.
+[09:25:01] [1/1] Scraping: Walking the Way All Alone Episode 16 English Sub
+[09:25:01] URL: https://luciferdonghua.in/walking-the-way-all-alone-episode-16-lucifer-donghua/
+[09:25:01] Fetching mirror subpage: https://luciferdonghua.in/walking-the-way-all-alone-episode-16-lucifer-donghua/v/1/
+[09:25:07] Fetching mirror subpage: https://luciferdonghua.in/walking-the-way-all-alone-episode-16-lucifer-donghua/v/2/
+[09:25:14] Fetching mirror subpage: https://luciferdonghua.in/walking-the-way-all-alone-episode-16-lucifer-donghua/v/3/
+[09:25:22] Fetching mirror subpage: https://luciferdonghua.in/walking-the-way-all-alone-episode-16-lucifer-donghua/v/4/
+[09:25:28] Fetching mirror subpage: https://luciferdonghua.in/walking-the-way-all-alone-episode-16-lucifer-donghua/v/5/
+[09:25:34] Success: Scraped 5 mirrors and 0 download links.
+[09:25:36] Checkpoint: Saved 1 new items to videos.json (Total database: 10861 items).
+[09:25:37] Checkpoint: Generated and saved catalog.json (Size: 3945 KB).
+[09:25:37] ==========================================
+[09:25:37] Sync Completed: 07/13/2026 09:25:37
+[09:25:37] ==========================================
