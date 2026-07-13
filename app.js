@@ -13,6 +13,7 @@ function decodeHTMLEntities(str) {
 // Global State
 let allVideos = [];
 let filteredVideos = [];
+let filteredSeries = [];
 let fullVideoDetails = [];
 let isFullDetailsLoaded = false;
 let isFullDetailsLoading = false;
@@ -20,6 +21,7 @@ let activeFilter = 'All';
 let isSyncing = false;
 let syncIntervalId = null;
 let catalogLayout = 'grid'; // 'grid' or 'list'
+let currentView = 'episodes'; // 'episodes' or 'anime'
 
 let currentPage = 1;
 const itemsPerPage = 24;
@@ -84,6 +86,10 @@ const catalogGrid = document.getElementById('catalog-grid');
 const genreFilters = document.getElementById('genre-filters');
 const layoutGridBtn = document.getElementById('layout-grid-btn');
 const layoutListBtn = document.getElementById('layout-list-btn');
+const navAnime = document.getElementById('nav-anime');
+const drawerNavAnime = document.getElementById('drawer-nav-anime');
+const sortContainer = document.getElementById('sort-container');
+const catalogSort = document.getElementById('catalog-sort');
 
 const scheduleSection = document.getElementById('schedule-section');
 const popularSection = document.getElementById('popular-section');
@@ -266,6 +272,14 @@ function generateFilterTags() {
 // Apply searches and filter badges
 function applyFiltersAndSearch() {
     currentPage = 1;
+    if (currentView === 'anime') {
+        applyFiltersAndSearchAnime();
+    } else {
+        applyFiltersAndSearchEpisodes();
+    }
+}
+
+function applyFiltersAndSearchEpisodes() {
     const keyword = searchInput.value.toLowerCase().trim();
     
     filteredVideos = allVideos.filter(video => {
@@ -321,6 +335,63 @@ function applyFiltersAndSearch() {
     }
 
     renderCatalogGrid();
+}
+
+function applyFiltersAndSearchAnime() {
+    const keyword = searchInput.value.toLowerCase().trim();
+    
+    // Group allVideos by series name
+    const seriesMap = {};
+    allVideos.forEach(v => {
+        const sName = getSeriesName(v.title);
+        if (sName) {
+            const decodedName = decodeHTMLEntities(sName).trim();
+            if (decodedName.length > 0) {
+                const lowerName = decodedName.toLowerCase();
+                if (!seriesMap[lowerName]) {
+                    seriesMap[lowerName] = {
+                        name: decodedName,
+                        thumbnail: v.thumbnail,
+                        pubDate: v.pubDate,
+                        _timestamp: v._timestamp,
+                        categories: v.categories || [],
+                        episodes: []
+                    };
+                }
+                // Keep the latest thumbnail and pubDate
+                if (v._timestamp > seriesMap[lowerName]._timestamp) {
+                    seriesMap[lowerName].thumbnail = v.thumbnail;
+                    seriesMap[lowerName].pubDate = v.pubDate;
+                    seriesMap[lowerName]._timestamp = v._timestamp;
+                }
+                seriesMap[lowerName].episodes.push(v);
+            }
+        }
+    });
+    
+    const allSeries = Object.values(seriesMap);
+    
+    // Filter
+    filteredSeries = allSeries.filter(series => {
+        const matchesSearch = !keyword || series.name.toLowerCase().includes(keyword);
+        const matchesCategory = activeFilter === 'All' || 
+                                (series.categories && series.categories.includes(activeFilter));
+        return matchesSearch && matchesCategory;
+    });
+    
+    // Sort
+    const sortVal = catalogSort ? catalogSort.value : 'newest';
+    if (sortVal === 'newest') {
+        filteredSeries.sort((a, b) => b._timestamp - a._timestamp);
+    } else if (sortVal === 'oldest') {
+        filteredSeries.sort((a, b) => a._timestamp - b._timestamp);
+    } else if (sortVal === 'az') {
+        filteredSeries.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortVal === 'za') {
+        filteredSeries.sort((a, b) => b.name.localeCompare(a.name));
+    }
+    
+    renderCatalogGridAnime();
 }
 
 // Calculate search relevance score for ranking results
@@ -380,6 +451,14 @@ function escapeRegExp(string) {
 
 // Render cards grid
 function renderCatalogGrid() {
+    if (currentView === 'anime') {
+        renderCatalogGridAnime();
+    } else {
+        renderCatalogGridEpisodes();
+    }
+}
+
+function renderCatalogGridEpisodes() {
     catalogGrid.innerHTML = '';
     
     if (catalogLayout === 'list') {
@@ -441,6 +520,88 @@ function renderCatalogGrid() {
 
     // Render Pagination
     const totalPages = Math.ceil(filteredVideos.length / itemsPerPage);
+    if (totalPages > 1) {
+        if (paginationContainer) {
+            paginationContainer.style.display = 'flex';
+            renderPaginationControls(totalPages);
+        }
+    } else {
+        if (paginationContainer) paginationContainer.style.display = 'none';
+    }
+}
+
+function renderCatalogGridAnime() {
+    catalogGrid.innerHTML = '';
+    
+    if (catalogLayout === 'list') {
+        catalogGrid.classList.add('list-view');
+    } else {
+        catalogGrid.classList.remove('list-view');
+    }
+    
+    const paginationContainer = document.getElementById('pagination-container');
+    
+    if (filteredSeries.length === 0) {
+        catalogGrid.innerHTML = `
+            <div class="loading-state">
+                <p>🎬 No anime series match your current search/filters.</p>
+            </div>
+        `;
+        if (paginationContainer) paginationContainer.style.display = 'none';
+        return;
+    }
+    
+    const visibleSeries = filteredSeries.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    
+    visibleSeries.forEach((series) => {
+        // Find the maximum episode number in this series
+        let maxEpNum = 0;
+        series.episodes.forEach(e => {
+            const num = getEpisodeNumber(e.title);
+            if (num > maxEpNum) maxEpNum = num;
+        });
+        const epText = maxEpNum > 0 ? `Ep ${maxEpNum}` : 'Latest';
+        
+        const formattedDate = formatDate(series.pubDate);
+        const titleClean = series.name;
+        
+        const card = document.createElement('div');
+        card.className = 'video-card anime-series-card';
+        
+        card.innerHTML = `
+            <div class="card-thumb-wrapper">
+                <img src="${series.thumbnail || 'https://via.placeholder.com/350x220/0a0b10/d50000?text=FallenAnime'}" alt="${titleClean}" loading="lazy">
+                <span class="card-badge-top-left">Series</span>
+                <span class="card-badge-bottom-left">${epText}</span>
+                <span class="card-badge-bottom-right">Sub</span>
+            </div>
+            <div class="card-details">
+                <h3 class="card-title">${titleClean}</h3>
+                <div class="card-meta">
+                    <span class="card-time-badge">📅 Updated: ${formattedDate}</span>
+                </div>
+            </div>
+        `;
+        
+        card.addEventListener('click', () => {
+            searchInput.value = series.name;
+            currentView = 'episodes';
+            if (sortContainer) sortContainer.style.display = 'none';
+            catalogHeading.textContent = 'Latest Release';
+            
+            // Sync nav styling to "All Episodes"
+            syncActiveNavState('All');
+            activeNavFilter = 'All';
+            
+            applyFiltersAndSearch();
+            scrollToCatalog();
+        });
+        
+        catalogGrid.appendChild(card);
+    });
+    
+    // Render Pagination
+    const totalPages = Math.ceil(filteredSeries.length / itemsPerPage);
     if (totalPages > 1) {
         if (paginationContainer) {
             paginationContainer.style.display = 'flex';
@@ -1290,6 +1451,10 @@ function syncActiveNavState(filterName) {
         if (navAll) navAll.classList.add('active');
         const dAll = document.getElementById('drawer-nav-all');
         if (dAll) dAll.classList.add('active');
+    } else if (filterName === 'Anime') {
+        if (navAnime) navAnime.classList.add('active');
+        const dAnime = document.getElementById('drawer-nav-anime');
+        if (dAnime) dAnime.classList.add('active');
     } else if (filterName === 'Favorites') {
         if (navFavorites) navFavorites.classList.add('active');
         const dFav = document.getElementById('drawer-nav-favorites');
@@ -1482,6 +1647,9 @@ function populateDrawerAccordions() {
         
         card.addEventListener('click', () => {
             closeDrawer();
+            currentView = 'episodes';
+            if (sortContainer) sortContainer.style.display = 'none';
+            catalogHeading.textContent = 'Latest Release';
             // Set search bar to this series name and filter
             searchInput.value = series;
             activeFilter = 'All';
@@ -1548,6 +1716,15 @@ function setupEventListeners() {
             closeDrawer();
             navAll.click();
             syncActiveNavState('All');
+        });
+    }
+
+    if (drawerNavAnime) {
+        drawerNavAnime.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeDrawer();
+            if (navAnime) navAnime.click();
+            syncActiveNavState('Anime');
         });
     }
 
@@ -1816,6 +1993,9 @@ function setupEventListeners() {
     // Logo / Brand clicks
     logoBtn.addEventListener('click', (e) => {
         e.preventDefault();
+        currentView = 'episodes';
+        if (sortContainer) sortContainer.style.display = 'none';
+        catalogHeading.textContent = 'Latest Release';
         searchInput.value = '';
         activeFilter = 'All';
         activeScheduleDay = null;
@@ -1828,6 +2008,9 @@ function setupEventListeners() {
     
     navAll.addEventListener('click', (e) => {
         e.preventDefault();
+        currentView = 'episodes';
+        if (sortContainer) sortContainer.style.display = 'none';
+        catalogHeading.textContent = 'Latest Release';
         searchInput.value = '';
         activeFilter = 'All';
         activeScheduleDay = null;
@@ -1837,6 +2020,31 @@ function setupEventListeners() {
         if (floatingScrollDownBtn) floatingScrollDownBtn.style.display = 'none';
         applyFiltersAndSearch();
     });
+
+    if (navAnime) {
+        navAnime.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentView = 'anime';
+            syncActiveNavState('Anime');
+            if (sortContainer) sortContainer.style.display = 'flex';
+            catalogHeading.textContent = 'All Anime Series';
+            searchInput.value = '';
+            activeFilter = 'All';
+            activeScheduleDay = null;
+            document.querySelectorAll('.schedule-btn').forEach(b => b.classList.remove('active'));
+            window.location.hash = '';
+            hideWatchView();
+            if (floatingScrollDownBtn) floatingScrollDownBtn.style.display = 'none';
+            applyFiltersAndSearch();
+        });
+    }
+
+    if (catalogSort) {
+        catalogSort.addEventListener('change', () => {
+            currentPage = 1;
+            applyFiltersAndSearch();
+        });
+    }
 
     // Layout buttons
     layoutGridBtn.addEventListener('click', () => {
@@ -2366,6 +2574,9 @@ function initAuth() {
     if (navFavorites) {
         navFavorites.addEventListener('click', (e) => {
             e.preventDefault();
+            currentView = 'episodes';
+            if (sortContainer) sortContainer.style.display = 'none';
+            catalogHeading.textContent = 'My Favorites';
             syncActiveNavState('Favorites');
             activeNavFilter = 'Favorites';
             activeFilter = 'All';
@@ -2379,6 +2590,9 @@ function initAuth() {
     if (navHistory) {
         navHistory.addEventListener('click', (e) => {
             e.preventDefault();
+            currentView = 'episodes';
+            if (sortContainer) sortContainer.style.display = 'none';
+            catalogHeading.textContent = 'Watch History';
             syncActiveNavState('History');
             activeNavFilter = 'History';
             activeFilter = 'All';
@@ -2391,6 +2605,9 @@ function initAuth() {
     if (navAll) {
         navAll.addEventListener('click', (e) => {
             e.preventDefault();
+            currentView = 'episodes';
+            if (sortContainer) sortContainer.style.display = 'none';
+            catalogHeading.textContent = 'Latest Release';
             syncActiveNavState('All');
             activeNavFilter = 'All';
             applyFiltersAndSearch();
