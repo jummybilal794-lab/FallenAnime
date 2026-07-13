@@ -53,6 +53,44 @@ function Log-Message($msg, $level = "info") {
     Add-Content -Path $logPath -Value $line -Encoding utf8
 }
 
+function Get-Episode-Key($title) {
+    # 1. Clean title of branding and html
+    $t = $title -replace '<[^>]+>', ''
+    $t = $t -replace '\s*[-–]\s*AnimeXin(\.dev)?', ''
+    $t = $t -replace '\s*Subtitle\s*[-–]\s*AnimeXin(\.dev)?', ''
+    $t = $t -replace '\s*[-–]\s*Lucifer\s*Donghua', ''
+    $t = $t -replace '\s*Lucifer\s*Donghua', ''
+    $t = $t.Trim()
+    
+    # 2. Extract series name and episode number
+    $cleanTitle = $t -replace '\[\d+\]', ''
+    
+    # Extract episode number
+    $epNum = ""
+    if ($cleanTitle -match '(?i)(?:Episode|Ep)\s*(\d+)') {
+        $epNum = $Matches[1]
+    }
+    
+    # Extract base series name
+    $seriesName = $cleanTitle
+    if ($cleanTitle -match '(?i)(.*?)\s*(?:Episode|Ep)\s*\d+') {
+        $seriesName = $Matches[1].Trim()
+    }
+    
+    # Normalize series name
+    $normalizedSeries = $seriesName.ToLower()
+    $normalizedSeries = $normalizedSeries -replace '\[[^\]]+\]', '' # remove [...]
+    $normalizedSeries = $normalizedSeries -replace '\([^\)]+\)', '' # remove (...)
+    $normalizedSeries = $normalizedSeries -replace 'season\s*\d+', '' # remove season X
+    $normalizedSeries = $normalizedSeries -replace '[^\w\s]', '' # remove special chars
+    $normalizedSeries = [regex]::Replace($normalizedSeries, '\s+', ' ').Trim()
+    
+    if ($normalizedSeries -and $epNum) {
+        return "${normalizedSeries}_ep${epNum}"
+    }
+    return $null
+}
+
 Log-Message "=========================================="
 Log-Message "Starting Video Sync: $(Get-Date)"
 Log-Message "Mode: $(if ($Full) { 'Deep Sync (Sitemaps)' } else { 'Incremental Sync (RSS)' })"
@@ -111,11 +149,57 @@ if (Test-Path $videosPath) {
 
 Log-Message "Loaded $($videos.Count) existing videos from local database."
 
+# 1b. De-duplicate existing database entries (keeping the first one, which is the newest/preferred)
+$deduplicatedVideos = @()
+$seenKeys = @{}
+$duplicateCount = 0
+foreach ($v in $videos) {
+    if ($v.title) {
+        $key = Get-Episode-Key $v.title
+        if ($key) {
+            if ($seenKeys.ContainsKey($key)) {
+                $duplicateCount++
+                continue # Skip this duplicate entry!
+            }
+            $seenKeys[$key] = $true
+        }
+    }
+    $deduplicatedVideos += $v
+}
+
+if ($duplicateCount -gt 0) {
+    Log-Message "Cleaned up $duplicateCount duplicate episode entries from the database."
+    $videos = $deduplicatedVideos
+    
+    # Save the cleaned database back to files
+    $videosJson = $videos | ConvertTo-Json -Depth 5
+    [System.IO.File]::WriteAllText($videosPath, $videosJson, [System.Text.Encoding]::UTF8)
+    
+    $catalog = foreach ($v in $videos) {
+        [PSCustomObject]@{
+            title      = $v.title
+            link       = $v.link
+            pubDate    = $v.pubDate
+            categories = $v.categories
+            thumbnail  = $v.thumbnail
+        }
+    }
+    $catalogJson = $catalog | ConvertTo-Json -Compress -Depth 5
+    [System.IO.File]::WriteAllText($catalogPath, $catalogJson, [System.Text.Encoding]::UTF8)
+}
+
 # Create a lookup set for existing links for O(1) checks
 $existingLinks = @{}
+$existingKeys = @{}
 foreach ($v in $videos) {
     if ($v.link) {
         $existingLinks[$v.link] = $true
+    }
+    if ($v.title) {
+        $key = Get-Episode-Key $v.title
+        if ($key) {
+            $existingKeys[$key] = $true
+        }
     }
 }
 
@@ -210,6 +294,11 @@ if ($Full) {
     for ($i = $feedItems.Count - 1; $i -ge 0; $i--) {
         $item = $feedItems[$i]
         if (-not $existingLinks.ContainsKey($item.link)) {
+            # Check for title key duplicate
+            $key = Get-Episode-Key $item.title
+            if ($key -and $existingKeys.ContainsKey($key)) {
+                continue
+            }
             $newItems += $item
         }
     }
@@ -354,6 +443,13 @@ foreach ($item in $newItems) {
             $title = $title.Trim()
         } else {
             $title = "Episode (No Title)"
+        }
+        
+        # Check for title key duplicate (in case sitemap gave us different link for existing title)
+        $key = Get-Episode-Key $title
+        if ($key -and $existingKeys.ContainsKey($key)) {
+            Log-Message "Skipping duplicate episode by title key: $title"
+            continue
         }
         
         Log-Message "[$count/$($newItems.Count)] Scraping: $title"
@@ -548,6 +644,11 @@ foreach ($item in $newItems) {
             mirrors = $mirrors
             downloads = $downloads
             syncedAt = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ")
+        }
+        
+        $key = Get-Episode-Key $title
+        if ($key) {
+            $existingKeys[$key] = $true
         }
         
         $uncommittedVideos = @($videoObj) + $uncommittedVideos
