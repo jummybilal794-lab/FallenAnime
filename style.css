@@ -2455,5 +2455,46 @@ a {
     align-items: center;
     gap: 6px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+}
+
+/* Custom Styles for Sort Dropdown and Anime Cards */
+.sort-container {
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-secondary, rgba(20, 22, 32, 0.7));
+    border: 1.5px solid var(--border-color, rgba(255, 255, 255, 0.08));
+    padding: 6px 12px;
+    border-radius: var(--radius-md, 8px);
+    transition: border-color var(--transition-normal, 0.3s ease);
+}
+
+.sort-container:hover, .sort-container:focus-within {
+    border-color: var(--accent-light, #e50914);
+}
+
+.sort-select {
+    background: none;
+    border: none;
+    color: var(--text-normal, #f3f4f6);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    padding-right: 4px;
+}
+
+.sort-select option {
+    background-color: #0a0b10;
+    color: var(--text-normal, #f3f4f6);
+    font-size: 0.85rem;
+    padding: 8px;
+}
+
+.anime-series-card {
+    cursor: pointer;
+}
+
+.anime-series-card .card-badge-top-left {
+    background-color: var(--accent-red, #d50000);
 }
