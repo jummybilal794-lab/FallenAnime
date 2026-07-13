@@ -9,7 +9,22 @@ param(
 
 $videosPath = Join-Path $PSScriptRoot "videos.json"
 $logPath = Join-Path $PSScriptRoot "sync.log"
-$targetFeedUrl = "https://animexin.dev/feed/"
+$sources = @(
+    @{
+        name = "Animexin"
+        feedUrl = "https://animexin.dev/feed/"
+        sitemapUrl = "https://animexin.dev/sitemap.xml"
+        sitemapPattern = 'https://animexin\.dev/post-sitemap\d*\.xml'
+        baseUrl = "https://animexin.dev/"
+    },
+    @{
+        name = "LuciferDonghua"
+        feedUrl = "https://luciferdonghua.in/feed/"
+        sitemapUrl = "https://luciferdonghua.in/sitemap.xml"
+        sitemapPattern = 'https://luciferdonghua\.in/post-sitemap\d*\.xml'
+        baseUrl = "https://luciferdonghua.in/"
+    }
+)
 
 # Clear or create sync.log at start
 New-Item -Path $logPath -ItemType File -Force | Out-Null
@@ -108,86 +123,88 @@ $newItems = @()
 
 if ($Full) {
     # 2. Deep Sync: Fetch URLs from sitemaps
-    Log-Message "Fetching sitemap index from: https://animexin.dev/sitemap.xml"
-    try {
-        $sitemapWeb = Invoke-WebRequest -Uri "https://animexin.dev/sitemap.xml" -UseBasicParsing -TimeoutSec 15
-        $sitemapXml = $sitemapWeb.Content
-        $postSitemaps = [regex]::Matches($sitemapXml, 'https://animexin\.dev/post-sitemap\d*\.xml') | ForEach-Object { $_.Value }
-        
-        Log-Message "Found $($postSitemaps.Count) sitemap pages. Checking for missing episodes..."
-        
-        $urlsToScrape = @()
-        foreach ($sitemapUrl in $postSitemaps) {
-            Log-Message "Checking sitemap: $sitemapUrl"
-            try {
-                $subWeb = Invoke-WebRequest -Uri $sitemapUrl -UseBasicParsing -TimeoutSec 15
-                $subXml = $subWeb.Content
-                
-                $urlBlocks = [regex]::Matches($subXml, '(?s)<url>(.*?)</url>')
-                foreach ($block in $urlBlocks) {
-                    $blockHtml = $block.Groups[1].Value
-                    $loc = ""
-                    $lastmod = ""
-                    if ($blockHtml -match '(?s)<loc>([^<]+)</loc>') {
-                        $loc = $Matches[1].Trim()
-                    }
-                    if ($blockHtml -match '(?s)<lastmod>([^<]+)</lastmod>') {
-                        $lastmod = $Matches[1].Trim()
-                    }
+    foreach ($source in $sources) {
+        Log-Message "Fetching sitemap index from: $($source.sitemapUrl)"
+        try {
+            $sitemapWeb = Invoke-WebRequest -Uri $source.sitemapUrl -UseBasicParsing -TimeoutSec 15
+            $sitemapXml = $sitemapWeb.Content
+            $postSitemaps = [regex]::Matches($sitemapXml, $source.sitemapPattern) | ForEach-Object { $_.Value }
+            
+            Log-Message "[$($source.name)] Found $($postSitemaps.Count) sitemap pages. Checking for missing episodes..."
+            
+            $urlsToScrape = @()
+            foreach ($sitemapUrl in $postSitemaps) {
+                Log-Message "[$($source.name)] Checking sitemap: $sitemapUrl"
+                try {
+                    $subWeb = Invoke-WebRequest -Uri $sitemapUrl -UseBasicParsing -TimeoutSec 15
+                    $subXml = $subWeb.Content
                     
-                    if ($loc -and $loc -ne "https://animexin.dev/") {
-                        if (-not $existingLinks.ContainsKey($loc)) {
-                            $urlsToScrape += @{
-                                link = $loc
-                                pubDate = $lastmod
-                                title = "" # Will extract from HTML
+                    $urlBlocks = [regex]::Matches($subXml, '(?s)<url>(.*?)</url>')
+                    foreach ($block in $urlBlocks) {
+                        $blockHtml = $block.Groups[1].Value
+                        $loc = ""
+                        $lastmod = ""
+                        if ($blockHtml -match '(?s)<loc>([^<]+)</loc>') {
+                            $loc = $Matches[1].Trim()
+                        }
+                        if ($blockHtml -match '(?s)<lastmod>([^<]+)</lastmod>') {
+                            $lastmod = $Matches[1].Trim()
+                        }
+                        
+                        if ($loc -and $loc -ne $source.baseUrl) {
+                            if (-not $existingLinks.ContainsKey($loc)) {
+                                $urlsToScrape += @{
+                                    link = $loc
+                                    pubDate = $lastmod
+                                    title = "" # Will extract from HTML
+                                }
                             }
                         }
                     }
+                } catch {
+                    Log-Message "[$($source.name)] Failed to fetch sitemap page ${sitemapUrl}: $_" "warning"
                 }
-            } catch {
-                Log-Message "Failed to fetch sitemap page ${sitemapUrl}: $_" "warning"
             }
+            
+            Log-Message "[$($source.name)] Total candidate URLs found: $($urlsToScrape.Count)"
+            $newItems += $urlsToScrape
+        } catch {
+            Log-Message "[$($source.name)] Failed to fetch sitemap index: $_" "warning"
         }
-        
-        Log-Message "Total candidate URLs found: $($urlsToScrape.Count)"
-        $newItems = $urlsToScrape
-        
-        # Apply Limit if set
-        if ($Limit -gt 0 -and $newItems.Count -gt $Limit) {
-            Log-Message "Limiting Deep Sync to crawl $Limit new episodes (out of $($newItems.Count) total missing)."
-            $newItems = $newItems[0..($Limit-1)]
-        }
-    } catch {
-        Log-Message "Failed to fetch sitemap index: $_" "error"
-        exit 1
+    }
+    
+    # Apply Limit if set
+    if ($Limit -gt 0 -and $newItems.Count -gt $Limit) {
+        Log-Message "Limiting Deep Sync to crawl $Limit new episodes (out of $($newItems.Count) total missing)."
+        $newItems = $newItems[0..($Limit-1)]
     }
 } else {
     # 2. Incremental Sync: Fetch RSS feed pages
     $feedItems = @()
-    for ($page = 1; $page -le $MaxPages; $page++) {
-        $url = $targetFeedUrl
-        if ($page -gt 1) {
-            $url = "${targetFeedUrl}?paged=$page"
-        }
-        
-        Log-Message "Fetching RSS feed page $page from: $url"
-        try {
-            $feed = Invoke-RestMethod -Uri $url -TimeoutSec 15
-            if ($feed) {
-                $feedItems += @($feed)
+    foreach ($source in $sources) {
+        for ($page = 1; $page -le $MaxPages; $page++) {
+            $url = $source.feedUrl
+            if ($page -gt 1) {
+                $url = "$($source.feedUrl)?paged=$page"
             }
-        } catch {
-            Log-Message "No more pages or failed to fetch feed page ${page}: $_" "warning"
-            break
+            
+            Log-Message "[$($source.name)] Fetching RSS feed page $page from: $url"
+            try {
+                $feed = Invoke-RestMethod -Uri $url -TimeoutSec 15
+                if ($feed) {
+                    $feedItems += @($feed)
+                }
+            } catch {
+                Log-Message "[$($source.name)] No more pages or failed to fetch feed page ${page}: $_" "warning"
+            }
         }
     }
     if ($feedItems.Count -eq 0) {
-        Log-Message "No items found in the RSS feed."
+        Log-Message "No items found in any RSS feeds."
         exit 0
     }
     
-    Log-Message "Found $($feedItems.Count) items in the feed. Checking for updates..."
+    Log-Message "Found $($feedItems.Count) items in all feeds. Checking for updates..."
     
     # Identify new items (in reverse order to process oldest new item first)
     for ($i = $feedItems.Count - 1; $i -ge 0; $i--) {
@@ -268,7 +285,7 @@ function Save-Database($newVideos) {
             }
             foreach ($v in $filteredNew) {
                 if ($v.link) {
-                    $slug = $v.link.Replace("https://animexin.dev/", "").Replace("/", "")
+                    $slug = $v.link.Replace("https://animexin.dev/", "").Replace("https://luciferdonghua.in/", "").Replace("/", "")
                     if ($slug) {
                         $epFile = Join-Path $episodesDir "$slug.json"
                         $epData = [PSCustomObject]@{
@@ -327,11 +344,13 @@ foreach ($item in $newItems) {
             $title = $Matches[1].Trim()
         }
         
-        # Clean title (remove html tags if any and AnimeXin branding suffix)
+        # Clean title (remove html tags if any and branding suffixes)
         if ($title) {
             $title = $title -replace '<[^>]+>', ''
             $title = $title -replace '\s*[-–]\s*AnimeXin(\.dev)?', ''
             $title = $title -replace '\s*Subtitle\s*[-–]\s*AnimeXin(\.dev)?', ''
+            $title = $title -replace '\s*[-–]\s*Lucifer\s*Donghua', ''
+            $title = $title -replace '\s*Lucifer\s*Donghua', ''
             $title = $title.Trim()
         } else {
             $title = "Episode (No Title)"
@@ -359,27 +378,42 @@ foreach ($item in $newItems) {
                 
                 if ($base64Val) {
                     try {
-                        # Decode base64 embed HTML
-                        $bytes = [System.Convert]::FromBase64String($base64Val)
-                        $embedHtml = [System.Text.Encoding]::UTF8.GetString($bytes)
-                        
-                        # Extract iframe URL
+                        $embedHtml = ""
                         $embedUrl = ""
-                        if ($embedHtml -match 'src="([^"]+)"') {
-                            $embedUrl = $Matches[1]
-                            if ($embedUrl.StartsWith("//")) {
-                                $embedUrl = "https:" + $embedUrl
+                        if ($base64Val.StartsWith("http://") -or $base64Val.StartsWith("https://")) {
+                            Log-Message "Fetching mirror subpage: $base64Val"
+                            $subWebRequest = Invoke-WebRequest -Uri $base64Val -UseBasicParsing -TimeoutSec 10
+                            $subHtml = $subWebRequest.Content
+                            if ($subHtml -match '(?s)<iframe[^>]+src=\"([^\"]+)\"') {
+                                $embedUrl = $Matches[1]
+                                if ($embedUrl.StartsWith("//")) {
+                                    $embedUrl = "https:" + $embedUrl
+                                }
+                                $embedHtml = "<iframe src=""$embedUrl"" width=""640"" height=""360"" frameborder=""0"" allowfullscreen></iframe>"
+                            }
+                        } else {
+                            # Decode base64 embed HTML (Animexin method)
+                            $bytes = [System.Convert]::FromBase64String($base64Val)
+                            $embedHtml = [System.Text.Encoding]::UTF8.GetString($bytes)
+                            
+                            if ($embedHtml -match 'src="([^"]+)"') {
+                                $embedUrl = $Matches[1]
+                                if ($embedUrl.StartsWith("//")) {
+                                    $embedUrl = "https:" + $embedUrl
+                                }
                             }
                         }
                         
-                        $mirrors += @{
-                            index = [int]$index
-                            label = $label
-                            embedHtml = $embedHtml
-                            embedUrl = $embedUrl
+                        if ($embedUrl) {
+                            $mirrors += @{
+                                index = [int]$index
+                                label = $label
+                                embedHtml = $embedHtml
+                                embedUrl = $embedUrl
+                            }
                         }
                     } catch {
-                        Log-Message "Failed to decode base64 mirror index $index for page $($item.link)" "warning"
+                        Log-Message "Failed to parse mirror index $index for page $($item.link): $_" "warning"
                     }
                 }
             }
@@ -414,7 +448,12 @@ foreach ($item in $newItems) {
         # Extract categories dynamically from HTML if sitemap was used (categories list is empty)
         if ($categories.Count -eq 0) {
             # 1. Show Name
-            if ($html -match '(?s)<h2 itemprop="partOfSeries">([^<]+)</h2>') {
+            if ($html -match '(?s)<a class="series" href="[^"]+"[^>]*>([^<]+)</a>') {
+                $showName = $Matches[1].Trim()
+                if ($showName) {
+                    $categories += $showName
+                }
+            } elseif ($html -match '(?s)<h2 itemprop="partOfSeries">([^<]+)</h2>') {
                 $showName = $Matches[1].Trim()
                 if ($showName) {
                     $categories += $showName
