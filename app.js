@@ -662,7 +662,7 @@ function showWatchView(index, scroll = true) {
 
     if (!video.mirrors && !video._isLoadingMirrors) {
         video._isLoadingMirrors = true;
-        const slug = video.link.replace('https://animexin.dev/', '').replace(/\/$/, '');
+        const slug = video.link.replace('https://animexin.dev/', '').replace('https://luciferdonghua.in/', '').replace(/\/$/, '');
         fetch(`episodes/${slug}.json`)
             .then(res => {
                 if (!res.ok) throw new Error("Failed to load episode details");
