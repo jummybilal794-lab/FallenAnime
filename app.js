@@ -23,6 +23,24 @@ let syncIntervalId = null;
 let catalogLayout = 'grid'; // 'grid' or 'list'
 let currentView = 'episodes'; // 'episodes' or 'anime'
 
+const safeLocalStorage = {
+    getItem(key) {
+        try {
+            return localStorage.getItem(key);
+        } catch (e) {
+            console.warn("localStorage not available:", e);
+            return null;
+        }
+    },
+    setItem(key, value) {
+        try {
+            localStorage.setItem(key, value);
+        } catch (e) {
+            console.warn("localStorage write failed:", e);
+        }
+    }
+};
+
 let currentPage = 1;
 const itemsPerPage = 24;
 
@@ -2877,7 +2895,7 @@ function getCurrentVideo() {
 // Save & Sync favorites list
 async function saveFavorites() {
     // 1. Save to Local Storage
-    localStorage.setItem('fallenanime_favorites', JSON.stringify(userFavorites));
+    safeLocalStorage.setItem('fallenanime_favorites', JSON.stringify(userFavorites));
     
     // 2. Sync to Firebase Firestore if logged in
     if (db && currentUser) {
@@ -2898,7 +2916,7 @@ async function markEpisodeWatched(link) {
         userWatched.push(link);
         
         // Save locally
-        localStorage.setItem('fallenanime_watched', JSON.stringify(userWatched));
+        safeLocalStorage.setItem('fallenanime_watched', JSON.stringify(userWatched));
         
         // Sync to Firebase
         if (db && currentUser) {
@@ -2921,10 +2939,10 @@ async function markEpisodeWatched(link) {
 
 // Load from LocalStorage fallback
 function loadFromLocalStorage() {
-    const cachedFavs = localStorage.getItem('fallenanime_favorites');
+    const cachedFavs = safeLocalStorage.getItem('fallenanime_favorites');
     userFavorites = cachedFavs ? JSON.parse(cachedFavs) : [];
     
-    const cachedWatched = localStorage.getItem('fallenanime_watched');
+    const cachedWatched = safeLocalStorage.getItem('fallenanime_watched');
     userWatched = cachedWatched ? JSON.parse(cachedWatched) : [];
 }
 
@@ -2950,8 +2968,8 @@ async function syncFromFirestore() {
                 watched: userWatched
             }, { merge: true });
             
-            localStorage.setItem('fallenanime_favorites', JSON.stringify(userFavorites));
-            localStorage.setItem('fallenanime_watched', JSON.stringify(userWatched));
+            safeLocalStorage.setItem('fallenanime_favorites', JSON.stringify(userFavorites));
+            safeLocalStorage.setItem('fallenanime_watched', JSON.stringify(userWatched));
         } else {
             // First time login - upload current local storage to Firestore
             await db.collection('users').doc(currentUser.uid).set({
