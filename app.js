@@ -497,7 +497,7 @@ function renderCatalogGridEpisodes() {
         
         card.innerHTML = `
             <div class="card-thumb-wrapper">
-                <img src="${video.thumbnail || 'https://via.placeholder.com/350x220/0a0b10/d50000?text=FallenAnime'}" alt="${titleClean}" loading="lazy">
+                <img src="${video.thumbnail || 'logo.png'}" onerror="this.onerror=null; this.src='logo.png'; this.style.objectFit='contain'; this.style.padding='20px'; this.style.backgroundColor='#0d0e15';" alt="${titleClean}" loading="lazy">
                 ${watchedBadge}
                 <span class="card-badge-top-left">ONA</span>
                 <span class="card-badge-bottom-left">${epText}</span>
@@ -570,7 +570,7 @@ function renderCatalogGridAnime() {
         
         card.innerHTML = `
             <div class="card-thumb-wrapper">
-                <img src="${series.thumbnail || 'https://via.placeholder.com/350x220/0a0b10/d50000?text=FallenAnime'}" alt="${titleClean}" loading="lazy">
+                <img src="${series.thumbnail || 'logo.png'}" onerror="this.onerror=null; this.src='logo.png'; this.style.objectFit='contain'; this.style.padding='20px'; this.style.backgroundColor='#0d0e15';" alt="${titleClean}" loading="lazy">
                 <span class="card-badge-top-left">Series</span>
                 <span class="card-badge-bottom-left">${epText}</span>
                 <span class="card-badge-bottom-right">Sub</span>
@@ -1322,7 +1322,7 @@ function renderSidebarList(currentPlayingIdx) {
         
         item.innerHTML = `
             <div class="sidebar-item-thumb">
-                <img src="${video.thumbnail}" alt="${sanitizedTitle}">
+                <img src="${video.thumbnail || 'logo.png'}" onerror="this.onerror=null; this.src='logo.png'; this.style.objectFit='contain'; this.style.padding='5px'; this.style.backgroundColor='#0d0e15';" alt="${sanitizedTitle}">
             </div>
             <div class="sidebar-item-details">
                 <h4 class="sidebar-item-title" style="${isCurrent ? 'color: var(--accent-blue)' : ''}">${sanitizedTitle}</h4>
@@ -1632,7 +1632,14 @@ function populateDrawerAccordions() {
         
         // Thumbnail Image
         const img = document.createElement('img');
-        img.src = seriesThumbnails[series] || 'placeholder.png';
+        img.src = seriesThumbnails[series] || 'logo.png';
+        img.onerror = function() {
+            this.onerror = null;
+            this.src = 'logo.png';
+            this.style.objectFit = 'contain';
+            this.style.padding = '5px';
+            this.style.backgroundColor = '#0d0e15';
+        };
         img.alt = series;
         img.className = 'drawer-series-thumb';
         img.loading = 'lazy';
@@ -2280,7 +2287,7 @@ function renderPopularCarousel() {
         
         card.innerHTML = `
             <div class="card-thumb-wrapper">
-                <img src="${video.thumbnail || 'https://via.placeholder.com/350x220/0a0b10/d50000?text=FallenAnime'}" alt="${sanitizedTitle}" loading="lazy">
+                <img src="${video.thumbnail || 'logo.png'}" onerror="this.onerror=null; this.src='logo.png'; this.style.objectFit='contain'; this.style.padding='20px'; this.style.backgroundColor='#0d0e15';" alt="${sanitizedTitle}" loading="lazy">
                 <span class="card-badge-top-left">ONA</span>
                 <span class="card-badge-bottom-left">${epText}</span>
                 <span class="card-badge-bottom-right">Sub</span>
