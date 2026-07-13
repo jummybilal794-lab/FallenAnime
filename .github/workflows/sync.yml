@@ -4,6 +4,17 @@ on:
   schedule:
     - cron: '17 * * * *' # Triggers automatically every hour (17 minutes past the hour to minimize delays)
   workflow_dispatch: # Allows you to trigger the sync manually from your GitHub Actions tab
+    inputs:
+      full:
+        description: 'Run Deep Sync (Sitemaps to find older missing episodes)'
+        required: false
+        default: false
+        type: boolean
+      limit:
+        description: 'Scrape Limit'
+        required: false
+        default: '250'
+        type: string
 
 permissions:
   contents: write # Grants the workflow permission to commit the updated database back to your repository
@@ -19,7 +30,17 @@ jobs:
       - name: Run synchronization script
         shell: pwsh
         run: |
-          ./sync-videos.ps1 -Limit 250
+          $fullVal = "${{ github.event.inputs.full }}"
+          $limitVal = "${{ github.event.inputs.limit }}"
+          if ([string]::IsNullOrEmpty($limitVal)) { $limitVal = "250" }
+          
+          $args = @()
+          if ($fullVal -eq "true") { $args += "-Full" }
+          $args += "-Limit"
+          $args += $limitVal
+          
+          Write-Host "Running: ./sync-videos.ps1 $args"
+          & ./sync-videos.ps1 @args
           
       - name: Generate updated sitemap
         shell: pwsh
