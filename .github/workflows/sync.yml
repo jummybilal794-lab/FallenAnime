@@ -34,13 +34,13 @@ jobs:
           $limitVal = "${{ github.event.inputs.limit }}"
           if ([string]::IsNullOrEmpty($limitVal)) { $limitVal = "250" }
           
-          $args = @()
-          if ($fullVal -eq "true") { $args += "-Full" }
-          $args += "-Limit"
-          $args += $limitVal
+          $syncArgs = @()
+          if ($fullVal -eq "true") { $syncArgs += "-Full" }
+          $syncArgs += "-Limit"
+          $syncArgs += $limitVal
           
-          Write-Host "Running: ./sync-videos.ps1 $args"
-          & ./sync-videos.ps1 @args
+          Write-Host "Running: ./sync-videos.ps1 $syncArgs"
+          & ./sync-videos.ps1 @syncArgs
           
       - name: Generate updated sitemap
         shell: pwsh
