@@ -148,10 +148,45 @@ async function loadDatabase() {
         }
         allVideos = await response.json();
         
-        // Pre-parse publication dates once for fast, accurate chronological sorting
+        // Build series keys and clean thumbnail mapping from animexin
+        const cleanThumbs = {};
+        const getSeriesKey = (title) => {
+            if (!title) return '';
+            return title.toLowerCase()
+                .replace(/indonesia.*/g, '')
+                .replace(/english.*/g, '')
+                .replace(/subtitle.*/g, '')
+                .replace(/episode.*/g, '')
+                .replace(/ep\s*\d.*/g, '')
+                .replace(/\[[^\]]+\]/g, '')
+                .replace(/\([^\)]+\)/g, '')
+                .replace(/season\s*\d+/g, '')
+                .replace(/[^\w\s]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        };
+
+        allVideos.forEach(v => {
+            if (v.thumbnail && v.thumbnail.includes('animexin.dev')) {
+                const key = getSeriesKey(v.title);
+                if (key && !cleanThumbs[key]) {
+                    cleanThumbs[key] = v.thumbnail;
+                }
+            }
+        });
+        
+        // Pre-parse publication dates once for fast sorting and clean up watermarked thumbnails
         allVideos.forEach(v => {
             if (v.title) {
                 v.title = v.title.replace(/[\u2019’]|â\u0080\u0099|â|\?\?/g, "'");
+            }
+            if (v.thumbnail && v.thumbnail.includes('luciferdonghua')) {
+                const key = getSeriesKey(v.title);
+                if (key && cleanThumbs[key]) {
+                    v.thumbnail = cleanThumbs[key];
+                } else {
+                    v.thumbnail = 'logo.png'; // Fallback to premium logo
+                }
             }
             v._timestamp = v.pubDate ? (Date.parse(v.pubDate) || 0) : 0;
         });
