@@ -334,12 +334,6 @@ a {
     position: relative;
 }
 
-.player-container iframe,
-.player-container div {
-    position: relative;
-    z-index: 1;
-}
-
 .player-container iframe {
     width: 100%;
     height: 100%;
@@ -1451,8 +1445,6 @@ a {
     align-items: center;
     gap: 12px;
     z-index: 10;
-    transform: translate3d(0, 0, 10px);
-    -webkit-transform: translate3d(0, 0, 10px);
     pointer-events: none; /* Click-through so they can still pause/play if they click the top */
     color: var(--text-primary);
     font-family: inherit;
@@ -1461,40 +1453,21 @@ a {
     box-sizing: border-box;
 }
 
-/* Solid watermark logo overlay in the top-left corner of the video player */
-.player-watermark {
-    position: absolute;
-    top: 36px;
-    left: 10px;
-    background: #0a0708;
-    border: 1px solid rgba(229, 9, 20, 0.6);
-    border-radius: 4px;
-    padding: 6px 12px;
-    z-index: 12;
-    transform: translate3d(0, 0, 12px);
-    -webkit-transform: translate3d(0, 0, 12px);
-    pointer-events: none;
-    user-select: none;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.95);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-}
-
-.player-watermark .watermark-logo {
+.player-title-logo {
     font-weight: 800;
-    font-size: 0.82rem;
     letter-spacing: 0.5px;
-    color: #ffffff;
 }
 
-.player-watermark .watermark-logo .logo-accent {
+.player-title-logo .logo-accent {
     color: var(--accent-red);
 }
 
+.player-title-divider {
+    color: var(--border-color);
+    opacity: 0.5;
+}
+
 .player-title-text {
-    margin-left: 125px;
     font-weight: 600;
     color: var(--text-secondary);
     white-space: nowrap;
@@ -1510,18 +1483,6 @@ a {
         padding: 8px 15px;
         height: 42px;
         gap: 8px;
-    }
-    .player-title-text {
-        margin-left: 95px;
-        max-width: 60%;
-    }
-    .player-watermark {
-        top: 24px;
-        left: 6px;
-        padding: 4px 8px;
-    }
-    .player-watermark .watermark-logo {
-        font-size: 0.7rem;
     }
 }
 
@@ -2536,51 +2497,4 @@ a {
 
 .anime-series-card .card-badge-top-left {
     background-color: var(--accent-red, #d50000);
-}
-
-/* Premium Fullscreen Player Overlays */
-.player-container:fullscreen {
-    background: #000000 !important;
-    position: relative !important;
-}
-
-.player-container:fullscreen iframe,
-.player-container:fullscreen div:not(.player-watermark):not(.player-title-bar) {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    padding-bottom: 0 !important; /* Reset padding-bottom for aspect wrappers in fullscreen */
-}
-
-.player-container:fullscreen .player-watermark {
-    top: 50px;
-    left: 20px;
-    padding: 8px 16px;
-    border: 1px solid rgba(229, 9, 20, 0.8);
-    box-shadow: 0 0 25px rgba(229, 9, 20, 0.4);
-}
-
-.player-container:fullscreen .player-watermark .watermark-logo {
-    font-size: 1.1rem;
-}
-
-.player-container:fullscreen .player-title-bar {
-    top: 0;
-    left: 0;
-    height: 60px;
-    padding: 15px 30px;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
-
-.player-container:fullscreen.show-controls .player-title-bar,
-.player-container:fullscreen .player-title-bar:hover {
-    opacity: 1;
-}
-
-.player-container:fullscreen .player-title-text {
-    margin-left: 170px;
-    font-size: 1.1rem;
 }

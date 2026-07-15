@@ -136,30 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         if (openSyncBtn) openSyncBtn.style.display = 'none';
     }
-
-    // Premium mouse-inactivity title-bar hide in fullscreen mode
-    let fullscreenTimeout;
-    if (playerContainer) {
-        playerContainer.addEventListener('mousemove', () => {
-            if (!document.fullscreenElement) return;
-            playerContainer.classList.add('show-controls');
-            clearTimeout(fullscreenTimeout);
-            fullscreenTimeout = setTimeout(() => {
-                if (document.fullscreenElement) {
-                    playerContainer.classList.remove('show-controls');
-                }
-            }, 3000);
-        });
-        
-        playerContainer.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) {
-                playerContainer.classList.remove('show-controls');
-                clearTimeout(fullscreenTimeout);
-            } else {
-                playerContainer.classList.add('show-controls');
-            }
-        });
-    }
 });
 
 // Load catalog data from local catalog.json (Fast Initial Load)
@@ -1272,7 +1248,7 @@ function hideWatchView() {
 function loadMirrorPlayer(mirror, videoTitle) {
     if (!mirror) return;
     
-    // Inject mirror html safely and remove fullscreen permissions from iframe
+    // Inject mirror html safely
     let embedHtml = mirror.embedHtml || '';
     if (embedHtml) {
         // Sanitize any instances of AnimeXin in titles/attributes inside iframe
@@ -1286,29 +1262,13 @@ function loadMirrorPlayer(mirror, videoTitle) {
         embedHtml = embedHtml.replace(/itemprop="description"\s+content="([^"]*)"/g, (match, content) => {
             return `itemprop="description" content="${content.replace(/AnimeXin(?:\.dev)?/gi, 'FallenAnime')}"`;
         });
-        
-        // Strip fullscreen allow attributes
-        embedHtml = embedHtml.replace(/allowfullscreen(?:="[^"]*")?/gi, '');
-        embedHtml = embedHtml.replace(/allow="([^"]*)"/gi, (match, allowVal) => {
-            const sanitizedAllow = allowVal.replace(/fullscreen;?/gi, '').trim();
-            return `allow="${sanitizedAllow}"`;
-        });
-        
         playerContainer.innerHTML = embedHtml;
     } else if (mirror.embedUrl) {
-        playerContainer.innerHTML = `<iframe src="${mirror.embedUrl}" allow="autoplay; picture-in-picture"></iframe>`;
+        playerContainer.innerHTML = `<iframe src="${mirror.embedUrl}" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>`;
     } else {
         playerContainer.innerHTML = `<div class="player-placeholder"><p>No play method available for this server.</p></div>`;
         return;
     }
-
-    // Append FallenAnime permanent watermark to top-left corner to block out baked-in logos
-    const watermark = document.createElement('div');
-    watermark.className = 'player-watermark';
-    watermark.innerHTML = `
-        <span class="watermark-logo"><span class="logo-accent">Fallen</span>Anime</span>
-    `;
-    playerContainer.appendChild(watermark);
 
     // Append FallenAnime custom premium title bar to overlay and mask uploader's logo & text
     if (videoTitle) {
@@ -1316,10 +1276,9 @@ function loadMirrorPlayer(mirror, videoTitle) {
         const titleBar = document.createElement('div');
         titleBar.className = 'player-title-bar';
         titleBar.innerHTML = `
+            <span class="player-title-logo"><span class="logo-accent">Fallen</span>Anime</span>
+            <span class="player-title-divider">|</span>
             <span class="player-title-text">${titleClean}</span>
-            <button class="player-fs-btn" onclick="togglePlayerFullscreen()" style="pointer-events: auto; margin-left: auto; background: rgba(229, 9, 20, 0.85); border: none; color: white; padding: 4px 10px; border-radius: 4px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; font-size: 0.78rem; transition: background 0.2s;">
-                <span style="font-size: 0.9rem;">⛶</span> Fullscreen
-            </button>
         `;
         playerContainer.appendChild(titleBar);
     }
@@ -3249,16 +3208,3 @@ function escapeHtml(text) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 }
-
-window.togglePlayerFullscreen = function() {
-    const container = document.getElementById('player-container');
-    if (!container) return;
-    
-    if (!document.fullscreenElement) {
-        container.requestFullscreen().catch(err => {
-            console.error(`Error attempting to enable full-screen mode: ${err.message}`);
-        });
-    } else {
-        document.exitFullscreen();
-    }
-};
