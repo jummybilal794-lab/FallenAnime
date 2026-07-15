@@ -2541,14 +2541,17 @@ a {
 /* Premium Fullscreen Player Overlays */
 .player-container:fullscreen {
     background: #000000 !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative !important;
 }
 
-.player-container:fullscreen iframe {
+.player-container:fullscreen iframe,
+.player-container:fullscreen div:not(.player-watermark):not(.player-title-bar) {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
+    padding-bottom: 0 !important; /* Reset padding-bottom for aspect wrappers in fullscreen */
 }
 
 .player-container:fullscreen .player-watermark {
