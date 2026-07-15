@@ -1464,7 +1464,7 @@ a {
 /* Solid watermark logo overlay in the top-left corner of the video player */
 .player-watermark {
     position: absolute;
-    top: 10px;
+    top: 36px;
     left: 10px;
     background: #0a0708;
     border: 1px solid rgba(229, 9, 20, 0.6);
@@ -1516,7 +1516,7 @@ a {
         max-width: 60%;
     }
     .player-watermark {
-        top: 6px;
+        top: 24px;
         left: 6px;
         padding: 4px 8px;
     }
@@ -2555,8 +2555,8 @@ a {
 }
 
 .player-container:fullscreen .player-watermark {
-    top: 25px;
-    left: 25px;
+    top: 50px;
+    left: 20px;
     padding: 8px 16px;
     border: 1px solid rgba(229, 9, 20, 0.8);
     box-shadow: 0 0 25px rgba(229, 9, 20, 0.4);
