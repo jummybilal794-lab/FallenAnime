@@ -136,6 +136,30 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         if (openSyncBtn) openSyncBtn.style.display = 'none';
     }
+
+    // Premium mouse-inactivity title-bar hide in fullscreen mode
+    let fullscreenTimeout;
+    if (playerContainer) {
+        playerContainer.addEventListener('mousemove', () => {
+            if (!document.fullscreenElement) return;
+            playerContainer.classList.add('show-controls');
+            clearTimeout(fullscreenTimeout);
+            fullscreenTimeout = setTimeout(() => {
+                if (document.fullscreenElement) {
+                    playerContainer.classList.remove('show-controls');
+                }
+            }, 3000);
+        });
+        
+        playerContainer.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                playerContainer.classList.remove('show-controls');
+                clearTimeout(fullscreenTimeout);
+            } else {
+                playerContainer.classList.add('show-controls');
+            }
+        });
+    }
 });
 
 // Load catalog data from local catalog.json (Fast Initial Load)
@@ -1248,7 +1272,7 @@ function hideWatchView() {
 function loadMirrorPlayer(mirror, videoTitle) {
     if (!mirror) return;
     
-    // Inject mirror html safely
+    // Inject mirror html safely and remove fullscreen permissions from iframe
     let embedHtml = mirror.embedHtml || '';
     if (embedHtml) {
         // Sanitize any instances of AnimeXin in titles/attributes inside iframe
@@ -1262,9 +1286,17 @@ function loadMirrorPlayer(mirror, videoTitle) {
         embedHtml = embedHtml.replace(/itemprop="description"\s+content="([^"]*)"/g, (match, content) => {
             return `itemprop="description" content="${content.replace(/AnimeXin(?:\.dev)?/gi, 'FallenAnime')}"`;
         });
+        
+        // Strip fullscreen allow attributes
+        embedHtml = embedHtml.replace(/allowfullscreen(?:="[^"]*")?/gi, '');
+        embedHtml = embedHtml.replace(/allow="([^"]*)"/gi, (match, allowVal) => {
+            const sanitizedAllow = allowVal.replace(/fullscreen;?/gi, '').trim();
+            return `allow="${sanitizedAllow}"`;
+        });
+        
         playerContainer.innerHTML = embedHtml;
     } else if (mirror.embedUrl) {
-        playerContainer.innerHTML = `<iframe src="${mirror.embedUrl}" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>`;
+        playerContainer.innerHTML = `<iframe src="${mirror.embedUrl}" allow="autoplay; picture-in-picture"></iframe>`;
     } else {
         playerContainer.innerHTML = `<div class="player-placeholder"><p>No play method available for this server.</p></div>`;
         return;
