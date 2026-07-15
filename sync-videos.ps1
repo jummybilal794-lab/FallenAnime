@@ -91,6 +91,42 @@ function Get-Episode-Key($title) {
     return $null
 }
 
+function Get-Episode-Key-Unified($title, $link) {
+    if ($title) {
+        $key = Get-Episode-Key $title
+        if ($key) { return $key }
+    }
+    
+    if ($link) {
+        $slug = $link.Replace("https://animexin.dev/", "").Replace("https://luciferdonghua.in/", "").Replace("/", "")
+        $cleanSlug = $slug -replace '-(?:lucifer-donghua|indonesia-english-sub|indonesia|english-sub|english|subtitle|sub)$', ''
+        $cleanSlug = $cleanSlug -replace '-lucifer-donghua', ''
+        $cleanSlug = $cleanSlug -replace '-indonesia.*', ''
+        $cleanSlug = $cleanSlug -replace '-english.*', ''
+        $cleanSlug = $cleanSlug -replace '-sub.*', ''
+        
+        $epNum = ""
+        if ($cleanSlug -match '(?:episode|ep)-(\d+)') {
+            $epNum = $Matches[1]
+        }
+        
+        $seriesName = $cleanSlug
+        if ($cleanSlug -match '(.*?)-(?:episode|ep)-\d+') {
+            $seriesName = $Matches[1]
+        }
+        
+        $normalizedSeries = $seriesName.Replace("-", " ").ToLower().Trim()
+        $normalizedSeries = $normalizedSeries -replace 'season\s*\d+', ''
+        $normalizedSeries = $normalizedSeries -replace '[^\w\s]', ''
+        $normalizedSeries = [regex]::Replace($normalizedSeries, '\s+', ' ').Trim()
+        
+        if ($normalizedSeries -and $epNum) {
+            return "${normalizedSeries}_ep${epNum}"
+        }
+    }
+    return $null
+}
+
 Log-Message "=========================================="
 Log-Message "Starting Video Sync: $(Get-Date)"
 Log-Message "Mode: $(if ($Full) { 'Deep Sync (Sitemaps)' } else { 'Incremental Sync (RSS)' })"
@@ -303,6 +339,41 @@ if ($Full) {
         }
     }
 }
+
+# 3. Deduplicate new items prioritizing Animexin over Lucifer Donghua
+$dedupedNewItems = @()
+$seenNewKeys = @{}
+
+# First pass: Add all Animexin items to ensure they are prioritized and seen first
+foreach ($item in $newItems) {
+    if ($item.link -like "*animexin.dev*") {
+        $key = Get-Episode-Key-Unified $item.title $item.link
+        if ($key) {
+            $seenNewKeys[$key] = $true
+        }
+        $dedupedNewItems += $item
+    }
+}
+
+# Second pass: Add Lucifer Donghua items only if their key has not been seen in Animexin
+foreach ($item in $newItems) {
+    if ($item.link -like "*luciferdonghua.in*") {
+        $key = Get-Episode-Key-Unified $item.title $item.link
+        if ($key) {
+            if (-not $seenNewKeys.ContainsKey($key)) {
+                $seenNewKeys[$key] = $true
+                $dedupedNewItems += $item
+            } else {
+                Log-Message "Prioritizing Animexin version; discarding Lucifer Donghua duplicate for: $($item.title) / $($item.link)"
+            }
+        } else {
+            # If no key could be parsed, keep it to be safe
+            $dedupedNewItems += $item
+        }
+    }
+}
+
+$newItems = $dedupedNewItems
 
 if ($newItems.Count -eq 0) {
     Log-Message "No new episodes found. Database is up to date."

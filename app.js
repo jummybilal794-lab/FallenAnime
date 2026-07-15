@@ -1270,14 +1270,20 @@ function loadMirrorPlayer(mirror, videoTitle) {
         return;
     }
 
+    // Append FallenAnime permanent watermark to top-left corner to block out baked-in logos
+    const watermark = document.createElement('div');
+    watermark.className = 'player-watermark';
+    watermark.innerHTML = `
+        <span class="watermark-logo"><span class="logo-accent">Fallen</span>Anime</span>
+    `;
+    playerContainer.appendChild(watermark);
+
     // Append FallenAnime custom premium title bar to overlay and mask uploader's logo & text
     if (videoTitle) {
         const titleClean = sanitizeTitle(videoTitle);
         const titleBar = document.createElement('div');
         titleBar.className = 'player-title-bar';
         titleBar.innerHTML = `
-            <span class="player-title-logo"><span class="logo-accent">Fallen</span>Anime</span>
-            <span class="player-title-divider">|</span>
             <span class="player-title-text">${titleClean}</span>
         `;
         playerContainer.appendChild(titleBar);

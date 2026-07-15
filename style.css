@@ -1453,21 +1453,38 @@ a {
     box-sizing: border-box;
 }
 
-.player-title-logo {
-    font-weight: 800;
-    letter-spacing: 0.5px;
+/* Solid watermark logo overlay in the top-left corner of the video player */
+.player-watermark {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #0a0708;
+    border: 1px solid rgba(229, 9, 20, 0.6);
+    border-radius: 4px;
+    padding: 6px 12px;
+    z-index: 12;
+    pointer-events: none;
+    user-select: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 }
 
-.player-title-logo .logo-accent {
+.player-watermark .watermark-logo {
+    font-weight: 800;
+    font-size: 0.82rem;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+}
+
+.player-watermark .watermark-logo .logo-accent {
     color: var(--accent-red);
 }
 
-.player-title-divider {
-    color: var(--border-color);
-    opacity: 0.5;
-}
-
 .player-title-text {
+    margin-left: 125px;
     font-weight: 600;
     color: var(--text-secondary);
     white-space: nowrap;
@@ -1483,6 +1500,18 @@ a {
         padding: 8px 15px;
         height: 42px;
         gap: 8px;
+    }
+    .player-title-text {
+        margin-left: 95px;
+        max-width: 60%;
+    }
+    .player-watermark {
+        top: 6px;
+        left: 6px;
+        padding: 4px 8px;
+    }
+    .player-watermark .watermark-logo {
+        font-size: 0.7rem;
     }
 }
 
