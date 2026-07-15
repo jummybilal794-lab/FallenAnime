@@ -1285,6 +1285,9 @@ function loadMirrorPlayer(mirror, videoTitle) {
         titleBar.className = 'player-title-bar';
         titleBar.innerHTML = `
             <span class="player-title-text">${titleClean}</span>
+            <button class="player-fs-btn" onclick="togglePlayerFullscreen()" style="pointer-events: auto; margin-left: auto; background: rgba(229, 9, 20, 0.85); border: none; color: white; padding: 4px 10px; border-radius: 4px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; font-size: 0.78rem; transition: background 0.2s;">
+                <span style="font-size: 0.9rem;">⛶</span> Fullscreen
+            </button>
         `;
         playerContainer.appendChild(titleBar);
     }
@@ -3214,3 +3217,16 @@ function escapeHtml(text) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 }
+
+window.togglePlayerFullscreen = function() {
+    const container = document.getElementById('player-container');
+    if (!container) return;
+    
+    if (!document.fullscreenElement) {
+        container.requestFullscreen().catch(err => {
+            console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+        });
+    } else {
+        document.exitFullscreen();
+    }
+};
