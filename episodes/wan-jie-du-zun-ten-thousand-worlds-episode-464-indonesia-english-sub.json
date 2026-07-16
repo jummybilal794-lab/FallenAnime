@@ -16,6 +16,18 @@
                         "index":  2
                     },
                     {
+                        "label":  "Hardsub Indonesia Odysee",
+                        "embedHtml":  "\u003ccenter\u003e\u003ch2 style=\u0027font-size: 14px;margin: 10px 0;margin-top: 0;border-radius: 3px;background: #FDECEC;color: #B34037;text-shadow: 0 1px 1px #FFF;padding: 8px;border: 1px solid #F5C5C5;\u0027\u003eVideo Not Available\u003c/h2\u003e\u003c/center\u003e",
+                        "embedUrl":  "",
+                        "index":  3
+                    },
+                    {
+                        "label":  "Hardsub English Odysee",
+                        "embedHtml":  "\u003ccenter\u003e\u003ch2 style=\u0027font-size: 14px;margin: 10px 0;margin-top: 0;border-radius: 3px;background: #FDECEC;color: #B34037;text-shadow: 0 1px 1px #FFF;padding: 8px;border: 1px solid #F5C5C5;\u0027\u003eVideo Not Available\u003c/h2\u003e\u003c/center\u003e",
+                        "embedUrl":  "",
+                        "index":  4
+                    },
+                    {
                         "label":  "Hardsub Indonesia Ok.ru",
                         "embedHtml":  "\u003ciframe width=\"560\" height=\"315\" src=\"//ok.ru/videoembed/14980892985908?nochat=1\" frameborder=\"0\" allow=\"autoplay\" allowfullscreen\u003e\u003c/iframe\u003e",
                         "embedUrl":  "https://ok.ru/videoembed/14980892985908?nochat=1",

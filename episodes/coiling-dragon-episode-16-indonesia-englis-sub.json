@@ -17,14 +17,14 @@
                     },
                     {
                         "label":  "Hardsub Indonesia Odysee",
-                        "embedHtml":  "\u003ciframe id=\"odysee-iframe\" style=\"width:100%; aspect-ratio:16 / 9;\" src=\"https://odysee.com/%24/embed/%40awdwa%3A2%2FAnimeXin.dev-coiling-dragon-ep-16-indo%3A7?r=HLKBUHzds1UcwtdhncHJ9c2bBeMgQ9vr\u0026signature=fb68db8c7a7c5df65c23a51d6628238fa91b68bc78b28a27b5f87eabf0b87e7161955ea06146fe359d00296b294b7cfbd2fdd45f487c413bb1a23c63ed96ca96\u0026signature_ts=1783911173\" allowfullscreen\u003e\u003c/iframe\u003e",
-                        "embedUrl":  "https://odysee.com/%24/embed/%40awdwa%3A2%2FAnimeXin.dev-coiling-dragon-ep-16-indo%3A7?r=HLKBUHzds1UcwtdhncHJ9c2bBeMgQ9vr\u0026signature=fb68db8c7a7c5df65c23a51d6628238fa91b68bc78b28a27b5f87eabf0b87e7161955ea06146fe359d00296b294b7cfbd2fdd45f487c413bb1a23c63ed96ca96\u0026signature_ts=1783911173",
+                        "embedHtml":  "\u003ccenter\u003e\u003ch2 style=\u0027font-size: 14px;margin: 10px 0;margin-top: 0;border-radius: 3px;background: #FDECEC;color: #B34037;text-shadow: 0 1px 1px #FFF;padding: 8px;border: 1px solid #F5C5C5;\u0027\u003eVideo Not Available\u003c/h2\u003e\u003c/center\u003e",
+                        "embedUrl":  "",
                         "index":  3
                     },
                     {
                         "label":  "Hardsub English Odysee",
-                        "embedHtml":  "\u003ciframe id=\"odysee-iframe\" style=\"width:100%; aspect-ratio:16 / 9;\" src=\"https://odysee.com/%24/embed/%40awdwa%3A2%2FAnimeXin.dev-coiling-dragon-ep-16-eng%3Ac?r=HLKBUHzds1UcwtdhncHJ9c2bBeMgQ9vr\u0026signature=d55fe8e932801a18b467b139e0ab85b5a74296ee6254aff76ac3b7c96a04295f2758c11ef088680f727dec2d5d4f4fe48c203b593a720e9c05fc7f30fa6351f9\u0026signature_ts=1783911159\" allowfullscreen\u003e\u003c/iframe\u003e",
-                        "embedUrl":  "https://odysee.com/%24/embed/%40awdwa%3A2%2FAnimeXin.dev-coiling-dragon-ep-16-eng%3Ac?r=HLKBUHzds1UcwtdhncHJ9c2bBeMgQ9vr\u0026signature=d55fe8e932801a18b467b139e0ab85b5a74296ee6254aff76ac3b7c96a04295f2758c11ef088680f727dec2d5d4f4fe48c203b593a720e9c05fc7f30fa6351f9\u0026signature_ts=1783911159",
+                        "embedHtml":  "\u003ccenter\u003e\u003ch2 style=\u0027font-size: 14px;margin: 10px 0;margin-top: 0;border-radius: 3px;background: #FDECEC;color: #B34037;text-shadow: 0 1px 1px #FFF;padding: 8px;border: 1px solid #F5C5C5;\u0027\u003eVideo Not Available\u003c/h2\u003e\u003c/center\u003e",
+                        "embedUrl":  "",
                         "index":  4
                     },
                     {
@@ -38,6 +38,18 @@
                         "embedHtml":  "\u003ciframe width=\"560\" height=\"315\" src=\"//ok.ru/videoembed/15003689224756?nochat=1\" frameborder=\"0\" allow=\"autoplay\" allowfullscreen\u003e\u003c/iframe\u003e",
                         "embedUrl":  "https://ok.ru/videoembed/15003689224756?nochat=1",
                         "index":  6
+                    },
+                    {
+                        "label":  "Dtube Indo",
+                        "embedHtml":  "\u003ccenter\u003e\u003ch2 style=\u0027font-size: 14px;margin: 10px 0;margin-top: 0;border-radius: 3px;background: #FDECEC;color: #B34037;text-shadow: 0 1px 1px #FFF;padding: 8px;border: 1px solid #F5C5C5;\u0027\u003eVideo Not Available\u003c/h2\u003e\u003c/center\u003e",
+                        "embedUrl":  "",
+                        "index":  7
+                    },
+                    {
+                        "label":  "Dtube Eng",
+                        "embedHtml":  "\u003ccenter\u003e\u003ch2 style=\u0027font-size: 14px;margin: 10px 0;margin-top: 0;border-radius: 3px;background: #FDECEC;color: #B34037;text-shadow: 0 1px 1px #FFF;padding: 8px;border: 1px solid #F5C5C5;\u0027\u003eVideo Not Available\u003c/h2\u003e\u003c/center\u003e",
+                        "embedUrl":  "",
+                        "index":  8
                     },
                     {
                         "label":  "Hardsub Indonesia Mega",
