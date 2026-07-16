@@ -234,7 +234,7 @@ foreach ($v in $videos) {
     if ($v.title) {
         $key = Get-Episode-Key $v.title
         if ($key) {
-            $existingKeys[$key] = $true
+            $existingKeys[$key] = $v
         }
     }
 }
@@ -273,6 +273,20 @@ if ($Full) {
                         
                         if ($loc -and $loc -ne $source.baseUrl) {
                             if (-not $existingLinks.ContainsKey($loc)) {
+                                $key = Get-Episode-Key-Unified "" $loc
+                                if ($key -and $existingKeys.ContainsKey($key)) {
+                                    $existingVal = $existingKeys[$key]
+                                    if ($loc -like "*animexin.dev*" -and $existingVal.link -like "*luciferdonghua.in*") {
+                                        Log-Message "Found Animexin sitemap item for existing Lucifer Donghua episode: $loc. Allowing overwrite!"
+                                        $urlsToScrape += @{
+                                            link = $loc
+                                            pubDate = $lastmod
+                                            title = "" # Will extract from HTML
+                                        }
+                                        continue
+                                    }
+                                    continue
+                                }
                                 $urlsToScrape += @{
                                     link = $loc
                                     pubDate = $lastmod
@@ -333,6 +347,12 @@ if ($Full) {
             # Check for title key duplicate
             $key = Get-Episode-Key $item.title
             if ($key -and $existingKeys.ContainsKey($key)) {
+                $existingVal = $existingKeys[$key]
+                if ($item.link -like "*animexin.dev*" -and $existingVal.link -like "*luciferdonghua.in*") {
+                    Log-Message "Found Animexin RSS item for existing Lucifer Donghua episode: $($item.title). Allowing overwrite!"
+                    $newItems += $item
+                    continue
+                }
                 continue
             }
             $newItems += $item
@@ -418,6 +438,39 @@ function Save-Database($newVideos) {
             $originalVideos = @()
         }
     }
+    # Deduplicate old Lucifer Donghua episodes replaced by new Animexin ones
+    $cleanOriginals = @()
+    $episodesDir = Join-Path $PSScriptRoot "episodes"
+    foreach ($orig in $originalVideos) {
+        $shouldKeep = $true
+        if ($orig.title -and $orig.link -like "*luciferdonghua.in*") {
+            $origKey = Get-Episode-Key $orig.title
+            if ($origKey) {
+                foreach ($newV in $newObjects) {
+                    if ($newV.link -like "*animexin.dev*") {
+                        $newKey = Get-Episode-Key $newV.title
+                        if ($newKey -eq $origKey) {
+                            Log-Message "Overwriting existing Lucifer Donghua version with new Animexin version for: $($newV.title)"
+                            $shouldKeep = $false
+                            $slug = $orig.link.Replace("https://luciferdonghua.in/", "").Replace("/", "")
+                            if ($slug) {
+                                $oldEpFile = Join-Path $episodesDir "$slug.json"
+                                if (Test-Path $oldEpFile) {
+                                    Remove-Item -Path $oldEpFile -Force
+                                    Log-Message "Deleted Lucifer Donghua JSON file: $oldEpFile"
+                                }
+                            }
+                            break
+                        }
+                    }
+                }
+            }
+        }
+        if ($shouldKeep) {
+            $cleanOriginals += $orig
+        }
+    }
+    $originalVideos = $cleanOriginals
     
     $existingMergedLinks = @{}
     foreach ($v in $originalVideos) {
@@ -519,8 +572,13 @@ foreach ($item in $newItems) {
         # Check for title key duplicate (in case sitemap gave us different link for existing title)
         $key = Get-Episode-Key $title
         if ($key -and $existingKeys.ContainsKey($key)) {
-            Log-Message "Skipping duplicate episode by title key: $title"
-            continue
+            $existingVal = $existingKeys[$key]
+            if ($item.link -like "*animexin.dev*" -and $existingVal.link -like "*luciferdonghua.in*") {
+                Log-Message "Allowing Animexin scrape for existing Lucifer Donghua episode: $title"
+            } else {
+                Log-Message "Skipping duplicate episode by title key: $title"
+                continue
+            }
         }
         
         Log-Message "[$count/$($newItems.Count)] Scraping: $title"
