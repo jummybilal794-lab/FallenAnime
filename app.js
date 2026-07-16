@@ -22,6 +22,8 @@ let isSyncing = false;
 let syncIntervalId = null;
 let catalogLayout = 'grid'; // 'grid' or 'list'
 let currentView = 'episodes'; // 'episodes' or 'anime'
+let currentDetailedVideo = null;
+let autoSwitchInterval = null;
 
 const safeLocalStorage = {
     getItem(key) {
@@ -139,6 +141,72 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Normalizes and maps thumbnails to clean series versions, preventing blanks and generic logo.png fallbacks
+function normalizeThumbnails() {
+    const cleanThumbs = {};
+    const getSeriesKey = (title) => {
+        if (!title) return '';
+        return title.toLowerCase()
+            .replace(/indonesia.*/g, '')
+            .replace(/english.*/g, '')
+            .replace(/subtitle.*/g, '')
+            .replace(/episode.*/g, '')
+            .replace(/ep\s*\d.*/g, '')
+            .replace(/\[[^\]]+\]/g, '')
+            .replace(/\([^\)]+\)/g, '')
+            .replace(/season\s*\d+/g, '')
+            .replace(/[^\w\s]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+    };
+
+    // First pass: collect clean Animexin thumbnails
+    allVideos.forEach(v => {
+        if (v.thumbnail && v.thumbnail.includes('animexin.dev')) {
+            const key = getSeriesKey(v.title);
+            if (key && !cleanThumbs[key]) {
+                cleanThumbs[key] = v.thumbnail;
+            }
+        }
+    });
+
+    // Second pass: collect any other valid thumbnails if Animexin is not available
+    allVideos.forEach(v => {
+        if (v.thumbnail && v.thumbnail !== 'logo.png') {
+            const key = getSeriesKey(v.title);
+            if (key && !cleanThumbs[key]) {
+                cleanThumbs[key] = v.thumbnail;
+            }
+        }
+    });
+
+    // Third pass: assign/clean thumbnails
+    allVideos.forEach(v => {
+        if (v.title) {
+            v.title = v.title.replace(/[\u2019’]|â\u0080\u0099|â|\?\?/g, "'");
+        }
+        
+        const key = getSeriesKey(v.title);
+        
+        // If empty/blank, try to use cleanThumb for the series, or logo.png
+        if (!v.thumbnail || v.thumbnail === 'logo.png') {
+            if (key && cleanThumbs[key]) {
+                v.thumbnail = cleanThumbs[key];
+            } else {
+                v.thumbnail = 'logo.png';
+            }
+        } 
+        // If it contains luciferdonghua, try to replace it with a clean animexin.dev one
+        else if (v.thumbnail.includes('luciferdonghua')) {
+            if (key && cleanThumbs[key] && !cleanThumbs[key].includes('luciferdonghua')) {
+                v.thumbnail = cleanThumbs[key];
+            }
+        }
+        
+        v._timestamp = v.pubDate ? (Date.parse(v.pubDate) || 0) : 0;
+    });
+}
+
 // Load catalog data from local catalog.json (Fast Initial Load)
 async function loadDatabase() {
     try {
@@ -149,48 +217,9 @@ async function loadDatabase() {
         }
         allVideos = await response.json();
         
-        // Build series keys and clean thumbnail mapping from animexin
-        const cleanThumbs = {};
-        const getSeriesKey = (title) => {
-            if (!title) return '';
-            return title.toLowerCase()
-                .replace(/indonesia.*/g, '')
-                .replace(/english.*/g, '')
-                .replace(/subtitle.*/g, '')
-                .replace(/episode.*/g, '')
-                .replace(/ep\s*\d.*/g, '')
-                .replace(/\[[^\]]+\]/g, '')
-                .replace(/\([^\)]+\)/g, '')
-                .replace(/season\s*\d+/g, '')
-                .replace(/[^\w\s]/g, '')
-                .replace(/\s+/g, ' ')
-                .trim();
-        };
-
-        allVideos.forEach(v => {
-            if (v.thumbnail && v.thumbnail.includes('animexin.dev')) {
-                const key = getSeriesKey(v.title);
-                if (key && !cleanThumbs[key]) {
-                    cleanThumbs[key] = v.thumbnail;
-                }
-            }
-        });
+        // Normalize and clean up thumbnails
+        normalizeThumbnails();
         
-        // Pre-parse publication dates once for fast sorting and clean up watermarked thumbnails
-        allVideos.forEach(v => {
-            if (v.title) {
-                v.title = v.title.replace(/[\u2019’]|â\u0080\u0099|â|\?\?/g, "'");
-            }
-            if (v.thumbnail && v.thumbnail.includes('luciferdonghua')) {
-                const key = getSeriesKey(v.title);
-                if (key && cleanThumbs[key]) {
-                    v.thumbnail = cleanThumbs[key];
-                } else {
-                    v.thumbnail = 'logo.png'; // Fallback to premium logo
-                }
-            }
-            v._timestamp = v.pubDate ? (Date.parse(v.pubDate) || 0) : 0;
-        });
         allVideos.sort((a, b) => b._timestamp - a._timestamp);
         
         // Update database count
@@ -226,13 +255,10 @@ async function loadDatabaseFallback() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         allVideos = await response.json();
-        // Pre-parse publication dates once for fast, accurate chronological sorting
-        allVideos.forEach(v => {
-            if (v.title) {
-                v.title = v.title.replace(/[\u2019’]|â\u0080\u0099|â|\?\?/g, "'");
-            }
-            v._timestamp = v.pubDate ? (Date.parse(v.pubDate) || 0) : 0;
-        });
+        
+        // Normalize and clean up thumbnails
+        normalizeThumbnails();
+        
         allVideos.sort((a, b) => b._timestamp - a._timestamp);
         dbCount.textContent = `${allVideos.length} Synced Videos`;
         renderPopularCarousel();
@@ -694,6 +720,7 @@ function showWatchView(index, scroll = true) {
     let detailedVideo = null;
     if (video.mirrors) {
         detailedVideo = video;
+        currentDetailedVideo = video;
     }
 
     if (!video.mirrors && !video._isLoadingMirrors) {
@@ -1249,6 +1276,12 @@ function hideWatchView() {
 function loadMirrorPlayer(mirror, videoTitle) {
     if (!mirror) return;
     
+    // Clear any active auto-switch timers
+    if (autoSwitchInterval) {
+        clearInterval(autoSwitchInterval);
+        autoSwitchInterval = null;
+    }
+    
     // Inject mirror html safely
     let embedHtml = mirror.embedHtml || '';
     if (embedHtml) {
@@ -1282,6 +1315,77 @@ function loadMirrorPlayer(mirror, videoTitle) {
             <span class="player-title-text">${titleClean}</span>
         `;
         playerContainer.appendChild(titleBar);
+    }
+
+    // Setup Auto-switch to next server if current server fails/hangs (uninteracted for 12 seconds)
+    if (currentDetailedVideo && currentDetailedVideo.mirrors && currentDetailedVideo.mirrors.length > 0) {
+        const currentIndex = currentDetailedVideo.mirrors.findIndex(m => m.index == mirror.index);
+        if (currentIndex !== -1 && currentIndex < currentDetailedVideo.mirrors.length - 1) {
+            const nextMirror = currentDetailedVideo.mirrors[currentIndex + 1];
+            
+            // Create elegant countdown banner overlay
+            const banner = document.createElement('div');
+            banner.className = 'player-auto-switch-banner';
+            banner.id = 'player-auto-switch-banner';
+            
+            let secondsLeft = 12;
+            banner.innerHTML = `
+                <span>⏳ Loading server... Auto-try next in <strong id="switch-countdown">${secondsLeft}</strong>s</span>
+                <button class="switch-btn-now" id="switch-btn-now">Try Now</button>
+                <button class="switch-btn-cancel" id="switch-btn-cancel">Stay</button>
+            `;
+            playerContainer.appendChild(banner);
+            
+            // Helper to stop countdown and remove UI
+            const cancelAutoSwitch = () => {
+                if (autoSwitchInterval) {
+                    clearInterval(autoSwitchInterval);
+                    autoSwitchInterval = null;
+                }
+                window.removeEventListener('blur', handleWindowBlur);
+                const b = document.getElementById('player-auto-switch-banner');
+                if (b) b.remove();
+            };
+            
+            // Cancel when user chooses to stay
+            document.getElementById('switch-btn-cancel').onclick = (e) => {
+                e.stopPropagation();
+                cancelAutoSwitch();
+            };
+            
+            // Immediately switch when requested
+            document.getElementById('switch-btn-now').onclick = (e) => {
+                e.stopPropagation();
+                cancelAutoSwitch();
+                if (mirrorSelect) mirrorSelect.value = nextMirror.index;
+                loadMirrorPlayer(nextMirror, videoTitle);
+            };
+            
+            // Cancel if the window loses focus (meaning user clicked/tapped inside the cross-origin player iframe)
+            const handleWindowBlur = () => {
+                if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
+                    cancelAutoSwitch();
+                }
+            };
+            window.addEventListener('blur', handleWindowBlur);
+            
+            // Cancel if user clicks anywhere on the player container (background/title overlay)
+            playerContainer.addEventListener('click', cancelAutoSwitch);
+            
+            // Run interval countdown
+            autoSwitchInterval = setInterval(() => {
+                secondsLeft--;
+                const countEl = document.getElementById('switch-countdown');
+                if (countEl) {
+                    countEl.textContent = secondsLeft;
+                }
+                if (secondsLeft <= 0) {
+                    cancelAutoSwitch();
+                    if (mirrorSelect) mirrorSelect.value = nextMirror.index;
+                    loadMirrorPlayer(nextMirror, videoTitle);
+                }
+            }, 1000);
+        }
     }
 }
 

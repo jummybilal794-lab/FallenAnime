@@ -2598,3 +2598,55 @@ a {
 .anime-series-card .card-badge-top-left {
     background-color: var(--accent-red, #d50000);
 }
+
+/* Custom Player Auto-Switch Banner Overlay */
+.player-auto-switch-banner {
+    position: absolute;
+    bottom: 50px; /* Slightly above the control bar area */
+    right: 20px;
+    background: rgba(13, 14, 21, 0.95);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 100;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    font-size: 0.85rem;
+    color: var(--text-normal, #f3f4f6);
+    backdrop-filter: blur(10px);
+    animation: fadeInUp 0.3s ease;
+}
+
+.player-auto-switch-banner .switch-btn-cancel {
+    background: var(--bg-tertiary, #1a1d29);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+    color: var(--text-normal, #f3f4f6);
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: var(--transition, 0.2s ease);
+}
+
+.player-auto-switch-banner .switch-btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.player-auto-switch-banner .switch-btn-now {
+    background: var(--accent-red, #e50914);
+    border: none;
+    color: #ffffff;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: var(--transition, 0.2s ease);
+}
+
+.player-auto-switch-banner .switch-btn-now:hover {
+    background: #ff3333;
+}
