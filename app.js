@@ -129,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     checkSyncStatusOnStart();
     initChatCounter();
+    initLiveChat();
     
     // Admin mode check to display Sync Hub button
     if (window.location.search.includes('admin=true') || window.location.hash.includes('admin')) {
@@ -3207,4 +3208,123 @@ function escapeHtml(text) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
+
+// Live Chat Room with 1-day message retention
+function initLiveChat() {
+    const messagesArea = document.getElementById('chat-messages-area');
+    const messageInput = document.getElementById('chat-message-input');
+    const sendBtn = document.getElementById('chat-send-btn');
+    
+    if (!messagesArea || !messageInput || !sendBtn) return;
+    
+    // Fallback if Firebase is not loaded
+    if (typeof firebase === 'undefined' || !db) {
+        messagesArea.innerHTML = '<div class="chat-system-message">Chat is currently unavailable (Firebase not configured).</div>';
+        messageInput.disabled = true;
+        sendBtn.disabled = true;
+        return;
+    }
+    
+    // 1. Subscribe to real-time chat messages from the last 24 hours
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    
+    db.collection('chat_messages')
+        .where('timestamp', '>=', oneDayAgo)
+        .orderBy('timestamp', 'asc')
+        .onSnapshot((snapshot) => {
+            messagesArea.innerHTML = '';
+            
+            if (snapshot.empty) {
+                messagesArea.innerHTML = '<div class="chat-system-message">No messages in the last 24 hours. Start the conversation!</div>';
+                return;
+            }
+            
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                if (!data.text) return;
+                
+                // Format timestamp
+                let timeStr = "";
+                if (data.timestamp) {
+                    const dateObj = data.timestamp.toDate ? data.timestamp.toDate() : new Date(data.timestamp);
+                    timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+                
+                const isSelf = currentUser && currentUser.uid === data.userId;
+                
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `chat-message${isSelf ? ' self' : ''}`;
+                msgDiv.innerHTML = `
+                    <div class="chat-msg-header">
+                        <span class="chat-msg-user">${escapeHtml(data.username || 'Guest')}</span>
+                        <span class="chat-msg-time">${timeStr}</span>
+                    </div>
+                    <div class="chat-msg-body">${escapeHtml(data.text)}</div>
+                `;
+                messagesArea.appendChild(msgDiv);
+            });
+            
+            // Auto scroll to bottom
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }, (error) => {
+            console.error("Firestore chat subscription error:", error);
+            messagesArea.innerHTML = `<div class="chat-system-message">Error connecting to live chat.</div>`;
+        });
+        
+    // 2. Setup Message Sender Action
+    async function handleSend() {
+        const text = messageInput.value.trim();
+        if (!text) return;
+        
+        let username = "Guest";
+        let userId = "guest_" + Math.random().toString(36).substring(2, 9);
+        
+        if (currentUser) {
+            username = currentUser.displayName || currentUser.email.split('@')[0];
+            userId = currentUser.uid;
+        } else {
+            const storedNick = localStorage.getItem('chat_nickname');
+            if (storedNick) {
+                username = storedNick;
+            } else {
+                const nick = prompt("Enter a nickname to chat:", "Guest_" + Math.floor(Math.random() * 900 + 100));
+                if (nick && nick.trim()) {
+                    username = nick.trim().substring(0, 20);
+                    localStorage.setItem('chat_nickname', username);
+                } else {
+                    return; // Cancel sending if guest cancels nickname prompt
+                }
+            }
+        }
+        
+        messageInput.value = '';
+        
+        try {
+            await db.collection('chat_messages').add({
+                userId: userId,
+                username: username,
+                text: text,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            // Delete messages older than 24 hours to keep the collection clean
+            const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+            const oldQuery = await db.collection('chat_messages').where('timestamp', '<', cutoff).limit(10).get();
+            if (!oldQuery.empty) {
+                const batch = db.batch();
+                oldQuery.forEach(doc => batch.delete(doc.ref));
+                await batch.commit();
+            }
+        } catch (err) {
+            console.error("Failed to send chat message:", err);
+        }
+    }
+    
+    sendBtn.addEventListener('click', handleSend);
+    messageInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            handleSend();
+        }
+    });
 }

@@ -81,12 +81,12 @@ function Get-Episode-Key($title) {
     $normalizedSeries = $seriesName.ToLower()
     $normalizedSeries = $normalizedSeries -replace '\[[^\]]+\]', '' # remove [...]
     $normalizedSeries = $normalizedSeries -replace '\([^\)]+\)', '' # remove (...)
-    $normalizedSeries = $normalizedSeries -replace 'season\s*\d+', '' # remove season X
     $normalizedSeries = $normalizedSeries -replace '[^\w\s]', '' # remove special chars
     $normalizedSeries = [regex]::Replace($normalizedSeries, '\s+', ' ').Trim()
     
     if ($normalizedSeries -and $epNum) {
-        return "${normalizedSeries}_ep${epNum}"
+        $normEp = [int]$epNum
+        return "${normalizedSeries}_ep${normEp}"
     }
     return $null
 }
@@ -116,12 +116,12 @@ function Get-Episode-Key-Unified($title, $link) {
         }
         
         $normalizedSeries = $seriesName.Replace("-", " ").ToLower().Trim()
-        $normalizedSeries = $normalizedSeries -replace 'season\s*\d+', ''
         $normalizedSeries = $normalizedSeries -replace '[^\w\s]', ''
         $normalizedSeries = [regex]::Replace($normalizedSeries, '\s+', ' ').Trim()
         
         if ($normalizedSeries -and $epNum) {
-            return "${normalizedSeries}_ep${epNum}"
+            $normEp = [int]$epNum
+            return "${normalizedSeries}_ep${normEp}"
         }
     }
     return $null

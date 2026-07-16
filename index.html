@@ -358,7 +358,15 @@
             <button class="chat-close-btn" id="chat-close-btn" aria-label="Close Chat Drawer">&times;</button>
         </div>
         <div class="chat-drawer-body">
-            <iframe src="https://chitchatter.im/public/fallenanime-chat?embed=1" allow="camera; microphone; display-capture; fullscreen; clipboard-read; clipboard-write; speaker-selection"></iframe>
+            <div class="custom-chat-container">
+                <div class="chat-messages-area" id="chat-messages-area">
+                    <div class="chat-system-message">Connecting to live chat room...</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-message-input" placeholder="Type a message..." maxlength="200">
+                    <button id="chat-send-btn">Send</button>
+                </div>
+            </div>
         </div>
     </div>
 
