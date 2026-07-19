@@ -1273,6 +1273,20 @@ function hideWatchView() {
     }
 }
 
+// Check if mirror is a placeholder / not released yet
+function isPlaceholderMirror(mirror) {
+    if (!mirror) return false;
+    const url = (mirror.embedUrl || '').toLowerCase();
+    const html = (mirror.embedHtml || '').toLowerCase();
+    const label = (mirror.label || '').toLowerCase();
+    
+    if (url.includes('t.co/') || url.includes('bit.ly/') || url.includes('tinyurl.com/')) return true;
+    if (html.includes('t.co/') || html.includes('bit.ly/') || html.includes('tinyurl.com/')) return true;
+    if (label.includes('today evening') || label.includes('released soon') || label.includes('placeholder')) return true;
+    
+    return false;
+}
+
 // Load mirror HTML/Iframe into container
 function loadMirrorPlayer(mirror, videoTitle) {
     if (!mirror) return;
@@ -1281,6 +1295,17 @@ function loadMirrorPlayer(mirror, videoTitle) {
     if (autoSwitchInterval) {
         clearInterval(autoSwitchInterval);
         autoSwitchInterval = null;
+    }
+    
+    if (isPlaceholderMirror(mirror)) {
+        playerContainer.innerHTML = `
+            <div class="player-placeholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 360px;">
+                <div style="font-size: 3.5rem; margin-bottom: 1rem; animation: pulse 2s infinite;">⏳</div>
+                <p style="color: var(--accent); font-size: 1.25rem; font-weight: 600; margin: 0 0 0.5rem 0;">Episode Not Released Yet</p>
+                <p style="font-size: 0.9rem; color: var(--text-muted); max-width: 380px; margin: 0; line-height: 1.5;">This episode is currently a placeholder on the source server. The full video will play automatically once it is officially released by the subbers!</p>
+            </div>
+        `;
+        return;
     }
     
     // Inject mirror html safely
