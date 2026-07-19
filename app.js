@@ -719,6 +719,7 @@ function showWatchView(index, scroll = true) {
     // Find detailed video with mirrors and description from dynamic loading
     let detailedVideo = null;
     if (video.mirrors) {
+        video.mirrors = reorderMirrors(video.mirrors);
         detailedVideo = video;
         currentDetailedVideo = video;
     }
@@ -732,7 +733,7 @@ function showWatchView(index, scroll = true) {
                 return res.json();
             })
             .then(data => {
-                video.mirrors = data.mirrors || [];
+                video.mirrors = reorderMirrors(data.mirrors || []);
                 video.downloads = data.downloads || [];
                 video.description = data.description || "";
                 video._isLoadingMirrors = false;
@@ -3431,4 +3432,36 @@ function initLiveChat() {
             handleSend();
         }
     });
+}
+
+// Reorders mirrors to prioritize more reliable/compatible video hosts on FallenAnime custom domain
+function reorderMirrors(mirrors) {
+    if (!mirrors || !Array.isArray(mirrors)) return [];
+    
+    const getWeight = (label, html, url) => {
+        const text = ((label || '') + ' ' + (html || '') + ' ' + (url || '')).toLowerCase();
+        if (text.includes('streamwish') || text.includes('seekplayer')) return 10;
+        if (text.includes('ok.ru') || text.includes('videoembed')) return 9;
+        if (text.includes('odysee')) return 8;
+        if (text.includes('mega.nz') || text.includes('mega.co')) return 7;
+        if (text.includes('dood') || text.includes('playmogo') || text.includes('doodstream')) return 6;
+        if (text.includes('rumble')) return 5;
+        if (text.includes('dtube') || text.includes('d.tube')) return 4;
+        if (text.includes('dailymotion') || text.includes('dmcdn') || text.includes('geo.dailymotion')) return 1;
+        return 3;
+    };
+    
+    // Sort mirrors by weight in descending order (highest weight first)
+    const sorted = [...mirrors].sort((a, b) => {
+        const weightA = getWeight(a.label, a.embedHtml, a.embedUrl);
+        const weightB = getWeight(b.label, b.embedHtml, b.embedUrl);
+        return weightB - weightA;
+    });
+    
+    // Re-index mirrors so their options match their sorted order
+    sorted.forEach((m, idx) => {
+        m.index = idx + 1;
+    });
+    
+    return sorted;
 }
