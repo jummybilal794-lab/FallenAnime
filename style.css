@@ -2658,7 +2658,7 @@ a {
 }
 
 /* Screen Rotation for Video Player */
-#player-container.rotated {
+.player-wrapper.rotated {
     position: fixed !important;
     z-index: 999999 !important;
     background: #000 !important;
@@ -2668,15 +2668,17 @@ a {
     height: 100vw !important;
     top: calc(50% - 50vw) !important;
     left: calc(50% - 50vh) !important;
+    border-radius: 0 !important;
+    border: none !important;
 }
 
-#player-container.rotated iframe {
+.player-wrapper.rotated iframe {
     width: 100% !important;
     height: 100% !important;
     border: none !important;
 }
 
-#player-container.rotated .player-title-bar {
+.player-wrapper.rotated .player-title-bar {
     width: 100% !important;
     padding: 8px 15px !important;
 }

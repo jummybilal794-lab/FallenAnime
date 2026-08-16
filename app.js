@@ -1303,7 +1303,9 @@ function loadMirrorPlayer(mirror, videoTitle) {
     if (!mirror) return;
     
     // Reset rotation state on new mirror load
-    playerContainer.classList.remove('rotated');
+    if (playerContainer.parentElement) {
+        playerContainer.parentElement.classList.remove('rotated');
+    }
     
     // Clear any active auto-switch timers
     if (autoSwitchInterval) {
@@ -1364,11 +1366,14 @@ function loadMirrorPlayer(mirror, videoTitle) {
         if (rotateBtn) {
             rotateBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                playerContainer.classList.toggle('rotated');
-                if (playerContainer.classList.contains('rotated')) {
-                    rotateBtn.innerHTML = '🔄 Reset';
-                } else {
-                    rotateBtn.innerHTML = '🔄 Rotate';
+                const wrapper = playerContainer.parentElement;
+                if (wrapper) {
+                    wrapper.classList.toggle('rotated');
+                    if (wrapper.classList.contains('rotated')) {
+                        rotateBtn.innerHTML = '🔄 Reset';
+                    } else {
+                        rotateBtn.innerHTML = '🔄 Rotate';
+                    }
                 }
             });
         }
