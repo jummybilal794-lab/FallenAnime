@@ -2656,3 +2656,40 @@ a {
     50% { transform: scale(1.15); opacity: 1; }
     100% { transform: scale(1); opacity: 0.8; }
 }
+
+/* Screen Rotation for Video Player */
+#player-container.rotated {
+    position: fixed !important;
+    z-index: 999999 !important;
+    background: #000 !important;
+    transform: rotate(90deg) !important;
+    transform-origin: center center !important;
+    width: 100vh !important;
+    height: 100vw !important;
+    top: calc(50% - 50vw) !important;
+    left: calc(50% - 50vh) !important;
+}
+
+#player-container.rotated iframe {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+}
+
+#player-container.rotated .player-title-bar {
+    width: 100% !important;
+    padding: 8px 15px !important;
+}
+
+/* Chatbot styling */
+.chat-message.bot-msg {
+    border-left: 3px solid var(--accent-red, #e50914) !important;
+    background: rgba(229, 9, 20, 0.04) !important;
+}
+
+.bot-badge {
+    text-transform: uppercase;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 5px rgba(229, 9, 20, 0.3);
+}

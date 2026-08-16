@@ -883,6 +883,17 @@ function showWatchView(index, scroll = true) {
             </div>
         `;
     } else if (detailedVideo.mirrors && detailedVideo.mirrors.length > 0) {
+        // Sort mirrors to prioritize Dailymotion (DM)
+        detailedVideo.mirrors.sort((a, b) => {
+            const aLabel = (a.label || '').toLowerCase();
+            const bLabel = (b.label || '').toLowerCase();
+            const aIsDm = aLabel.includes('dailymotion') || aLabel.includes('dm');
+            const bIsDm = bLabel.includes('dailymotion') || bLabel.includes('dm');
+            if (aIsDm && !bIsDm) return -1;
+            if (!aIsDm && bIsDm) return 1;
+            return 0;
+        });
+
         detailedVideo.mirrors.forEach((mirror) => {
             const opt = document.createElement('option');
             opt.value = mirror.index;
@@ -1291,6 +1302,9 @@ function isPlaceholderMirror(mirror) {
 function loadMirrorPlayer(mirror, videoTitle) {
     if (!mirror) return;
     
+    // Reset rotation state on new mirror load
+    playerContainer.classList.remove('rotated');
+    
     // Clear any active auto-switch timers
     if (autoSwitchInterval) {
         clearInterval(autoSwitchInterval);
@@ -1339,8 +1353,25 @@ function loadMirrorPlayer(mirror, videoTitle) {
             <span class="player-title-logo"><span class="logo-accent">Fallen</span>Anime</span>
             <span class="player-title-divider">|</span>
             <span class="player-title-text">${titleClean}</span>
+            <button class="player-rotate-btn" id="player-rotate-btn" title="Rotate Screen" style="margin-left: auto; background: rgba(229, 9, 20, 0.25); border: 1px solid var(--accent-red, #e50914); color: #ffffff; padding: 4px 10px; border-radius: 4px; font-size: 0.72rem; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: var(--transition); z-index: 10; font-weight: 600; font-family: inherit; line-height: 1;">
+                🔄 Rotate
+            </button>
         `;
         playerContainer.appendChild(titleBar);
+        
+        // Setup rotation toggle handler
+        const rotateBtn = titleBar.querySelector('#player-rotate-btn');
+        if (rotateBtn) {
+            rotateBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                playerContainer.classList.toggle('rotated');
+                if (playerContainer.classList.contains('rotated')) {
+                    rotateBtn.innerHTML = '🔄 Reset';
+                } else {
+                    rotateBtn.innerHTML = '🔄 Rotate';
+                }
+            });
+        }
     }
 
     // Setup Auto-switch to next server if current server fails/hangs (uninteracted for 12 seconds)
@@ -3341,6 +3372,7 @@ function escapeHtml(text) {
 }
 
 // Live Chat Room with 1-day message retention
+// Live Chat Room with 1-day message retention & Local AI Chatbot Fallback
 function initLiveChat() {
     const messagesArea = document.getElementById('chat-messages-area');
     const messageInput = document.getElementById('chat-message-input');
@@ -3348,59 +3380,138 @@ function initLiveChat() {
     
     if (!messagesArea || !messageInput || !sendBtn) return;
     
-    // Fallback if Firebase is not loaded
-    if (typeof firebase === 'undefined' || !db) {
-        messagesArea.innerHTML = '<div class="chat-system-message">Chat is currently unavailable (Firebase not configured).</div>';
-        messageInput.disabled = true;
-        sendBtn.disabled = true;
-        return;
+    let isLocalMode = false;
+    let localMessages = [];
+    
+    // Helper to render a message
+    function appendMessage(username, text, timestamp, userId, isBot = false) {
+        let timeStr = "";
+        if (timestamp) {
+            const dateObj = new Date(timestamp);
+            timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        const isSelf = currentUser && currentUser.uid === userId;
+        
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `chat-message${isSelf ? ' self' : ''}${isBot ? ' bot-msg' : ''}`;
+        msgDiv.innerHTML = `
+            <div class="chat-msg-header">
+                <span class="chat-msg-user" style="${isBot ? 'color: var(--accent-red, #e50914); font-weight: bold;' : ''}">${escapeHtml(username)} ${isBot ? '<span class="bot-badge" style="background: var(--accent-red, #e50914); color: #fff; font-size: 0.65rem; padding: 1px 4px; border-radius: 3px; margin-left: 4px;">BOT</span>' : ''}</span>
+                <span class="chat-msg-time">${timeStr}</span>
+            </div>
+            <div class="chat-msg-body">${escapeHtml(text)}</div>
+        `;
+        messagesArea.appendChild(msgDiv);
+        messagesArea.scrollTop = messagesArea.scrollHeight;
     }
     
-    // 1. Subscribe to real-time chat messages from the last 24 hours
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    
-    db.collection('chat_messages')
-        .where('timestamp', '>=', oneDayAgo)
-        .orderBy('timestamp', 'asc')
-        .onSnapshot((snapshot) => {
-            messagesArea.innerHTML = '';
-            
-            if (snapshot.empty) {
-                messagesArea.innerHTML = '<div class="chat-system-message">No messages in the last 24 hours. Start the conversation!</div>';
-                return;
+    function loadLocalMessages() {
+        try {
+            const stored = localStorage.getItem('local_chat_messages');
+            if (stored) {
+                localMessages = JSON.parse(stored);
             }
-            
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                if (!data.text) return;
+        } catch (e) {
+            localMessages = [];
+        }
+        
+        messagesArea.innerHTML = '';
+        if (localMessages.length === 0) {
+            messagesArea.innerHTML = '<div class="chat-system-message">Welcome to FallenAnime Chat! Connect with others or chat with our assistant bot 🤖.</div>';
+            setTimeout(() => {
+                appendMessage('FallenBot', 'Hello! I am FallenBot, your virtual anime assistant. How can I help you today?', Date.now(), 'bot', true);
+            }, 500);
+        } else {
+            localMessages.forEach(m => {
+                appendMessage(m.username, m.text, m.timestamp, m.userId, m.isBot);
+            });
+        }
+    }
+    
+    function enableLocalMode() {
+        isLocalMode = true;
+        loadLocalMessages();
+        messageInput.disabled = false;
+        sendBtn.disabled = false;
+    }
+    
+    function triggerBotResponse(userText, toFirebase = false) {
+        const textLower = userText.toLowerCase();
+        let reply = "";
+        
+        if (textLower.includes('help') || textLower.includes('how to') || textLower.includes('work')) {
+            reply = "I am here to help! You can watch episodes in the player, switch mirrors using the dropdown, or save anime to your favorites list.";
+        } else if (textLower.includes('hello') || textLower.includes('hi') || textLower.includes('hey') || textLower.includes('yo')) {
+            reply = "Hello fellow cultivator! Welcome to FallenAnime. What cultivation series are you watching today?";
+        } else if (textLower.includes('renegade') || textLower.includes('immortal') || textLower.includes('perfect world') || textLower.includes('herding gods') || textLower.includes('shrouding') || textLower.includes('throne of seal')) {
+            reply = "That's an absolute masterpiece! Top tier action and incredible storylines. You can find all the latest subbed episodes right here!";
+        } else if (textLower.includes('mirror') || textLower.includes('player') || textLower.includes('slow') || textLower.includes('buffer') || textLower.includes('not working') || textLower.includes('broken')) {
+            reply = "If a mirror is buffering or down, please try switching players via the dropdown above the video. We recommend Dailymotion first! You can also use the high-speed download links at the bottom of the page.";
+        } else if (textLower.includes('thank') || textLower.includes('nice') || textLower.includes('good') || textLower.includes('great')) {
+            reply = "You're welcome! Happy to assist you. Enjoy your anime! 🎬";
+        } else if (textLower.includes('latest') || textLower.includes('new ep') || textLower.includes('when')) {
+            reply = "New episodes are synced automatically as soon as subbers release them. Check out the schedule tab for release days!";
+        } else {
+            reply = "I am FallenBot, your AI helper! Let me know if you need any recommendations or help navigating the site.";
+        }
+        
+        setTimeout(async () => {
+            const timestamp = Date.now();
+            if (toFirebase) {
+                try {
+                    await db.collection('chat_messages').add({
+                        userId: 'bot',
+                        username: 'FallenBot',
+                        text: reply,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        isBot: true
+                    });
+                } catch (e) {
+                    console.error("Failed to send bot response to Firebase:", e);
+                }
+            } else {
+                appendMessage('FallenBot', reply, timestamp, 'bot', true);
+                localMessages.push({ username: 'FallenBot', text: reply, timestamp: timestamp, userId: 'bot', isBot: true });
+                if (localMessages.length > 50) localMessages.shift();
+                localStorage.setItem('local_chat_messages', JSON.stringify(localMessages));
+            }
+        }, 1200);
+    }
+    
+    // 1. Initialize Firebase or Fallback to Local Mode
+    if (typeof firebase === 'undefined' || !db) {
+        enableLocalMode();
+    } else {
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        
+        db.collection('chat_messages')
+            .where('timestamp', '>=', oneDayAgo)
+            .orderBy('timestamp', 'asc')
+            .onSnapshot((snapshot) => {
+                messagesArea.innerHTML = '';
                 
-                // Format timestamp
-                let timeStr = "";
-                if (data.timestamp) {
-                    const dateObj = data.timestamp.toDate ? data.timestamp.toDate() : new Date(data.timestamp);
-                    timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                if (snapshot.empty) {
+                    messagesArea.innerHTML = '<div class="chat-system-message">No messages in the last 24 hours. Start the conversation!</div>';
+                    // Show a welcome tip from the bot locally
+                    appendMessage('FallenBot', 'Welcome! Ask me any questions or chat with other viewers! (Tag me with @bot to ask me questions).', Date.now(), 'bot', true);
+                    return;
                 }
                 
-                const isSelf = currentUser && currentUser.uid === data.userId;
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (!data.text) return;
+                    
+                    const t = data.timestamp ? (data.timestamp.toDate ? data.timestamp.toDate().getTime() : data.timestamp) : Date.now();
+                    appendMessage(data.username || 'Guest', data.text, t, data.userId, data.isBot);
+                });
                 
-                const msgDiv = document.createElement('div');
-                msgDiv.className = `chat-message${isSelf ? ' self' : ''}`;
-                msgDiv.innerHTML = `
-                    <div class="chat-msg-header">
-                        <span class="chat-msg-user">${escapeHtml(data.username || 'Guest')}</span>
-                        <span class="chat-msg-time">${timeStr}</span>
-                    </div>
-                    <div class="chat-msg-body">${escapeHtml(data.text)}</div>
-                `;
-                messagesArea.appendChild(msgDiv);
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+            }, (error) => {
+                console.error("Firestore chat subscription error, switching to local mode:", error);
+                enableLocalMode();
             });
-            
-            // Auto scroll to bottom
-            messagesArea.scrollTop = messagesArea.scrollHeight;
-        }, (error) => {
-            console.error("Firestore chat subscription error:", error);
-            messagesArea.innerHTML = `<div class="chat-system-message">Error connecting to live chat.</div>`;
-        });
+    }
         
     // 2. Setup Message Sender Action
     async function handleSend() {
@@ -3423,31 +3534,46 @@ function initLiveChat() {
                     username = nick.trim().substring(0, 20);
                     localStorage.setItem('chat_nickname', username);
                 } else {
-                    return; // Cancel sending if guest cancels nickname prompt
+                    return; // Cancel
                 }
             }
         }
         
         messageInput.value = '';
+        const timestamp = Date.now();
         
-        try {
-            await db.collection('chat_messages').add({
-                userId: userId,
-                username: username,
-                text: text,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
+        if (isLocalMode) {
+            appendMessage(username, text, timestamp, userId, false);
+            localMessages.push({ username, text, timestamp, userId, isBot: false });
+            if (localMessages.length > 50) localMessages.shift();
+            localStorage.setItem('local_chat_messages', JSON.stringify(localMessages));
             
-            // Delete messages older than 24 hours to keep the collection clean
-            const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
-            const oldQuery = await db.collection('chat_messages').where('timestamp', '<', cutoff).limit(10).get();
-            if (!oldQuery.empty) {
-                const batch = db.batch();
-                oldQuery.forEach(doc => batch.delete(doc.ref));
-                await batch.commit();
+            triggerBotResponse(text, false);
+        } else {
+            try {
+                await db.collection('chat_messages').add({
+                    userId: userId,
+                    username: username,
+                    text: text,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    isBot: false
+                });
+                
+                if (text.toLowerCase().includes('@bot') || text.toLowerCase().includes('@fallenbot')) {
+                    triggerBotResponse(text, true);
+                }
+                
+                const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+                const oldQuery = await db.collection('chat_messages').where('timestamp', '<', cutoff).limit(10).get();
+                if (!oldQuery.empty) {
+                    const batch = db.batch();
+                    oldQuery.forEach(doc => batch.delete(doc.ref));
+                    await batch.commit();
+                }
+            } catch (err) {
+                console.error("Failed to send chat message:", err);
+                appendMessage(username, text, timestamp, userId, false);
             }
-        } catch (err) {
-            console.error("Failed to send chat message:", err);
         }
     }
     
@@ -3465,6 +3591,7 @@ function reorderMirrors(mirrors) {
     
     const getWeight = (label, html, url) => {
         const text = ((label || '') + ' ' + (html || '') + ' ' + (url || '')).toLowerCase();
+        if (text.includes('dailymotion') || text.includes('dmcdn') || text.includes('geo.dailymotion')) return 100;
         if (text.includes('streamwish') || text.includes('seekplayer')) return 10;
         if (text.includes('ok.ru') || text.includes('videoembed')) return 9;
         if (text.includes('odysee')) return 8;
@@ -3472,7 +3599,6 @@ function reorderMirrors(mirrors) {
         if (text.includes('dood') || text.includes('playmogo') || text.includes('doodstream')) return 6;
         if (text.includes('rumble')) return 5;
         if (text.includes('dtube') || text.includes('d.tube')) return 4;
-        if (text.includes('dailymotion') || text.includes('dmcdn') || text.includes('geo.dailymotion')) return 1;
         return 3;
     };
     
