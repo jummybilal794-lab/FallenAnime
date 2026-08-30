@@ -17,7 +17,7 @@ if ($gitFolder -and (Test-Path $gitFolder)) {
 # 1. Run local synchronization
 Write-Host "=========================================="
 Write-Host "Starting video database sync..."
-& "$devPath\sync-videos.ps1"
+& "$devPath\sync-videos.ps1" -Full -Limit 200
 & "$devPath\generate-sitemap.ps1"
 
 # 2. Copy updated database files to repository
