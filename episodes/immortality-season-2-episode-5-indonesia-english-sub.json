@@ -58,12 +58,6 @@
                         "index":  9
                     },
                     {
-                        "label":  "All Sub Player FileLion",
-                        "embedHtml":  "\u003ccenter\u003e\u003ch2 style=\u0027font-size: 14px;margin: 10px 0;margin-top: 0;border-radius: 3px;background: #FDECEC;color: #B34037;text-shadow: 0 1px 1px #FFF;padding: 8px;border: 1px solid #F5C5C5;\u0027\u003eVideo Not Available\u003c/h2\u003e\u003c/center\u003e",
-                        "embedUrl":  "",
-                        "index":  10
-                    },
-                    {
                         "label":  "All Sub Player Dood",
                         "embedHtml":  "\u003ciframe width=\"600\" height=\"480\" src=\"https://dooood.com/e/jtvr7zkueuy4nejpm5ldpb70jqrcdytn\" scrolling=\"no\" frameborder=\"0\" allowfullscreen=\"true\"\u003e\u003c/iframe\u003e\r\n",
                         "embedUrl":  "https://dooood.com/e/jtvr7zkueuy4nejpm5ldpb70jqrcdytn",

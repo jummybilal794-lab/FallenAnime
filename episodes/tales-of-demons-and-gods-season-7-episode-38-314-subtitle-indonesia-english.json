@@ -58,12 +58,6 @@
                         "index":  9
                     },
                     {
-                        "label":  "All Sub Player Dood",
-                        "embedHtml":  "\u003ccenter\u003e\u003ch2 style=\u0027font-size: 14px;margin: 10px 0;margin-top: 0;border-radius: 3px;background: #FDECEC;color: #B34037;text-shadow: 0 1px 1px #FFF;padding: 8px;border: 1px solid #F5C5C5;\u0027\u003eVideo Not Available\u003c/h2\u003e\u003c/center\u003e",
-                        "embedUrl":  "",
-                        "index":  10
-                    },
-                    {
                         "label":  "All Sub Player Streamsb",
                         "embedHtml":  "\u003cIFRAME SRC=\"https://sbrapid.com/e/52o2rlktorhh.html\" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=640 HEIGHT=360 allowfullscreen\u003e\u003c/IFRAME\u003e\r\n\r\n",
                         "embedUrl":  "https://sbrapid.com/e/52o2rlktorhh.html",
