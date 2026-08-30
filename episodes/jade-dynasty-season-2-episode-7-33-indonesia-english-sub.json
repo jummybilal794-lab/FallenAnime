@@ -34,12 +34,6 @@
                         "index":  5
                     },
                     {
-                        "label":  "Hardsub English Rumble",
-                        "embedHtml":  "\u003ccenter\u003e\u003ch2 style=\u0027font-size: 14px;margin: 10px 0;margin-top: 0;border-radius: 3px;background: #FDECEC;color: #B34037;text-shadow: 0 1px 1px #FFF;padding: 8px;border: 1px solid #F5C5C5;\u0027\u003eVideo Not Available\u003c/h2\u003e\u003c/center\u003e",
-                        "embedUrl":  "",
-                        "index":  6
-                    },
-                    {
                         "label":  "Hardsub Indonesia Dailymotion",
                         "embedHtml":  "\u003cdiv style=\"position:relative;padding-bottom:56.25%;height:0;overflow:hidden;\"\u003e\u003ciframe style=\"width:100%;height:100%;position:absolute;left:0px;top:0px;overflow:hidden\" frameborder=\"0\" type=\"text/html\" src=\"https://www.dailymotion.com/embed/video/k6qZ4LWH1GG7x2Ay3hA\" width=\"100%\" height=\"100%\"   allow=\"autoplay\" allowfullscreen\u003e\u003c/iframe\u003e\u003c/div\u003e",
                         "embedUrl":  "https://www.dailymotion.com/embed/video/k6qZ4LWH1GG7x2Ay3hA",
