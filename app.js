@@ -141,6 +141,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Fix image domain to bypass Cloudflare 403 blocks
+function fixThumbnailUrl(url) {
+    if (!url || url === 'logo.png') return 'logo.png';
+    if (url.includes('animexin.dev/wp-content/uploads/')) {
+        return url.replace('animexin.dev', 'animexin.vip');
+    }
+    return url;
+}
+
 // Normalizes and maps thumbnails to clean series versions, preventing blanks and generic logo.png fallbacks
 function normalizeThumbnails() {
     const cleanThumbs = {};
@@ -160,30 +169,26 @@ function normalizeThumbnails() {
             .trim();
     };
 
-    // First pass: collect clean Animexin thumbnails
+    // First pass: collect clean thumbnails
     allVideos.forEach(v => {
-        if (v.thumbnail && v.thumbnail.includes('animexin.dev')) {
-            const key = getSeriesKey(v.title);
-            if (key && !cleanThumbs[key]) {
-                cleanThumbs[key] = v.thumbnail;
+        if (v.thumbnail) {
+            v.thumbnail = fixThumbnailUrl(v.thumbnail);
+            if (v.thumbnail !== 'logo.png') {
+                const key = getSeriesKey(v.title);
+                if (key && !cleanThumbs[key]) {
+                    cleanThumbs[key] = v.thumbnail;
+                }
             }
         }
     });
 
-    // Second pass: collect any other valid thumbnails if Animexin is not available
-    allVideos.forEach(v => {
-        if (v.thumbnail && v.thumbnail !== 'logo.png') {
-            const key = getSeriesKey(v.title);
-            if (key && !cleanThumbs[key]) {
-                cleanThumbs[key] = v.thumbnail;
-            }
-        }
-    });
-
-    // Third pass: assign/clean thumbnails
+    // Second pass: assign/clean thumbnails
     allVideos.forEach(v => {
         if (v.title) {
             v.title = v.title.replace(/[\u2019’]|â\u0080\u0099|â|\?\?/g, "'");
+            if (v.title.toLowerCase().includes('beyond time')) {
+                v.title = v.title.replace(/Beyond Time[^\s]+s Gaze/i, "Beyond Time's Gaze");
+            }
         }
         
         const key = getSeriesKey(v.title);
@@ -195,12 +200,8 @@ function normalizeThumbnails() {
             } else {
                 v.thumbnail = 'logo.png';
             }
-        } 
-        // If it contains luciferdonghua, try to replace it with a clean animexin.dev one
-        else if (v.thumbnail.includes('luciferdonghua')) {
-            if (key && cleanThumbs[key] && !cleanThumbs[key].includes('luciferdonghua')) {
-                v.thumbnail = cleanThumbs[key];
-            }
+        } else {
+            v.thumbnail = fixThumbnailUrl(v.thumbnail);
         }
         
         v._timestamp = v.pubDate ? (Date.parse(v.pubDate) || 0) : 0;
@@ -577,7 +578,7 @@ function renderCatalogGridEpisodes() {
         
         card.innerHTML = `
             <div class="card-thumb-wrapper">
-                <img src="${video.thumbnail || 'logo.png'}" onerror="this.onerror=null; this.src='logo.png'; this.style.objectFit='contain'; this.style.padding='20px'; this.style.backgroundColor='#0d0e15';" alt="${titleClean}" loading="lazy">
+                <img src="${video.thumbnail || 'logo.png'}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='logo.png'; this.style.objectFit='contain'; this.style.padding='20px'; this.style.backgroundColor='#0d0e15';" alt="${titleClean}" loading="lazy">
                 ${watchedBadge}
                 <span class="card-badge-top-left">ONA</span>
                 <span class="card-badge-bottom-left">${epText}</span>
@@ -650,7 +651,7 @@ function renderCatalogGridAnime() {
         
         card.innerHTML = `
             <div class="card-thumb-wrapper">
-                <img src="${series.thumbnail || 'logo.png'}" onerror="this.onerror=null; this.src='logo.png'; this.style.objectFit='contain'; this.style.padding='20px'; this.style.backgroundColor='#0d0e15';" alt="${titleClean}" loading="lazy">
+                <img src="${series.thumbnail || 'logo.png'}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='logo.png'; this.style.objectFit='contain'; this.style.padding='20px'; this.style.backgroundColor='#0d0e15';" alt="${titleClean}" loading="lazy">
                 <span class="card-badge-top-left">Series</span>
                 <span class="card-badge-bottom-left">${epText}</span>
                 <span class="card-badge-bottom-right">Sub</span>
@@ -1630,7 +1631,7 @@ function renderSidebarList(currentPlayingIdx) {
         
         item.innerHTML = `
             <div class="sidebar-item-thumb">
-                <img src="${video.thumbnail || 'logo.png'}" onerror="this.onerror=null; this.src='logo.png'; this.style.objectFit='contain'; this.style.padding='5px'; this.style.backgroundColor='#0d0e15';" alt="${sanitizedTitle}">
+                <img src="${video.thumbnail || 'logo.png'}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='logo.png'; this.style.objectFit='contain'; this.style.padding='5px'; this.style.backgroundColor='#0d0e15';" alt="${sanitizedTitle}">
             </div>
             <div class="sidebar-item-details">
                 <h4 class="sidebar-item-title" style="${isCurrent ? 'color: var(--accent-blue)' : ''}">${sanitizedTitle}</h4>
@@ -2595,7 +2596,7 @@ function renderPopularCarousel() {
         
         card.innerHTML = `
             <div class="card-thumb-wrapper">
-                <img src="${video.thumbnail || 'logo.png'}" onerror="this.onerror=null; this.src='logo.png'; this.style.objectFit='contain'; this.style.padding='20px'; this.style.backgroundColor='#0d0e15';" alt="${sanitizedTitle}" loading="lazy">
+                <img src="${video.thumbnail || 'logo.png'}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='logo.png'; this.style.objectFit='contain'; this.style.padding='20px'; this.style.backgroundColor='#0d0e15';" alt="${sanitizedTitle}" loading="lazy">
                 <span class="card-badge-top-left">ONA</span>
                 <span class="card-badge-bottom-left">${epText}</span>
                 <span class="card-badge-bottom-right">Sub</span>

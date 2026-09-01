@@ -248,9 +248,11 @@ if ($Full) {
         try {
             $sitemapWeb = Invoke-WebRequest -Uri $source.sitemapUrl -UseBasicParsing -TimeoutSec 15
             $sitemapXml = $sitemapWeb.Content
-            $postSitemaps = [regex]::Matches($sitemapXml, $source.sitemapPattern) | ForEach-Object { $_.Value }
+            $postSitemaps = [regex]::Matches($sitemapXml, $source.sitemapPattern) | ForEach-Object { $_.Value } | Sort-Object {
+                if ($_ -match 'post-sitemap(\d+)\.xml') { [int]$Matches[1] } else { 0 }
+            } -Descending
             
-            Log-Message "[$($source.name)] Found $($postSitemaps.Count) sitemap pages. Checking for missing episodes..."
+            Log-Message "[$($source.name)] Found $($postSitemaps.Count) sitemap pages (ordered newest first). Checking for missing episodes..."
             
             $urlsToScrape = @()
             foreach ($sitemapUrl in $postSitemaps) {
@@ -259,7 +261,9 @@ if ($Full) {
                     $subWeb = Invoke-WebRequest -Uri $sitemapUrl -UseBasicParsing -TimeoutSec 15
                     $subXml = $subWeb.Content
                     
-                    $urlBlocks = [regex]::Matches($subXml, '(?s)<url>(.*?)</url>')
+                    $rawUrlBlocks = [regex]::Matches($subXml, '(?s)<url>(.*?)</url>')
+                    $urlBlocks = @($rawUrlBlocks)
+                    [array]::Reverse($urlBlocks)
                     foreach ($block in $urlBlocks) {
                         $blockHtml = $block.Groups[1].Value
                         $loc = ""
@@ -584,10 +588,22 @@ foreach ($item in $newItems) {
         Log-Message "[$count/$($newItems.Count)] Scraping: $title"
         Log-Message "URL: $($item.link)"
         
-        # Extract OpenGraph Image (thumbnail)
+        # Extract OpenGraph Image (thumbnail) with fallbacks for Yoast SEO changes
         $thumbnail = ""
         if ($html -match '<meta property="og:image" content="([^"]+)"') {
             $thumbnail = $Matches[1]
+        } elseif ($html -match 'class="[^"]*wp-post-image[^"]*"\s+alt="[^"]*"\s+decoding="[^"]*"\s+fetchpriority="[^"]*"\s+src="([^"]+)"') {
+            $thumbnail = $Matches[1]
+        } elseif ($html -match '<img[^>]+class="[^"]*wp-post-image[^"]*"[^>]+src="([^"]+)"') {
+            $thumbnail = $Matches[1]
+        } elseif ($html -match '<img[^>]+src="([^"]+)"[^>]+class="[^"]*wp-post-image[^"]*"') {
+            $thumbnail = $Matches[1]
+        } elseif ($html -match '(?s)<div class="thumb">\s*<img src="([^"]+)"') {
+            $thumbnail = $Matches[1]
+        }
+        
+        if ($thumbnail -and $thumbnail.StartsWith("https://animexin.dev/")) {
+            $thumbnail = $thumbnail -replace "https://animexin\.dev/", "https://animexin.vip/"
         }
         
         # Extract Select class="mirror" dropdown options
