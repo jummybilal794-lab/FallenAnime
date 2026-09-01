@@ -141,14 +141,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Fix image URL to route through fast global CDN
+// Fix image URL to route through fast global jsDelivr CDN
 function fixThumbnailUrl(url) {
     if (!url || url === 'logo.png') return 'logo.png';
     if (url.startsWith('thumbnails/')) {
-        return 'https://raw.githubusercontent.com/jummybilal794-lab/FallenAnime/main/' + url;
+        return 'https://cdn.jsdelivr.net/gh/jummybilal794-lab/FallenAnime@main/' + url;
     }
-    if (url.includes('animexin.dev/wp-content/uploads/')) {
-        return url.replace('animexin.dev', 'animexin.vip');
+    if (url.includes('raw.githubusercontent.com/jummybilal794-lab/FallenAnime/main/')) {
+        return url.replace('https://raw.githubusercontent.com/jummybilal794-lab/FallenAnime/main/', 'https://cdn.jsdelivr.net/gh/jummybilal794-lab/FallenAnime@main/');
+    }
+    if (url.includes('animexin.dev/wp-content/uploads/') || url.includes('animexin.vip/wp-content/uploads/')) {
+        const file = url.split('/').pop();
+        return 'https://cdn.jsdelivr.net/gh/jummybilal794-lab/FallenAnime@main/thumbnails/' + file;
     }
     return url;
 }
@@ -178,7 +182,7 @@ function normalizeThumbnails() {
             const key = getSeriesKey(v.title);
             if (key) {
                 const fixed = fixThumbnailUrl(v.thumbnail);
-                if (fixed.includes('githubusercontent') || !cleanThumbs[key]) {
+                if (fixed.includes('jsdelivr') || !cleanThumbs[key]) {
                     cleanThumbs[key] = fixed;
                 }
             }
