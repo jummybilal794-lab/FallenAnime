@@ -27,6 +27,9 @@ if (Test-Path "$devPath\episodes") {
     # Robocopy is significantly faster than Copy-Item for 11,000+ files
     robocopy "$devPath\episodes" "$repoPath\episodes" /XO /NJH /NJS /NDL /NC /NS /R:0 /W:0 | Out-Null
 }
+if (Test-Path "$devPath\thumbnails") {
+    robocopy "$devPath\thumbnails" "$repoPath\thumbnails" /XO /NJH /NJS /NDL /NC /NS /R:0 /W:0 | Out-Null
+}
 Copy-Item -Path "$devPath\sitemap.xml" -Destination "$repoPath\sitemap.xml" -Force
 if (Test-Path "$devPath\logo.png") { Copy-Item -Path "$devPath\logo.png" -Destination "$repoPath\logo.png" -Force }
 if (Test-Path "$devPath\banner.png") { Copy-Item -Path "$devPath\banner.png" -Destination "$repoPath\banner.png" -Force }
