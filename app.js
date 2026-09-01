@@ -169,20 +169,22 @@ function normalizeThumbnails() {
             .trim();
     };
 
-    // First pass: collect clean high-definition thumbnails
+    // First pass: collect local or clean high-definition thumbnails
     allVideos.forEach(v => {
         if (v.thumbnail && v.thumbnail !== 'logo.png') {
             const key = getSeriesKey(v.title);
             if (key) {
-                // Prioritize wp.com or luciferdonghua thumbnails over other domains
-                if (!cleanThumbs[key] || v.thumbnail.includes('wp.com') || v.thumbnail.includes('luciferdonghua')) {
+                // Always prioritize local thumbnails folder
+                if (v.thumbnail.startsWith('thumbnails/')) {
+                    cleanThumbs[key] = v.thumbnail;
+                } else if (!cleanThumbs[key]) {
                     cleanThumbs[key] = v.thumbnail;
                 }
             }
         }
     });
 
-    // Second pass: assign/clean thumbnails and normalize titles
+    // Second pass: assign thumbnails and normalize titles
     allVideos.forEach(v => {
         if (v.title) {
             v.title = v.title.replace(/[\u2019’]|â\u0080\u0099|â|\?\?/g, "'");
@@ -193,7 +195,9 @@ function normalizeThumbnails() {
         
         const key = getSeriesKey(v.title);
         
-        if (key && cleanThumbs[key]) {
+        if (v.thumbnail && v.thumbnail.startsWith('thumbnails/')) {
+            // Keep existing valid local thumbnail
+        } else if (key && cleanThumbs[key]) {
             v.thumbnail = cleanThumbs[key];
         } else if (!v.thumbnail) {
             v.thumbnail = 'logo.png';
