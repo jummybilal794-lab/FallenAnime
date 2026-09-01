@@ -169,20 +169,20 @@ function normalizeThumbnails() {
             .trim();
     };
 
-    // First pass: collect clean thumbnails
+    // First pass: collect clean high-definition thumbnails
     allVideos.forEach(v => {
-        if (v.thumbnail) {
-            v.thumbnail = fixThumbnailUrl(v.thumbnail);
-            if (v.thumbnail !== 'logo.png') {
-                const key = getSeriesKey(v.title);
-                if (key && !cleanThumbs[key]) {
+        if (v.thumbnail && v.thumbnail !== 'logo.png') {
+            const key = getSeriesKey(v.title);
+            if (key) {
+                // Prioritize wp.com or luciferdonghua thumbnails over other domains
+                if (!cleanThumbs[key] || v.thumbnail.includes('wp.com') || v.thumbnail.includes('luciferdonghua')) {
                     cleanThumbs[key] = v.thumbnail;
                 }
             }
         }
     });
 
-    // Second pass: assign/clean thumbnails
+    // Second pass: assign/clean thumbnails and normalize titles
     allVideos.forEach(v => {
         if (v.title) {
             v.title = v.title.replace(/[\u2019’]|â\u0080\u0099|â|\?\?/g, "'");
@@ -193,15 +193,10 @@ function normalizeThumbnails() {
         
         const key = getSeriesKey(v.title);
         
-        // If empty/blank, try to use cleanThumb for the series, or logo.png
-        if (!v.thumbnail || v.thumbnail === 'logo.png') {
-            if (key && cleanThumbs[key]) {
-                v.thumbnail = cleanThumbs[key];
-            } else {
-                v.thumbnail = 'logo.png';
-            }
-        } else {
-            v.thumbnail = fixThumbnailUrl(v.thumbnail);
+        if (key && cleanThumbs[key]) {
+            v.thumbnail = cleanThumbs[key];
+        } else if (!v.thumbnail) {
+            v.thumbnail = 'logo.png';
         }
         
         v._timestamp = v.pubDate ? (Date.parse(v.pubDate) || 0) : 0;
