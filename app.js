@@ -160,6 +160,46 @@ function fixThumbnailUrl(url) {
 // Normalizes and maps thumbnails to clean series versions, preventing blanks and generic logo.png fallbacks
 function normalizeThumbnails() {
     const cleanThumbs = {};
+    const fallbackThumbMap = {
+        "beyond time": "Beyond-Time-Gaze-S2.webp",
+        "mortal": "A-record-Mortal-Journey-2026.jpg",
+        "battle through the heavens": "BTTH-S5-Ax.jpg",
+        "ancient god sovereign": "Ancient-God-Sovereign.jpg",
+        "against the sky supreme": "against-the-sky-supreme.webp",
+        "against the gods": "Against-the-Gods.jpg",
+        "spiritual realm walker": "Spiritual-Realm-Walker.jpg",
+        "yi nian yong heng": "A-Will-Eternal.jpg",
+        "a will eternal": "A-Will-Eternal.jpg",
+        "raised by demons": "Raised-by-Demons-Panda-Li.jpg",
+        "panda li": "Raised-by-Demons-Panda-Li.jpg",
+        "aliens among immortals": "Aliens-Among-Immortals.jpg",
+        "under the gate": "Under-the-Gate.jpg",
+        "the great ruler": "The-Great-Ruler-3D.jpg",
+        "eternal supreme": "The-Eternal-Supreme-Li-Yunxiao-New.jpg",
+        "li yunxiao": "The-Eternal-Supreme-Li-Yunxiao-New.jpg",
+        "li yun xiao": "The-Eternal-Supreme-Li-Yunxiao-New.jpg",
+        "lingwu": "Lingwu-Continent-2024.jpg",
+        "renegade immortal": "Renegade-Immortal-Ascendant.jpg",
+        "martial master": "Martial-Master-2026.jpg",
+        "tales of herding gods": "Tales-of-Herding-Gods-Arc.jpg",
+        "golden curse": "Golden-Curse.jpg",
+        "ten thousand worlds": "Wan-Jie-Du-Zun-2026.jpg",
+        "wan jie du zun": "Wan-Jie-Du-Zun-2026.jpg",
+        "tales of demons and gods": "Tales-of-Demons-and-Gods.jpg",
+        "refining qi": "100-000-Years-of-Refining-Qi.jpg",
+        "100.000": "100-000-Years-of-Refining-Qi.jpg",
+        "100,000": "100-000-Years-of-Refining-Qi.jpg",
+        "a good day to ascend": "A-Good-Day-to-Ascend.jpg",
+        "soul land 2": "Soul-Land-2-Tang-Sect.jpg",
+        "the demon hunter": "The-Demon-Hunter.jpg",
+        "supreme god emperor": "Supreme-God-Emperor.jpg",
+        "perfect world": "perfect-world-04-26.jpg",
+        "shrouding the heavens": "Shrouding-the-Heavens-Arc.jpg",
+        "swallowed star": "Swallowed-Star-S5.jpg",
+        "throne of seal": "Throne-of-Seal-Shen-Yin-Wangzuo.webp",
+        "gu an": "Gu-An.jpg"
+    };
+
     const getSeriesKey = (title) => {
         if (!title) return '';
         return title.toLowerCase()
@@ -199,13 +239,25 @@ function normalizeThumbnails() {
         }
         
         const key = getSeriesKey(v.title);
+        const titleLower = (v.title || '').toLowerCase();
         
         if (v.thumbnail && v.thumbnail !== 'logo.png') {
             v.thumbnail = fixThumbnailUrl(v.thumbnail);
         } else if (key && cleanThumbs[key]) {
             v.thumbnail = cleanThumbs[key];
         } else {
-            v.thumbnail = 'logo.png';
+            // Check fallback dictionary
+            let matched = false;
+            for (const [k, img] of Object.entries(fallbackThumbMap)) {
+                if (titleLower.includes(k)) {
+                    v.thumbnail = 'https://cdn.jsdelivr.net/gh/jummybilal794-lab/FallenAnime@main/thumbnails/' + img;
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched) {
+                v.thumbnail = 'logo.png';
+            }
         }
         
         v._timestamp = v.pubDate ? (Date.parse(v.pubDate) || 0) : 0;
