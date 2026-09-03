@@ -197,7 +197,15 @@ function normalizeThumbnails() {
         "shrouding the heavens": "Shrouding-the-Heavens-Arc.jpg",
         "swallowed star": "Swallowed-Star-S5.jpg",
         "throne of seal": "Throne-of-Seal-Shen-Yin-Wangzuo.webp",
-        "gu an": "Gu-An.jpg"
+        "gu an": "Gu-An.jpg",
+        "bu liang ren": "Bu-Liang-Ren.jpg",
+        "kings avatar": "The-Kings-Avatar-For-The-Glory.jpg",
+        "king's avatar": "The-Kings-Avatar-For-The-Glory.jpg",
+        "hundred demons": "Manual-of-Hundred-Demons.jpg",
+        "my cultivator girlfriend": "My-Cultivator-Girlfriend.jpg",
+        "wings of the world": "Wings-of-the-World.jpg",
+        "demon spirit seed manual": "Demon-Spirit-Seed-Manual.jpg",
+        "battle through": "BTTH-S5-Ax.jpg"
     };
 
     const getSeriesKey = (title) => {
