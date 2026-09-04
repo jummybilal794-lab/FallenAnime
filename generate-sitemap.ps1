@@ -19,18 +19,13 @@ if (Test-Path $videosPath) {
     exit 1
 }
 
-# Start XML structure
-$xml = @"
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>$baseUrl</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.00</priority>
-  </url>
-"@
+$sb = New-Object System.Text.StringBuilder(1000000)
+[void]$sb.AppendLine('<?xml version="1.0" encoding="UTF-8"?>')
+[void]$sb.AppendLine('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+[void]$sb.AppendLine("  <url>`n    <loc>$baseUrl</loc>`n    <changefreq>daily</changefreq>`n    <priority>1.00</priority>`n  </url>")
 
 # Add each episode
+$nowIso = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ")
 $count = $videos.Count
 for ($i = 0; $i -lt $count; $i++) {
     $v = $videos[$i]
@@ -40,7 +35,7 @@ for ($i = 0; $i -lt $count; $i++) {
     $dateValue = $v.syncedAt
     if (-not $dateValue) { $dateValue = $v.pubDate }
     
-    $dateStr = ""
+    $dateStr = $nowIso
     if ($dateValue) {
         # Check if it matches old MM/dd/yyyy HH:mm:ss format
         if ($dateValue -match '(\d{2})/(\d{2})/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})') {
@@ -52,27 +47,15 @@ for ($i = 0; $i -lt $count; $i++) {
             } else {
                 $dateStr = $dateValue
             }
-        } else {
-            $dateStr = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ")
         }
-    } else {
-        $dateStr = (Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ")
     }
 
-    $xml += @"
-
-  <url>
-    <loc>$loc</loc>
-    <lastmod>$dateStr</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
-  </url>
-"@
+    [void]$sb.AppendLine("  <url>`n    <loc>$loc</loc>`n    <lastmod>$dateStr</lastmod>`n    <changefreq>weekly</changefreq>`n    <priority>0.80</priority>`n  </url>")
 }
 
-$xml += "`n</urlset>"
+[void]$sb.AppendLine("</urlset>")
 
 # Write to sitemap.xml strictly in UTF-8 WITHOUT Byte Order Mark (BOM)
 $utf8WithoutBom = New-Object System.Text.UTF8Encoding($false)
-[System.IO.File]::WriteAllText($sitemapPath, $xml, $utf8WithoutBom)
+[System.IO.File]::WriteAllText($sitemapPath, $sb.ToString(), $utf8WithoutBom)
 Write-Host "Successfully generated sitemap.xml with $($count + 1) URLs without UTF-8 BOM."
