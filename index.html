@@ -56,7 +56,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css?v=2.6.0">
+    <link rel="stylesheet" href="style.css?v=2.7.0">
 </head>
 <body>
     <!-- Top Header -->
@@ -127,11 +127,16 @@
                     </div>
                     
                     <!-- Playback Notice Banner -->
-                    <div class="playback-notice-banner" style="margin-top: 10px; background: rgba(229, 9, 20, 0.1); border-left: 4px solid var(--accent-red); padding: 10px 15px; border-radius: 4px; display: flex; align-items: center; gap: 8px;">
-                        <span style="color: var(--accent-red); font-size: 1.1rem; line-height: 1;">⚠️</span>
-                        <p style="margin: 0; color: var(--text-secondary); font-size: 0.85rem; font-weight: 500;">
-                            If the video is not playing or shows "video removed", please try selecting other mirrors from the dropdown below.
-                        </p>
+                    <div class="playback-notice-banner" style="margin-top: 10px; background: rgba(229, 9, 20, 0.1); border-left: 4px solid var(--accent-red); padding: 10px 15px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: var(--accent-red); font-size: 1.1rem; line-height: 1;">⚠️</span>
+                            <p style="margin: 0; color: var(--text-secondary); font-size: 0.85rem; font-weight: 500;">
+                                If video is buffering or unavailable, click to instantly switch to the next working player.
+                            </p>
+                        </div>
+                        <button id="btn-switch-next-mirror" class="btn" style="background: var(--accent-red); border: none; color: #ffffff; font-size: 0.8rem; font-weight: 700; padding: 6px 14px; border-radius: 20px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: var(--transition); box-shadow: 0 2px 8px rgba(229, 9, 20, 0.4);">
+                            🔄 Next Player (Eng Sub)
+                        </button>
                     </div>
                     
                     <!-- Watch Details -->
@@ -521,6 +526,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <!-- Script Application -->
-    <script src="app.js?v=2.6.0"></script>
+    <script src="app.js?v=2.7.0"></script>
 </body>
 </html>

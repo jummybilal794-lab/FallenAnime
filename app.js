@@ -1025,17 +1025,7 @@ function showWatchView(index, scroll = true) {
             </div>
         `;
     } else if (detailedVideo.mirrors && detailedVideo.mirrors.length > 0) {
-        // Sort mirrors to prioritize Dailymotion (DM)
-        detailedVideo.mirrors.sort((a, b) => {
-            const aLabel = (a.label || '').toLowerCase();
-            const bLabel = (b.label || '').toLowerCase();
-            const aIsDm = aLabel.includes('dailymotion') || aLabel.includes('dm');
-            const bIsDm = bLabel.includes('dailymotion') || bLabel.includes('dm');
-            if (aIsDm && !bIsDm) return -1;
-            if (!aIsDm && bIsDm) return 1;
-            return 0;
-        });
-
+        // Mirrors are already prioritized by English Sub and reliable CDN via reorderMirrors
         detailedVideo.mirrors.forEach((mirror) => {
             const opt = document.createElement('option');
             opt.value = mirror.index;
@@ -1052,7 +1042,16 @@ function showWatchView(index, scroll = true) {
             }
         };
 
-        // Load first mirror as default
+        // Wire up manual Next Working Mirror button
+        const switchBtn = document.getElementById('btn-switch-next-mirror');
+        if (switchBtn) {
+            switchBtn.onclick = (e) => {
+                e.preventDefault();
+                switchToNextWorkingMirror("User clicked switch button");
+            };
+        }
+
+        // Load highest-priority mirror (English Sub #1) as default
         loadMirrorPlayer(detailedVideo.mirrors[0], detailedVideo.title);
 
         // Populate download/source links
@@ -1440,6 +1439,81 @@ function isPlaceholderMirror(mirror) {
     return false;
 }
 
+// Global set to track failed mirrors for the current episode session
+window._failedMirrors = window._failedMirrors || new Set();
+
+// Shows a non-intrusive floating toast notification when switching mirrors
+function showMirrorSwitchToast(message, isError = false) {
+    let toast = document.getElementById('mirror-switch-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'mirror-switch-toast';
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid var(--accent-red, #e50914);
+            border-left: 5px solid var(--accent-red, #e50914);
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100000;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(-20px);
+            opacity: 0;
+            pointer-events: none;
+            backdrop-filter: blur(8px);
+        `;
+        document.body.appendChild(toast);
+    }
+    
+    toast.innerHTML = `<span style="font-size: 1.2rem;">${isError ? '⚠️' : '⚡'}</span> <span>${message}</span>`;
+    toast.style.transform = 'translateY(0)';
+    toast.style.opacity = '1';
+    
+    if (toast._timer) clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => {
+        toast.style.transform = 'translateY(-20px)';
+        toast.style.opacity = '0';
+    }, 4000);
+}
+
+// Switches to the next available working mirror (prioritizing English Sub)
+function switchToNextWorkingMirror(reason = "Server unavailable") {
+    if (!currentDetailedVideo || !currentDetailedVideo.mirrors || currentDetailedVideo.mirrors.length <= 1) {
+        showMirrorSwitchToast("No alternative mirror servers available for this episode.", true);
+        return;
+    }
+    
+    const currentIdx = parseInt(mirrorSelect ? mirrorSelect.value : "1") || 1;
+    window._failedMirrors.add(currentIdx);
+    
+    // Find next untried mirror (mirrors are already sorted by English Sub priority via reorderMirrors)
+    let nextMirror = currentDetailedVideo.mirrors.find(m => !window._failedMirrors.has(m.index) && !isPlaceholderMirror(m));
+    
+    // If all untried mirrors are exhausted, reset failed tracking and cycle to next mirror
+    if (!nextMirror) {
+        window._failedMirrors.clear();
+        const curListIdx = currentDetailedVideo.mirrors.findIndex(m => m.index == currentIdx);
+        const nextListIdx = (curListIdx + 1) % currentDetailedVideo.mirrors.length;
+        nextMirror = currentDetailedVideo.mirrors[nextListIdx];
+    }
+    
+    if (nextMirror) {
+        console.log(`[Mirror Auto-Failover] ${reason}. Switching from mirror ${currentIdx} to mirror ${nextMirror.index} (${nextMirror.label})`);
+        if (mirrorSelect) mirrorSelect.value = nextMirror.index;
+        showMirrorSwitchToast(`Switching to backup server: ${nextMirror.label}`);
+        loadMirrorPlayer(nextMirror, currentDetailedVideo.title);
+    }
+}
+
 // Load mirror HTML/Iframe into container
 function loadMirrorPlayer(mirror, videoTitle) {
     if (!mirror) return;
@@ -1455,7 +1529,18 @@ function loadMirrorPlayer(mirror, videoTitle) {
         autoSwitchInterval = null;
     }
     
+    // If this mirror is a placeholder, check if there's another non-placeholder mirror available
     if (isPlaceholderMirror(mirror)) {
+        if (currentDetailedVideo && currentDetailedVideo.mirrors) {
+            const nonPlaceholder = currentDetailedVideo.mirrors.find(m => !isPlaceholderMirror(m));
+            if (nonPlaceholder && nonPlaceholder.index !== mirror.index) {
+                console.log(`[Mirror Failover] Mirror ${mirror.index} is placeholder. Auto-switching to working mirror ${nonPlaceholder.index}`);
+                if (mirrorSelect) mirrorSelect.value = nonPlaceholder.index;
+                loadMirrorPlayer(nonPlaceholder, videoTitle);
+                return;
+            }
+        }
+        
         playerContainer.innerHTML = `
             <div class="player-placeholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 360px;">
                 <div style="font-size: 3.5rem; margin-bottom: 1rem; animation: pulse 2s infinite;">⏳</div>
@@ -1486,6 +1571,15 @@ function loadMirrorPlayer(mirror, videoTitle) {
     } else {
         playerContainer.innerHTML = `<div class="player-placeholder"><p>No play method available for this server.</p></div>`;
         return;
+    }
+
+    // Attach error detection listener on the iframe
+    const iframeEl = playerContainer.querySelector('iframe');
+    if (iframeEl) {
+        iframeEl.onerror = () => {
+            console.warn(`[Iframe Error] Player failed to load for mirror ${mirror.index}`);
+            switchToNextWorkingMirror("Player iframe error");
+        };
     }
 
     // Append FallenAnime custom premium title bar to overlay and mask uploader's logo & text
@@ -1609,21 +1703,19 @@ function loadMirrorPlayer(mirror, videoTitle) {
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 
-    // Setup Auto-switch to next server if current server fails/hangs (uninteracted for 12 seconds)
-    if (currentDetailedVideo && currentDetailedVideo.mirrors && currentDetailedVideo.mirrors.length > 0) {
+    // Setup Auto-switch to next English Sub server if current server fails/hangs (uninteracted for 10 seconds)
+    if (currentDetailedVideo && currentDetailedVideo.mirrors && currentDetailedVideo.mirrors.length > 1) {
         const currentIndex = currentDetailedVideo.mirrors.findIndex(m => m.index == mirror.index);
-        if (currentIndex !== -1 && currentIndex < currentDetailedVideo.mirrors.length - 1) {
-            const nextMirror = currentDetailedVideo.mirrors[currentIndex + 1];
-            
+        if (currentIndex !== -1) {
             // Create elegant countdown banner overlay
             const banner = document.createElement('div');
             banner.className = 'player-auto-switch-banner';
             banner.id = 'player-auto-switch-banner';
             
-            let secondsLeft = 12;
+            let secondsLeft = 10;
             banner.innerHTML = `
-                <span>⏳ Loading server... Auto-try next in <strong id="switch-countdown">${secondsLeft}</strong>s</span>
-                <button class="switch-btn-now" id="switch-btn-now">Try Now</button>
+                <span>⚡ Testing player... If not playing, auto-switching in <strong id="switch-countdown">${secondsLeft}</strong>s</span>
+                <button class="switch-btn-now" id="switch-btn-now">▶️ Switch Server</button>
                 <button class="switch-btn-cancel" id="switch-btn-cancel">Stay</button>
             `;
             playerContainer.appendChild(banner);
@@ -1640,18 +1732,23 @@ function loadMirrorPlayer(mirror, videoTitle) {
             };
             
             // Cancel when user chooses to stay
-            document.getElementById('switch-btn-cancel').onclick = (e) => {
-                e.stopPropagation();
-                cancelAutoSwitch();
-            };
+            const stayBtn = document.getElementById('switch-btn-cancel');
+            if (stayBtn) {
+                stayBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    cancelAutoSwitch();
+                };
+            }
             
             // Immediately switch when requested
-            document.getElementById('switch-btn-now').onclick = (e) => {
-                e.stopPropagation();
-                cancelAutoSwitch();
-                if (mirrorSelect) mirrorSelect.value = nextMirror.index;
-                loadMirrorPlayer(nextMirror, videoTitle);
-            };
+            const nowBtn = document.getElementById('switch-btn-now');
+            if (nowBtn) {
+                nowBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    cancelAutoSwitch();
+                    switchToNextWorkingMirror("User clicked Switch Server");
+                };
+            }
             
             // Cancel if the window loses focus (meaning user clicked/tapped inside the cross-origin player iframe)
             const handleWindowBlur = () => {
@@ -1673,8 +1770,7 @@ function loadMirrorPlayer(mirror, videoTitle) {
                 }
                 if (secondsLeft <= 0) {
                     cancelAutoSwitch();
-                    if (mirrorSelect) mirrorSelect.value = nextMirror.index;
-                    loadMirrorPlayer(nextMirror, videoTitle);
+                    switchToNextWorkingMirror("Auto-switch timeout expired");
                 }
             }, 1000);
         }
@@ -3820,29 +3916,66 @@ function initLiveChat() {
     });
 }
 
-// Reorders mirrors to prioritize more reliable/compatible video hosts on FallenAnime custom domain
+// Reorders mirrors to strictly prioritize English Sub and fast, reliable video hosts
 function reorderMirrors(mirrors) {
     if (!mirrors || !Array.isArray(mirrors)) return [];
     
-    const getWeight = (label, html, url) => {
-        const text = ((label || '') + ' ' + (html || '') + ' ' + (url || '')).toLowerCase();
-        if (text.includes('dailymotion') || text.includes('dmcdn') || text.includes('geo.dailymotion')) return 100;
-        if (text.includes('streamwish') || text.includes('seekplayer')) return 10;
-        if (text.includes('ok.ru') || text.includes('videoembed')) return 9;
-        if (text.includes('odysee')) return 8;
-        if (text.includes('mega.nz') || text.includes('mega.co')) return 7;
-        if (text.includes('dood') || text.includes('playmogo') || text.includes('doodstream')) return 6;
-        if (text.includes('rumble')) return 5;
-        if (text.includes('dtube') || text.includes('d.tube')) return 4;
-        return 3;
+    const getScore = (mirror) => {
+        const label = (mirror.label || '').toLowerCase();
+        const html = (mirror.embedHtml || '').toLowerCase();
+        const url = (mirror.embedUrl || '').toLowerCase();
+        const fullText = `${label} ${html} ${url}`;
+        
+        let score = 0;
+        
+        // 1. Language Priority (English Sub is Highest Priority)
+        const isEnglish = label.includes('english') || label.includes('eng') || label.includes('hardsub english') || label.includes('[eng]') || fullText.includes('english sub');
+        const isAllSub = label.includes('all sub') || label.includes('multi') || label.includes('softsub');
+        const isIndo = label.includes('indonesia') || label.includes('indo') || label.includes('hardsub indonesia');
+        
+        if (isEnglish) {
+            score += 2000; // #1 Priority: English Sub
+        } else if (isAllSub) {
+            score += 1000; // #2 Priority: Multi/All Sub
+        } else if (isIndo) {
+            score += 200;  // Fallback: Indo Sub if English is unavailable
+        } else {
+            score += 400;
+        }
+        
+        // 2. Video Player Host Reliability Score
+        if (fullText.includes('dailymotion') || fullText.includes('dmcdn') || fullText.includes('geo.dailymotion')) {
+            score += 350; // Fast, reliable global CDN, no popups
+        } else if (fullText.includes('youtube') || fullText.includes('youtu.be')) {
+            score += 320;
+        } else if (fullText.includes('ok.ru') || fullText.includes('videoembed')) {
+            score += 300; // Resilient, reliable embed
+        } else if (fullText.includes('streamwish') || fullText.includes('seekplayer') || fullText.includes('vidhide')) {
+            score += 260;
+        } else if (fullText.includes('mega.nz') || fullText.includes('mega.co')) {
+            score += 240;
+        } else if (fullText.includes('odysee')) {
+            score += 220;
+        } else if (fullText.includes('rumble')) {
+            score += 200;
+        } else if (fullText.includes('dood') || fullText.includes('playmogo') || fullText.includes('doodstream')) {
+            score += 180;
+        } else if (fullText.includes('terabox')) {
+            score += 150;
+        } else {
+            score += 100;
+        }
+        
+        // Severely penalize placeholders
+        if (isPlaceholderMirror(mirror)) {
+            score -= 5000;
+        }
+        
+        return score;
     };
     
-    // Sort mirrors by weight in descending order (highest weight first)
-    const sorted = [...mirrors].sort((a, b) => {
-        const weightA = getWeight(a.label, a.embedHtml, a.embedUrl);
-        const weightB = getWeight(b.label, b.embedHtml, b.embedUrl);
-        return weightB - weightA;
-    });
+    // Sort mirrors by score in descending order (highest score first)
+    const sorted = [...mirrors].sort((a, b) => getScore(b) - getScore(a));
     
     // Re-index mirrors so their options match their sorted order
     sorted.forEach((m, idx) => {
