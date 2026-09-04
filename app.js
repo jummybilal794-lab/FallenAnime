@@ -154,13 +154,18 @@ function fixThumbnailUrl(url) {
         const file = url.split('/').pop();
         return 'https://cdn.jsdelivr.net/gh/jummybilal794-lab/FallenAnime@main/thumbnails/' + file;
     }
+    if (url.includes('luciferdonghua.in/wp-content/uploads/') && !url.includes('wp.com')) {
+        return url.replace('https://luciferdonghua.in/', 'https://i0.wp.com/luciferdonghua.in/');
+    }
     return url;
 }
 
-// Normalizes and maps thumbnails to clean series versions, preventing blanks and generic logo.png fallbacks
+// Normalizes and maps thumbnails to clean series versions by source (Animexin vs LuciferDonghua)
 function normalizeThumbnails() {
-    const cleanThumbs = {};
-    const fallbackThumbMap = {
+    const cleanThumbsAnimexin = {};
+    const cleanThumbsLucifer = {};
+
+    const animexinFallbackMap = {
         "beyond time": "Beyond-Time-Gaze-S2.webp",
         "mortal": "A-record-Mortal-Journey-2026.jpg",
         "battle through the heavens": "BTTH-S5-Ax.jpg",
@@ -208,6 +213,50 @@ function normalizeThumbnails() {
         "battle through": "BTTH-S5-Ax.jpg"
     };
 
+    const luciferFallbackMap = {
+        "supreme god emperor": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2020/05/supreme-god-emperor-wu-shang-shen-di-season-02.webp",
+        "wu shang shen di": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2020/05/supreme-god-emperor-wu-shang-shen-di-season-02.webp",
+        "ten thousand worlds": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2021/04/ten-thousand-worlds-season-2-lucifer-donghua.webp",
+        "wan jie du zun": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2021/04/ten-thousand-worlds-season-2-lucifer-donghua.webp",
+        "immortal tomb": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2022/10/immortal-tomb-lucifer-donghua.webp",
+        "xian mu": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2022/10/immortal-tomb-lucifer-donghua.webp",
+        "a will eternal": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2021/02/a-will-eternal-season-2.webp",
+        "yi nian yong heng": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2021/02/a-will-eternal-season-2.webp",
+        "swallowed star": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2026/02/swallowed-star-season-2-lucifer-donghua.webp",
+        "perfect world": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2021/04/perfect-world-lucifer-donghua.webp",
+        "wanmei shijie": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2021/04/perfect-world-lucifer-donghua.webp",
+        "renegade immortal": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2023/09/renegade-immortal-lucifer-donghua.webp",
+        "xian ni": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2023/09/renegade-immortal-lucifer-donghua.webp",
+        "martial master": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2020/03/martial-master-lucifer-donghua.webp",
+        "wu shen zhu zai": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2020/03/martial-master-lucifer-donghua.webp",
+        "tales of demons and gods": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2023/01/tales-of-demons-and-gods-season-7-lucifer-donghua.webp",
+        "yao shen ji": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2023/01/tales-of-demons-and-gods-season-7-lucifer-donghua.webp",
+        "battle through the heavens": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2022/07/battle-through-the-heavens-season-5-lucifer-donghua.webp",
+        "doupo cangqiong": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2022/07/battle-through-the-heavens-season-5-lucifer-donghua.webp",
+        "against the sky supreme": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2021/07/against-the-sky-supreme-lucifer-donghua.webp",
+        "ni tian zhizun": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2021/07/against-the-sky-supreme-lucifer-donghua.webp",
+        "shrouding the heavens": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2023/05/shrouding-the-heavens-lucifer-donghua.webp",
+        "zhe tian": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2023/05/shrouding-the-heavens-lucifer-donghua.webp",
+        "the great ruler": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2023/07/the-great-ruler-3d-lucifer-donghua.webp",
+        "da zhu zai": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2023/07/the-great-ruler-3d-lucifer-donghua.webp",
+        "soul land 2": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2023/06/soul-land-2-the-peerless-tang-sect-lucifer-donghua.webp",
+        "peerless tang sect": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2023/06/soul-land-2-the-peerless-tang-sect-lucifer-donghua.webp",
+        "the demon hunter": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2023/06/the-demon-hunter-lucifer-donghua.webp",
+        "chang yuan tu": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2023/06/the-demon-hunter-lucifer-donghua.webp",
+        "eternal supreme": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2023/05/the-eternal-supreme-lucifer-donghua.webp",
+        "wan gu shen hua": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2023/05/the-eternal-supreme-lucifer-donghua.webp",
+        "qi refining": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2023/02/one-hundred-thousand-years-of-qi-refining-lucifer-donghua.webp",
+        "refining qi": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2023/02/one-hundred-thousand-years-of-qi-refining-lucifer-donghua.webp",
+        "tales of herding gods": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2024/10/tales-of-herding-gods-lucifer-donghua.webp",
+        "mu shen ji": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2024/10/tales-of-herding-gods-lucifer-donghua.webp",
+        "lingwu": "https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2024/07/lingwu-continent-2024-luifer-donghua.webp",
+        "magic chef": "https://i1.wp.com/luciferdonghua.in/wp-content/uploads/2021/12/the-magic-chef-of-ice-and-fire-LUCIFER-DONGHUA.webp",
+        "empyrean xuan emperor": "https://i2.wp.com/luciferdonghua.in/wp-content/uploads/2022/05/the-success-of-empyrean-xuan-emperor-season-2-lucifer-donghua.webp",
+        "leveling up in a fantasy world": "https://i1.wp.com/luciferdonghua.in/wp-content/uploads/2022/10/leveling-up-in-a-fantasy-world-lucifer-donghua.webp",
+        "supreme lord of galaxy": "https://i2.wp.com/luciferdonghua.in/wp-content/uploads/2022/04/supreme-lord-of-galaxy-season-2-lucifer-donghua.webp",
+        "myriad realms supreme": "https://i3.wp.com/luciferdonghua.in/wp-content/uploads/2022/11/myriad-realms-supreme-luicfer-donghua.webp"
+    };
+
     const getSeriesKey = (title) => {
         if (!title) return '';
         return title.toLowerCase()
@@ -224,20 +273,26 @@ function normalizeThumbnails() {
             .trim();
     };
 
-    // First pass: collect clean high-definition thumbnails
+    // First pass: collect clean high-definition thumbnails per source
     allVideos.forEach(v => {
         if (v.thumbnail && v.thumbnail !== 'logo.png') {
             const key = getSeriesKey(v.title);
             if (key) {
                 const fixed = fixThumbnailUrl(v.thumbnail);
-                if (fixed.includes('jsdelivr') || !cleanThumbs[key]) {
-                    cleanThumbs[key] = fixed;
+                if (v.link && v.link.includes('luciferdonghua')) {
+                    if (!cleanThumbsLucifer[key] || fixed.includes('luciferdonghua')) {
+                        cleanThumbsLucifer[key] = fixed;
+                    }
+                } else {
+                    if (!cleanThumbsAnimexin[key] || fixed.includes('jsdelivr')) {
+                        cleanThumbsAnimexin[key] = fixed;
+                    }
                 }
             }
         }
     });
 
-    // Second pass: assign thumbnails and normalize titles
+    // Second pass: assign thumbnails and normalize titles strictly based on source
     allVideos.forEach(v => {
         if (v.title) {
             v.title = v.title.replace(/[\u2019’]|â\u0080\u0099|â|\?\?/g, "'");
@@ -248,23 +303,45 @@ function normalizeThumbnails() {
         
         const key = getSeriesKey(v.title);
         const titleLower = (v.title || '').toLowerCase();
+        const isLucifer = v.link && v.link.includes('luciferdonghua');
         
-        if (v.thumbnail && v.thumbnail !== 'logo.png') {
-            v.thumbnail = fixThumbnailUrl(v.thumbnail);
-        } else if (key && cleanThumbs[key]) {
-            v.thumbnail = cleanThumbs[key];
-        } else {
-            // Check fallback dictionary
-            let matched = false;
-            for (const [k, img] of Object.entries(fallbackThumbMap)) {
-                if (titleLower.includes(k)) {
-                    v.thumbnail = 'https://cdn.jsdelivr.net/gh/jummybilal794-lab/FallenAnime@main/thumbnails/' + img;
-                    matched = true;
-                    break;
+        if (isLucifer) {
+            // Lucifer Donghua source handling
+            if (v.thumbnail && (v.thumbnail.includes('luciferdonghua') || v.thumbnail.includes('wp.com'))) {
+                v.thumbnail = fixThumbnailUrl(v.thumbnail);
+            } else if (key && cleanThumbsLucifer[key]) {
+                v.thumbnail = cleanThumbsLucifer[key];
+            } else {
+                let matched = false;
+                for (const [k, imgUrl] of Object.entries(luciferFallbackMap)) {
+                    if (titleLower.includes(k)) {
+                        v.thumbnail = imgUrl;
+                        matched = true;
+                        break;
+                    }
+                }
+                if (!matched) {
+                    v.thumbnail = v.thumbnail ? fixThumbnailUrl(v.thumbnail) : 'logo.png';
                 }
             }
-            if (!matched) {
-                v.thumbnail = 'logo.png';
+        } else {
+            // Animexin source handling
+            if (v.thumbnail && v.thumbnail.includes('jsdelivr')) {
+                v.thumbnail = fixThumbnailUrl(v.thumbnail);
+            } else if (key && cleanThumbsAnimexin[key]) {
+                v.thumbnail = cleanThumbsAnimexin[key];
+            } else {
+                let matched = false;
+                for (const [k, img] of Object.entries(animexinFallbackMap)) {
+                    if (titleLower.includes(k)) {
+                        v.thumbnail = 'https://cdn.jsdelivr.net/gh/jummybilal794-lab/FallenAnime@main/thumbnails/' + img;
+                        matched = true;
+                        break;
+                    }
+                }
+                if (!matched) {
+                    v.thumbnail = v.thumbnail ? fixThumbnailUrl(v.thumbnail) : 'logo.png';
+                }
             }
         }
         
