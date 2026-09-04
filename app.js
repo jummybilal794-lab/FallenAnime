@@ -1518,11 +1518,6 @@ function switchToNextWorkingMirror(reason = "Server unavailable") {
 function loadMirrorPlayer(mirror, videoTitle) {
     if (!mirror) return;
     
-    // Reset rotation state on new mirror load
-    if (playerContainer.parentElement) {
-        playerContainer.parentElement.classList.remove('rotated');
-    }
-    
     // Clear any active auto-switch timers
     if (autoSwitchInterval) {
         clearInterval(autoSwitchInterval);
@@ -1594,114 +1589,6 @@ function loadMirrorPlayer(mirror, videoTitle) {
         `;
         playerContainer.appendChild(titleBar);
     }
-
-    // Create floating Rotate button at bottom right
-    const rotateBtn = document.createElement('button');
-    rotateBtn.className = 'player-rotate-btn';
-    rotateBtn.id = 'player-rotate-btn';
-    rotateBtn.title = 'Rotate Screen';
-    rotateBtn.innerHTML = '🔄 Rotate';
-    rotateBtn.style.cssText = `
-        position: absolute;
-        bottom: 15px;
-        right: 15px;
-        background: rgba(229, 9, 20, 0.85);
-        border: 1px solid var(--accent-red, #e50914);
-        color: #ffffff;
-        padding: 6px 12px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        transition: var(--transition, 0.2s ease);
-        z-index: 10000;
-        font-weight: 600;
-        font-family: inherit;
-        line-height: 1;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    `;
-    
-    // Hover animation
-    rotateBtn.onmouseenter = () => {
-        rotateBtn.style.background = 'var(--accent-red, #e50914)';
-        rotateBtn.style.transform = 'scale(1.05)';
-    };
-    rotateBtn.onmouseleave = () => {
-        rotateBtn.style.background = 'rgba(229, 9, 20, 0.85)';
-        rotateBtn.style.transform = 'scale(1)';
-    };
-    
-    playerContainer.appendChild(rotateBtn);
-
-    // Setup rotation and fullscreen toggle handler
-    rotateBtn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        const wrapper = playerContainer.parentElement;
-        if (!wrapper) return;
-        
-        wrapper.classList.toggle('rotated');
-        
-        if (wrapper.classList.contains('rotated')) {
-            rotateBtn.innerHTML = '🔄 Reset';
-            rotateBtn.style.bottom = '20px';
-            rotateBtn.style.right = '20px';
-            
-            // Try to enter fullscreen mode for maximum landscape experience
-            try {
-                if (wrapper.requestFullscreen) {
-                    await wrapper.requestFullscreen();
-                } else if (wrapper.webkitRequestFullscreen) {
-                    await wrapper.webkitRequestFullscreen();
-                } else if (wrapper.msRequestFullscreen) {
-                    await wrapper.msRequestFullscreen();
-                }
-            } catch (err) {
-                console.warn("Fullscreen request failed:", err);
-            }
-        } else {
-            rotateBtn.innerHTML = '🔄 Rotate';
-            rotateBtn.style.bottom = '15px';
-            rotateBtn.style.right = '15px';
-            
-            // Exit fullscreen if active
-            try {
-                if (document.fullscreenElement || document.webkitFullscreenElement) {
-                    if (document.exitFullscreen) {
-                        await document.exitFullscreen();
-                    } else if (document.webkitExitFullscreen) {
-                        await document.webkitExitFullscreen();
-                    }
-                }
-            } catch (err) {
-                console.warn("Exit fullscreen failed:", err);
-            }
-        }
-    });
-
-    // Setup fullscreen change listener to sync rotation state (e.g. if user exits natively)
-    const handleFullscreenChange = () => {
-        const wrapper = playerContainer.parentElement;
-        if (!wrapper) return;
-        
-        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-            wrapper.classList.remove('rotated');
-            rotateBtn.innerHTML = '🔄 Rotate';
-            rotateBtn.style.bottom = '15px';
-            rotateBtn.style.right = '15px';
-        }
-    };
-    
-    // Cleanup any old listeners to prevent memory leaks
-    if (playerContainer._fsHandler) {
-        document.removeEventListener('fullscreenchange', playerContainer._fsHandler);
-        document.removeEventListener('webkitfullscreenchange', playerContainer._fsHandler);
-    }
-    
-    playerContainer._fsHandler = handleFullscreenChange;
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 
     // Setup Auto-switch to next English Sub server if current server fails/hangs (uninteracted for 10 seconds)
     if (currentDetailedVideo && currentDetailedVideo.mirrors && currentDetailedVideo.mirrors.length > 1) {
