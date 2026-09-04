@@ -1589,79 +1589,6 @@ function loadMirrorPlayer(mirror, videoTitle) {
         `;
         playerContainer.appendChild(titleBar);
     }
-
-    // Setup Auto-switch to next English Sub server if current server fails/hangs (uninteracted for 10 seconds)
-    if (currentDetailedVideo && currentDetailedVideo.mirrors && currentDetailedVideo.mirrors.length > 1) {
-        const currentIndex = currentDetailedVideo.mirrors.findIndex(m => m.index == mirror.index);
-        if (currentIndex !== -1) {
-            // Create elegant countdown banner overlay
-            const banner = document.createElement('div');
-            banner.className = 'player-auto-switch-banner';
-            banner.id = 'player-auto-switch-banner';
-            
-            let secondsLeft = 10;
-            banner.innerHTML = `
-                <span>⚡ Testing player... If not playing, auto-switching in <strong id="switch-countdown">${secondsLeft}</strong>s</span>
-                <button class="switch-btn-now" id="switch-btn-now">▶️ Switch Server</button>
-                <button class="switch-btn-cancel" id="switch-btn-cancel">Stay</button>
-            `;
-            playerContainer.appendChild(banner);
-            
-            // Helper to stop countdown and remove UI
-            const cancelAutoSwitch = () => {
-                if (autoSwitchInterval) {
-                    clearInterval(autoSwitchInterval);
-                    autoSwitchInterval = null;
-                }
-                window.removeEventListener('blur', handleWindowBlur);
-                const b = document.getElementById('player-auto-switch-banner');
-                if (b) b.remove();
-            };
-            
-            // Cancel when user chooses to stay
-            const stayBtn = document.getElementById('switch-btn-cancel');
-            if (stayBtn) {
-                stayBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    cancelAutoSwitch();
-                };
-            }
-            
-            // Immediately switch when requested
-            const nowBtn = document.getElementById('switch-btn-now');
-            if (nowBtn) {
-                nowBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    cancelAutoSwitch();
-                    switchToNextWorkingMirror("User clicked Switch Server");
-                };
-            }
-            
-            // Cancel if the window loses focus (meaning user clicked/tapped inside the cross-origin player iframe)
-            const handleWindowBlur = () => {
-                if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
-                    cancelAutoSwitch();
-                }
-            };
-            window.addEventListener('blur', handleWindowBlur);
-            
-            // Cancel if user clicks anywhere on the player container (background/title overlay)
-            playerContainer.addEventListener('click', cancelAutoSwitch);
-            
-            // Run interval countdown
-            autoSwitchInterval = setInterval(() => {
-                secondsLeft--;
-                const countEl = document.getElementById('switch-countdown');
-                if (countEl) {
-                    countEl.textContent = secondsLeft;
-                }
-                if (secondsLeft <= 0) {
-                    cancelAutoSwitch();
-                    switchToNextWorkingMirror("Auto-switch timeout expired");
-                }
-            }, 1000);
-        }
-    }
 }
 
 // Extract base series name from video title
@@ -3815,40 +3742,62 @@ function reorderMirrors(mirrors) {
         
         let score = 0;
         
-        // 1. Language Priority (English Sub is Highest Priority)
-        const isEnglish = label.includes('english') || label.includes('eng') || label.includes('hardsub english') || label.includes('[eng]') || fullText.includes('english sub');
+        // 1. Language & Host Specific Priority
+        // Priority #1: Hardsub English Odysee
+        // Priority #2: Hardsub English Dailymotion
+        // Then other English Sub hosts, then All Sub, then Indo Sub
+        const isEnglish = label.includes('english') || label.includes('eng') || label.includes('hardsub english') || label.includes('[eng]') || fullText.includes('english sub') || fullText.includes('eng sub');
         const isAllSub = label.includes('all sub') || label.includes('multi') || label.includes('softsub');
         const isIndo = label.includes('indonesia') || label.includes('indo') || label.includes('hardsub indonesia');
         
         if (isEnglish) {
-            score += 2000; // #1 Priority: English Sub
+            if (fullText.includes('odysee')) {
+                score += 3000; // #1 Priority: Hardsub English Odysee
+            } else if (fullText.includes('dailymotion') || fullText.includes('daylimotion') || fullText.includes('dmcdn') || fullText.includes('geo.dailymotion')) {
+                score += 2800; // #2 Priority: Hardsub English Dailymotion
+            } else if (fullText.includes('youtube') || fullText.includes('youtu.be')) {
+                score += 2600;
+            } else if (fullText.includes('ok.ru') || fullText.includes('videoembed')) {
+                score += 2500;
+            } else if (fullText.includes('streamwish') || fullText.includes('seekplayer') || fullText.includes('vidhide') || fullText.includes('streamsb') || fullText.includes('sbbrisk') || fullText.includes('streamhub') || fullText.includes('filelions')) {
+                score += 2400;
+            } else if (fullText.includes('rumble')) {
+                score += 2300;
+            } else if (fullText.includes('mega.nz') || fullText.includes('mega.co') || fullText.includes('mega.io')) {
+                score += 2200;
+            } else if (fullText.includes('archive.org')) {
+                score += 2100;
+            } else {
+                score += 2000;
+            }
         } else if (isAllSub) {
-            score += 1000; // #2 Priority: Multi/All Sub
+            if (fullText.includes('odysee')) {
+                score += 1500;
+            } else if (fullText.includes('dailymotion') || fullText.includes('daylimotion') || fullText.includes('dmcdn') || fullText.includes('geo.dailymotion')) {
+                score += 1400;
+            } else if (fullText.includes('streamwish') || fullText.includes('seekplayer') || fullText.includes('vidhide') || fullText.includes('streamsb') || fullText.includes('sbbrisk')) {
+                score += 1300;
+            } else if (fullText.includes('rumble')) {
+                score += 1200;
+            } else if (fullText.includes('mega')) {
+                score += 1100;
+            } else {
+                score += 1000;
+            }
         } else if (isIndo) {
-            score += 200;  // Fallback: Indo Sub if English is unavailable
-        } else {
-            score += 400;
-        }
-        
-        // 2. Video Player Host Reliability Score
-        if (fullText.includes('dailymotion') || fullText.includes('dmcdn') || fullText.includes('geo.dailymotion')) {
-            score += 350; // Fast, reliable global CDN, no popups
-        } else if (fullText.includes('youtube') || fullText.includes('youtu.be')) {
-            score += 320;
-        } else if (fullText.includes('ok.ru') || fullText.includes('videoembed')) {
-            score += 300; // Resilient, reliable embed
-        } else if (fullText.includes('streamwish') || fullText.includes('seekplayer') || fullText.includes('vidhide')) {
-            score += 260;
-        } else if (fullText.includes('mega.nz') || fullText.includes('mega.co')) {
-            score += 240;
-        } else if (fullText.includes('odysee')) {
-            score += 220;
-        } else if (fullText.includes('rumble')) {
-            score += 200;
-        } else if (fullText.includes('dood') || fullText.includes('playmogo') || fullText.includes('doodstream')) {
-            score += 180;
-        } else if (fullText.includes('terabox')) {
-            score += 150;
+            if (fullText.includes('odysee')) {
+                score += 500;
+            } else if (fullText.includes('dailymotion') || fullText.includes('daylimotion') || fullText.includes('dmcdn')) {
+                score += 450;
+            } else if (fullText.includes('ok.ru')) {
+                score += 400;
+            } else if (fullText.includes('mega')) {
+                score += 350;
+            } else if (fullText.includes('rumble')) {
+                score += 300;
+            } else {
+                score += 200;
+            }
         } else {
             score += 100;
         }
