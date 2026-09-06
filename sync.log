@@ -1,28 +1,28 @@
-﻿[11:22:02] ==========================================
-[11:22:02] Starting Video Sync: 09/06/2026 11:22:02
-[11:22:02] Mode: Incremental Sync (RSS)
-[11:22:02] ==========================================
-[11:22:02] Loaded 10939 existing videos from local database.
-[11:22:09] Scanning recent release pages from Animexin...
-[11:22:27] [Animexin] Scanning recent release pages 1 to 10...
-[11:22:27] [Animexin] Fetching release page 1 from: https://animexin.dev/
-[11:22:29] [Animexin] Found 0 episode links on page 1.
-[11:22:29] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
-[11:22:30] [Animexin] Found 0 episode links on page 2.
-[11:22:30] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
-[11:22:31] [Animexin] Found 0 episode links on page 3.
-[11:22:31] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
-[11:22:33] [Animexin] Found 0 episode links on page 4.
-[11:22:33] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
-[11:22:34] [Animexin] Found 0 episode links on page 5.
-[11:22:34] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
-[11:22:36] [Animexin] Found 0 episode links on page 6.
-[11:22:36] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
-[11:22:37] [Animexin] Found 0 episode links on page 7.
-[11:22:37] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
-[11:22:39] [Animexin] Found 0 episode links on page 8.
-[11:22:39] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
-[11:22:40] [Animexin] Found 0 episode links on page 9.
-[11:22:40] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
-[11:22:42] [Animexin] Found 0 episode links on page 10.
-[11:22:42] No new episodes found. Database is up to date.
+﻿[12:22:02] ==========================================
+[12:22:02] Starting Video Sync: 09/06/2026 12:22:02
+[12:22:02] Mode: Incremental Sync (RSS)
+[12:22:02] ==========================================
+[12:22:02] Loaded 10939 existing videos from local database.
+[12:22:10] Scanning recent release pages from Animexin...
+[12:22:21] [Animexin] Scanning recent release pages 1 to 10...
+[12:22:21] [Animexin] Fetching release page 1 from: https://animexin.dev/
+[12:22:21] [Animexin] Found 0 episode links on page 1.
+[12:22:21] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
+[12:22:22] [Animexin] Found 0 episode links on page 2.
+[12:22:22] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
+[12:22:23] [Animexin] Found 0 episode links on page 3.
+[12:22:23] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
+[12:22:23] [Animexin] Found 0 episode links on page 4.
+[12:22:23] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
+[12:22:24] [Animexin] Found 0 episode links on page 5.
+[12:22:24] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
+[12:22:25] [Animexin] Found 0 episode links on page 6.
+[12:22:25] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
+[12:22:26] [Animexin] Found 0 episode links on page 7.
+[12:22:26] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
+[12:22:26] [Animexin] Found 0 episode links on page 8.
+[12:22:26] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
+[12:22:27] [Animexin] Found 0 episode links on page 9.
+[12:22:27] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
+[12:22:27] [Animexin] Found 0 episode links on page 10.
+[12:22:27] No new episodes found. Database is up to date.
