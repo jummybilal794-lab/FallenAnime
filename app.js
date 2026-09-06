@@ -71,9 +71,16 @@ let activeNavFilter = 'All'; // 'All' or 'Favorites'
 function sanitizeTitle(title) {
     if (!title) return '';
     return title
+        .replace(/[\u2018\u2019’]|â\u0080\u0099|â|Â|Ã|ï¿½|\?\?|AA\?AT/g, "'")
+        .replace(/Beyond Time[^\s]+s Gaze/gi, "Beyond Time's Gaze")
+        .replace(/A Record Of Mortal[^\s]+s Journey/gi, "A Record of Mortal's Journey")
         .replace(/\s*[-–]\s*AnimeXin(?:\.dev)?/gi, '')
         .replace(/\s*Subtitle\s*[-–]\s*AnimeXin(?:\.dev)?/gi, '')
+        .replace(/\s*[-–]\s*Lucifer\s*Donghua/gi, '')
+        .replace(/\s*Lucifer\s*Donghua/gi, '')
+        .replace(/\.in\s*-\s*Chinese\/Donghua Anime Stream/gi, '')
         .replace(/AnimeXin(?:\.dev)?/gi, 'FallenAnime')
+        .replace(/\s+/g, ' ')
         .trim();
 }
 
@@ -2652,38 +2659,61 @@ function extractEpisodeText(title) {
     return match ? `Ep ${match[1]}` : 'Ep 1';
 }
 
-// Render the Popular Today carousel
+// Render the Popular Today carousel with the latest officially released episodes
 function renderPopularCarousel() {
     popularCarousel.innerHTML = '';
     
-    // Select popular shows (latest episode of each unique popular show title)
+    // Top trending popular Donghua series
     const popularShowKeywords = [
-        'Against the Gods',
-        'Renegade Immortal',
-        'Shrouding the Heavens',
-        'Perfect World',
-        'Soul Land',
-        'Martial Master',
-        'Big Brother',
-        'Battle Through the Heavens',
-        'Stellar Transformation',
-        'Swallowed Star',
-        'Great Ruler',
-        'Demon Hunter'
+        { name: 'Battle Through the Heavens', kw: ['battle through the heavens', 'battle through the heaven', 'btth'] },
+        { name: 'Beyond Time\'s Gaze', kw: ['beyond time', 'beyond the timescape'] },
+        { name: 'A Record of Mortal\'s Journey', kw: ['mortal', 'mortals journey', 'record of mortal'] },
+        { name: 'Perfect World', kw: ['perfect world', 'wanmei shijie'] },
+        { name: '100,000 Years of Refining Qi', kw: ['100.000 years of refining qi', 'refining qi', '100000 years of refining qi'] },
+        { name: 'Tales of Demons and Gods', kw: ['tales of demons and gods', 'tales demon'] },
+        { name: 'A Good Day to Ascend', kw: ['a good day to ascend'] },
+        { name: 'Soul Land 2', kw: ['soul land 2', 'peerless tang sect'] },
+        { name: 'Against the Sky Supreme', kw: ['against the sky supreme', 'ni tian zhizun'] },
+        { name: 'Supreme God Emperor', kw: ['supreme god emperor', 'wu shang shen di'] },
+        { name: 'The Demon Hunter', kw: ['demon hunter', 'chang yuan tu'] },
+        { name: 'The Great Ruler', kw: ['great ruler', 'da zhu zai'] },
+        { name: 'Renegade Immortal', kw: ['renegade immortal', 'xian ni'] },
+        { name: 'Swallowed Star', kw: ['swallowed star'] },
+        { name: 'Martial Master', kw: ['martial master', 'wu shen zhu zai'] },
+        { name: 'Against the Gods', kw: ['against the gods'] },
+        { name: 'Shrouding the Heavens', kw: ['shrouding the heavens', 'zhe tian'] },
+        { name: 'Big Brother', kw: ['big brother'] },
+        { name: 'Throne of Seal', kw: ['throne of seal', 'shen yin wangzuo'] }
     ];
     
     const renderedShows = new Set();
     const popularVideos = [];
     
     for (const video of allVideos) {
-        for (const kw of popularShowKeywords) {
-            if (video.title.toLowerCase().includes(kw.toLowerCase()) && !renderedShows.has(kw)) {
-                popularVideos.push(video);
-                renderedShows.add(kw);
-                break;
+        const tLower = (video.title || '').toLowerCase();
+        
+        // Skip movies, PVs, trailers, or placeholders to guarantee only full released weekly episodes
+        if (tLower.includes('[movie]') || tLower.includes(' movie') || tLower.includes(' pv') || tLower.includes(' preview') || tLower.includes(' trailer')) {
+            continue;
+        }
+        
+        for (const show of popularShowKeywords) {
+            if (!renderedShows.has(show.name)) {
+                let matched = false;
+                for (const k of show.kw) {
+                    if (tLower.includes(k)) {
+                        matched = true;
+                        break;
+                    }
+                }
+                if (matched) {
+                    popularVideos.push(video);
+                    renderedShows.add(show.name);
+                    break;
+                }
             }
         }
-        if (popularVideos.length >= 8) break; // Limit to 8 popular shows in carousel
+        if (popularVideos.length >= 12) break; // Display top 12 popular releases
     }
     
     if (popularVideos.length === 0) {
