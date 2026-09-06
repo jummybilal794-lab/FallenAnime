@@ -16,13 +16,6 @@ $sources = @(
         sitemapUrl = "https://animexin.dev/sitemap.xml"
         sitemapPattern = 'https://animexin\.dev/post-sitemap\d*\.xml'
         baseUrl = "https://animexin.dev/"
-    },
-    @{
-        name = "LuciferDonghua"
-        feedUrl = "https://luciferdonghua.in/feed/"
-        sitemapUrl = "https://luciferdonghua.in/sitemap.xml"
-        sitemapPattern = 'https://luciferdonghua\.in/post-sitemap\d*\.xml'
-        baseUrl = "https://luciferdonghua.in/"
     }
 )
 
@@ -242,20 +235,20 @@ foreach ($v in $videos) {
 $newItems = @()
 $candidateLinks = @{}
 
-# Always scan latest release HTML pages (Pages 1 to 5) directly
-Log-Message "Scanning recent release pages from Animexin and LuciferDonghua..."
+# Always scan latest release HTML pages (Pages 1 to 10) directly from Animexin
+Log-Message "Scanning recent release pages from Animexin..."
 
-# 1. Animexin latest release pages
-for ($p = 1; $p -le 5; $p++) {
+# Animexin latest release pages
+for ($p = 1; $p -le 10; $p++) {
     $url = if ($p -eq 1) { "https://animexin.dev/" } else { "https://animexin.dev/page/$p/" }
     try {
         $resp = Invoke-WebRequest -Uri $url -UseBasicParsing -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -TimeoutSec 15
-        $matches = [regex]::Matches($resp.Content, '<a[^>]+href="(https://animexin\.dev/[^"/]+/?)"[^>]*title="([^"]+)"')
+        $matches = [regex]::Matches($resp.Content, '<a[^>]+href="(https://animexin\.dev/[^"/]+/?)"[^>]+title="([^"]+)"')
         foreach ($m in $matches) {
             $link = $m.Groups[1].Value.Trim()
             $title = $m.Groups[2].Value.Trim()
-            if ($link -match '/blog/' -or $link -match '/anime/' -or $link -match '/genre/' -or $link -match '/category/') { continue }
-            if (-not $candidateLinks.ContainsKey($link)) {
+            if ($link -match '/blog/' -or $link -match '/anime/' -or $link -match '/genre/' -or $link -match '/category/' -or $link -match '/season/' -or $link -match '/author/') { continue }
+            if ($link -match 'episode|sub' -and -not $candidateLinks.ContainsKey($link)) {
                 $candidateLinks[$link] = $true
                 $newItems += [PSCustomObject]@{
                     link = $link
@@ -266,30 +259,6 @@ for ($p = 1; $p -le 5; $p++) {
         }
     } catch {
         Log-Message "Failed to fetch Animexin recent page ${p}: $_" "warning"
-    }
-}
-
-# 2. LuciferDonghua latest release pages
-for ($p = 1; $p -le 5; $p++) {
-    $url = if ($p -eq 1) { "https://luciferdonghua.in/" } else { "https://luciferdonghua.in/page/$p/" }
-    try {
-        $resp = Invoke-WebRequest -Uri $url -UseBasicParsing -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -TimeoutSec 15
-        $matches = [regex]::Matches($resp.Content, '<a[^>]+href="(https://luciferdonghua\.in/[^"/]+/?)"[^>]*title="([^"]+)"')
-        foreach ($m in $matches) {
-            $link = $m.Groups[1].Value.Trim()
-            $title = $m.Groups[2].Value.Trim()
-            if ($link -match '/blog/' -or $link -match '/anime/' -or $link -match '/genre/' -or $link -match '/category/') { continue }
-            if (-not $candidateLinks.ContainsKey($link)) {
-                $candidateLinks[$link] = $true
-                $newItems += [PSCustomObject]@{
-                    link = $link
-                    title = $title
-                    pubDate = (Get-Date).ToString("yyyy-MM-ddTHH:mm:sszzz")
-                }
-            }
-        }
-    } catch {
-        Log-Message "Failed to fetch LuciferDonghua recent page ${p}: $_" "warning"
     }
 }
 
