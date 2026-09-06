@@ -1,56 +1,38 @@
 # sync-and-push.ps1
-# Automates synchronization, copies files to repository, and pushes changes to GitHub
+# Automates synchronization, sitemap generation, and pushes changes to GitHub
 
 $repoPath = "C:\Users\jummy\OneDrive\Documents\GitHub\FallenAnime"
-$devPath = "C:\Users\jummy\.gemini\antigravity\scratch\video-cloner-app"
+Set-Location $repoPath
 
 # Dynamically find GitHub Desktop's git directory and add it to the environment PATH
 $gitFolder = Get-ChildItem -Path "C:\Users\jummy\AppData\Local\GitHubDesktop\app-*" | 
              Sort-Object Name -Descending | 
              Select-Object -First 1 | 
-             ForEach-Object { "$($_.FullName)\resources\app\git\cmd" }
+             ForEach-Object { Join-Path $_.FullName "resources\app\git\cmd" }
 
 if ($gitFolder -and (Test-Path $gitFolder)) {
-    $env:PATH += ";$gitFolder"
+    $env:PATH = "$gitFolder;$env:PATH"
 }
 
 # 1. Run local synchronization
 Write-Host "=========================================="
-Write-Host "Starting video database sync..."
-& "$devPath\sync-videos.ps1" -Full -Limit 200
-& "$devPath\generate-sitemap.ps1"
+Write-Host "Starting video database sync from Animexin..."
+& "$repoPath\sync-videos.ps1" -Limit 100
+& "$repoPath\generate-sitemap.ps1"
 
-# 2. Copy updated database files to repository
-Write-Host "Copying updated files to repository..."
-Copy-Item -Path "$devPath\catalog.json" -Destination "$repoPath\catalog.json" -Force
-if (Test-Path "$devPath\episodes") {
-    # Robocopy is significantly faster than Copy-Item for 11,000+ files
-    robocopy "$devPath\episodes" "$repoPath\episodes" /XO /NJH /NJS /NDL /NC /NS /R:0 /W:0 | Out-Null
-}
-if (Test-Path "$devPath\thumbnails") {
-    robocopy "$devPath\thumbnails" "$repoPath\thumbnails" /XO /NJH /NJS /NDL /NC /NS /R:0 /W:0 | Out-Null
-}
-Copy-Item -Path "$devPath\sitemap.xml" -Destination "$repoPath\sitemap.xml" -Force
-if (Test-Path "$devPath\logo.png") { Copy-Item -Path "$devPath\logo.png" -Destination "$repoPath\logo.png" -Force }
-if (Test-Path "$devPath\banner.png") { Copy-Item -Path "$devPath\banner.png" -Destination "$repoPath\banner.png" -Force }
-
-# 3. Commit and push changes directly from repository
+# 2. Commit and push changes directly from repository
 Write-Host "Committing and pushing to GitHub..."
-Push-Location $repoPath
 try {
-    # Check if there are changes to commit
-    $status = git status --porcelain
+    $status = & git status --porcelain
     if ($status) {
-        git add .
-        git commit -m "System: Auto-synced updates"
-        git push origin main --force
+        & git add catalog.json sitemap.xml episodes/ videos.json sync.log
+        & git commit -m "System: Auto-synced latest Animexin episodes and updated sitemap"
+        & git push origin main
         Write-Host "Successfully pushed latest updates to live website!"
     } else {
         Write-Host "No new updates found to commit."
     }
 } catch {
     Write-Error "Failed to push updates: $_"
-} finally {
-    Pop-Location
 }
 Write-Host "=========================================="

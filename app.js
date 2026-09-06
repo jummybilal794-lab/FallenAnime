@@ -412,10 +412,16 @@ function normalizeThumbnails() {
     });
 }
 
-// Load catalog data from local catalog.json (Fast Initial Load)
+// Load catalog data from local catalog.json (Fast Initial Load with Cache-Busting)
 async function loadDatabase() {
     try {
-        const response = await fetch('catalog.json?t=' + new Date().getTime());
+        const response = await fetch('catalog.json?v=' + Date.now(), {
+            cache: 'no-store',
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache'
+            }
+        });
         if (!response.ok) {
             // Fallback to videos.json if catalog.json is missing
             return await loadDatabaseFallback();
@@ -455,7 +461,13 @@ async function loadDatabase() {
 
 async function loadDatabaseFallback() {
     try {
-        const response = await fetch('videos.json?t=' + new Date().getTime());
+        const response = await fetch('videos.json?v=' + Date.now(), {
+            cache: 'no-store',
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache'
+            }
+        });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

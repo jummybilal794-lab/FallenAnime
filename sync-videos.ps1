@@ -319,31 +319,32 @@ if ($Full) {
         }
     }
 } else {
-    # 3. Incremental Sync: Fetch RSS feed pages
-    $feedItems = @()
-    foreach ($source in $sources) {
-        for ($page = 1; $page -le $MaxPages; $page++) {
-            $url = $source.feedUrl
-            if ($page -gt 1) {
-                $url = "$($source.feedUrl)?paged=$page"
-            }
-            
-            Log-Message "[$($source.name)] Fetching RSS feed page $page from: $url"
-            try {
-                $feed = Invoke-RestMethod -Uri $url -TimeoutSec 15
-                if ($feed) {
-                    $feedItems += @($feed)
+    # 3. Incremental Sync: Scan pages 1 to 10 of Animexin directly
+    Log-Message "[Animexin] Scanning recent release pages 1 to 10..."
+    for ($page = 1; $page -le 10; $page++) {
+        $url = if ($page -eq 1) { "https://animexin.dev/" } else { "https://animexin.dev/page/$page/" }
+        Log-Message "[Animexin] Fetching release page $page from: $url"
+        try {
+            $resp = Invoke-WebRequest -Uri $url -UseBasicParsing -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -TimeoutSec 15
+            $matches = [regex]::Matches($resp.Content, '<a[^>]+href="(https://animexin\.dev/[^"/]+/?)"[^>]+title="([^"]+)"')
+            $pageCount = 0
+            foreach ($m in $matches) {
+                $link = $m.Groups[1].Value.Trim()
+                $title = $m.Groups[2].Value.Trim()
+                if ($link -match '/blog/' -or $link -match '/anime/' -or $link -match '/genre/' -or $link -match '/category/' -or $link -match '/season/' -or $link -match '/author/') { continue }
+                if ($link -match 'episode|sub' -and -not $candidateLinks.ContainsKey($link)) {
+                    $candidateLinks[$link] = $true
+                    $newItems += [PSCustomObject]@{
+                        link = $link
+                        title = $title
+                        pubDate = (Get-Date).ToString("yyyy-MM-ddTHH:mm:sszzz")
+                    }
+                    $pageCount++
                 }
-            } catch {
-                Log-Message "[$($source.name)] No more pages or failed to fetch feed page ${page}: $_" "warning"
             }
-        }
-    }
-    
-    foreach ($item in $feedItems) {
-        if (-not $candidateLinks.ContainsKey($item.link)) {
-            $candidateLinks[$item.link] = $true
-            $newItems += $item
+            Log-Message "[Animexin] Found $pageCount episode links on page $page."
+        } catch {
+            Log-Message "[Animexin] Failed to fetch release page ${page}: $_" "warning"
         }
     }
 }
@@ -523,7 +524,8 @@ function Save-Database($newVideos) {
                             downloads = $v.downloads
                         }
                         $json = $epData | ConvertTo-Json -Depth 10
-                        [System.IO.File]::WriteAllText($epFile, $json, [System.Text.Encoding]::UTF8)
+                        $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+                        [System.IO.File]::WriteAllText($epFile, $json, $utf8NoBom)
                     }
                 }
             }
@@ -540,7 +542,8 @@ function Save-Database($newVideos) {
             }
             $catalogJson = $catalog | ConvertTo-Json -Compress -Depth 5
             $catalogPath = Join-Path $PSScriptRoot "catalog.json"
-            [System.IO.File]::WriteAllText($catalogPath, $catalogJson, [System.Text.Encoding]::UTF8)
+            $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+            [System.IO.File]::WriteAllText($catalogPath, $catalogJson, $utf8NoBom)
             Log-Message "Checkpoint: Generated and saved catalog.json (Size: $(([System.IO.FileInfo]$catalogPath).Length / 1KB -as [int]) KB)."
         } catch {
             Log-Message "Error writing checkpoint database: $_" "error"
