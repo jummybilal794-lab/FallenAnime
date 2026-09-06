@@ -6,16 +6,16 @@ $catalogPath = Join-Path $PSScriptRoot "catalog.json"
 $sitemapPath = Join-Path $PSScriptRoot "sitemap.xml"
 $baseUrl = "https://fallenanime.xyz/"
 
-if (Test-Path $videosPath) {
-    Write-Host "Reading videos.json to generate sitemap..."
-    $rawJson = Get-Content -Raw -Path $videosPath -Encoding utf8
-    $videos = ConvertFrom-Json $rawJson
-} elseif (Test-Path $catalogPath) {
-    Write-Host "videos.json not found. Reading catalog.json to generate sitemap..."
+if (Test-Path $catalogPath) {
+    Write-Host "Reading catalog.json to generate sitemap..."
     $rawJson = Get-Content -Raw -Path $catalogPath -Encoding utf8
     $videos = ConvertFrom-Json $rawJson
+} elseif (Test-Path $videosPath) {
+    Write-Host "catalog.json not found. Reading videos.json to generate sitemap..."
+    $rawJson = Get-Content -Raw -Path $videosPath -Encoding utf8
+    $videos = ConvertFrom-Json $rawJson
 } else {
-    Write-Warning "Neither videos.json nor catalog.json was found. Cannot generate sitemap."
+    Write-Warning "Neither catalog.json nor videos.json was found. Cannot generate sitemap."
     exit 1
 }
 

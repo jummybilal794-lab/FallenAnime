@@ -18,7 +18,6 @@ if ($gitFolder -and (Test-Path $gitFolder)) {
 Write-Host "=========================================="
 Write-Host "Starting video database sync..."
 & "$devPath\sync-videos.ps1" -Full -Limit 200
-& "C:\Users\jummy\.gemini\antigravity\brain\3dc98168-972e-45fc-8bde-16276dce0124\scratch\separate_source_thumbnails.ps1"
 & "$devPath\generate-sitemap.ps1"
 
 # 2. Copy updated database files to repository

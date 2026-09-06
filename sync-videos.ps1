@@ -240,9 +240,61 @@ foreach ($v in $videos) {
 }
 
 $newItems = @()
+$candidateLinks = @{}
+
+# Always scan latest release HTML pages (Pages 1 to 5) directly
+Log-Message "Scanning recent release pages from Animexin and LuciferDonghua..."
+
+# 1. Animexin latest release pages
+for ($p = 1; $p -le 5; $p++) {
+    $url = if ($p -eq 1) { "https://animexin.dev/" } else { "https://animexin.dev/page/$p/" }
+    try {
+        $resp = Invoke-WebRequest -Uri $url -UseBasicParsing -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -TimeoutSec 15
+        $matches = [regex]::Matches($resp.Content, '<a[^>]+href="(https://animexin\.dev/[^"/]+/?)"[^>]*title="([^"]+)"')
+        foreach ($m in $matches) {
+            $link = $m.Groups[1].Value.Trim()
+            $title = $m.Groups[2].Value.Trim()
+            if ($link -match '/blog/' -or $link -match '/anime/' -or $link -match '/genre/' -or $link -match '/category/') { continue }
+            if (-not $candidateLinks.ContainsKey($link)) {
+                $candidateLinks[$link] = $true
+                $newItems += [PSCustomObject]@{
+                    link = $link
+                    title = $title
+                    pubDate = (Get-Date).ToString("yyyy-MM-ddTHH:mm:sszzz")
+                }
+            }
+        }
+    } catch {
+        Log-Message "Failed to fetch Animexin recent page ${p}: $_" "warning"
+    }
+}
+
+# 2. LuciferDonghua latest release pages
+for ($p = 1; $p -le 5; $p++) {
+    $url = if ($p -eq 1) { "https://luciferdonghua.in/" } else { "https://luciferdonghua.in/page/$p/" }
+    try {
+        $resp = Invoke-WebRequest -Uri $url -UseBasicParsing -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -TimeoutSec 15
+        $matches = [regex]::Matches($resp.Content, '<a[^>]+href="(https://luciferdonghua\.in/[^"/]+/?)"[^>]*title="([^"]+)"')
+        foreach ($m in $matches) {
+            $link = $m.Groups[1].Value.Trim()
+            $title = $m.Groups[2].Value.Trim()
+            if ($link -match '/blog/' -or $link -match '/anime/' -or $link -match '/genre/' -or $link -match '/category/') { continue }
+            if (-not $candidateLinks.ContainsKey($link)) {
+                $candidateLinks[$link] = $true
+                $newItems += [PSCustomObject]@{
+                    link = $link
+                    title = $title
+                    pubDate = (Get-Date).ToString("yyyy-MM-ddTHH:mm:sszzz")
+                }
+            }
+        }
+    } catch {
+        Log-Message "Failed to fetch LuciferDonghua recent page ${p}: $_" "warning"
+    }
+}
 
 if ($Full) {
-    # 2. Deep Sync: Fetch URLs from sitemaps
+    # 3. Deep Sync: Fetch URLs from sitemaps
     foreach ($source in $sources) {
         Log-Message "Fetching sitemap index from: $($source.sitemapUrl)"
         try {
@@ -276,21 +328,8 @@ if ($Full) {
                         }
                         
                         if ($loc -and $loc -ne $source.baseUrl) {
-                            if (-not $existingLinks.ContainsKey($loc)) {
-                                $key = Get-Episode-Key-Unified "" $loc
-                                if ($key -and $existingKeys.ContainsKey($key)) {
-                                    $existingVal = $existingKeys[$key]
-                                    if ($loc -like "*animexin.dev*" -and $existingVal.link -like "*luciferdonghua.in*") {
-                                        Log-Message "Found Animexin sitemap item for existing Lucifer Donghua episode: $loc. Allowing overwrite!"
-                                        $urlsToScrape += @{
-                                            link = $loc
-                                            pubDate = $lastmod
-                                            title = "" # Will extract from HTML
-                                        }
-                                        continue
-                                    }
-                                    continue
-                                }
+                            if (-not $candidateLinks.ContainsKey($loc)) {
+                                $candidateLinks[$loc] = $true
                                 $urlsToScrape += @{
                                     link = $loc
                                     pubDate = $lastmod
@@ -310,14 +349,8 @@ if ($Full) {
             Log-Message "[$($source.name)] Failed to fetch sitemap index: $_" "warning"
         }
     }
-    
-    # Apply Limit if set
-    if ($Limit -gt 0 -and $newItems.Count -gt $Limit) {
-        Log-Message "Limiting Deep Sync to crawl $Limit new episodes (out of $($newItems.Count) total missing)."
-        $newItems = $newItems[0..($Limit-1)]
-    }
 } else {
-    # 2. Incremental Sync: Fetch RSS feed pages
+    # 3. Incremental Sync: Fetch RSS feed pages
     $feedItems = @()
     foreach ($source in $sources) {
         for ($page = 1; $page -le $MaxPages; $page++) {
@@ -337,31 +370,39 @@ if ($Full) {
             }
         }
     }
-    if ($feedItems.Count -eq 0) {
-        Log-Message "No items found in any RSS feeds."
-        exit 0
-    }
     
-    Log-Message "Found $($feedItems.Count) items in all feeds. Checking for updates..."
-    
-    # Identify new items (in reverse order to process oldest new item first)
-    for ($i = $feedItems.Count - 1; $i -ge 0; $i--) {
-        $item = $feedItems[$i]
-        if (-not $existingLinks.ContainsKey($item.link)) {
-            # Check for title key duplicate
-            $key = Get-Episode-Key $item.title
-            if ($key -and $existingKeys.ContainsKey($key)) {
-                $existingVal = $existingKeys[$key]
-                if ($item.link -like "*animexin.dev*" -and $existingVal.link -like "*luciferdonghua.in*") {
-                    Log-Message "Found Animexin RSS item for existing Lucifer Donghua episode: $($item.title). Allowing overwrite!"
-                    $newItems += $item
-                    continue
-                }
-                continue
-            }
+    foreach ($item in $feedItems) {
+        if (-not $candidateLinks.ContainsKey($item.link)) {
+            $candidateLinks[$item.link] = $true
             $newItems += $item
         }
     }
+}
+
+# Filter to genuinely missing items
+$filteredNewItems = @()
+foreach ($item in $newItems) {
+    if (-not $existingLinks.ContainsKey($item.link)) {
+        # Check for title key duplicate
+        $key = if ($item.title) { Get-Episode-Key $item.title } else { Get-Episode-Key-Unified "" $item.link }
+        if ($key -and $existingKeys.ContainsKey($key)) {
+            $existingVal = $existingKeys[$key]
+            if ($item.link -like "*animexin.dev*" -and $existingVal.link -like "*luciferdonghua.in*") {
+                Log-Message "Found Animexin item for existing Lucifer Donghua episode: $($item.link). Allowing overwrite!"
+                $filteredNewItems += $item
+                continue
+            }
+            continue
+        }
+        $filteredNewItems += $item
+    }
+}
+$newItems = $filteredNewItems
+
+# Apply Limit if set
+if ($Limit -gt 0 -and $newItems.Count -gt $Limit) {
+    Log-Message "Limiting crawl to $Limit new episodes (out of $($newItems.Count) total missing)."
+    $newItems = $newItems[0..($Limit-1)]
 }
 
 # 3. Deduplicate new items prioritizing Animexin over Lucifer Donghua
