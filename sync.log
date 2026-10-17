@@ -1,36 +1,54 @@
-﻿[18:22:02] ==========================================
-[18:22:02] Starting Video Sync: 10/16/2026 18:22:02
-[18:22:02] Mode: Incremental Sync (RSS)
-[18:22:02] ==========================================
-[18:22:03] Loaded 11123 existing videos from local database.
-[18:22:11] Scanning recent release pages from Animexin...
-[18:22:36] [Animexin] Scanning recent release pages 1 to 10...
-[18:22:36] [Animexin] Fetching release page 1 from: https://animexin.dev/
-[18:22:40] [Animexin] Found 0 episode links on page 1.
-[18:22:40] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
-[18:22:42] [Animexin] Found 0 episode links on page 2.
-[18:22:42] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
-[18:22:44] [Animexin] Found 0 episode links on page 3.
-[18:22:44] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
-[18:22:46] [Animexin] Found 0 episode links on page 4.
-[18:22:46] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
-[18:22:48] [Animexin] Found 0 episode links on page 5.
-[18:22:48] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
-[18:22:49] [Animexin] Found 0 episode links on page 6.
-[18:22:49] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
-[18:22:51] [Animexin] Found 0 episode links on page 7.
-[18:22:51] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
-[18:22:53] [Animexin] Found 0 episode links on page 8.
-[18:22:53] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
-[18:22:55] [Animexin] Found 0 episode links on page 9.
-[18:22:55] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
-[18:22:56] [Animexin] Found 0 episode links on page 10.
-[18:22:56] Found 1 new episodes to scrape.
-[18:23:00] [1/1] Scraping: Soul Land 2: The Peerless Tang Sect Episode 175 Indonesia, English Sub
-[18:23:00] URL: https://animexin.dev/soul-land-2-the-peerless-tang-sect-episode-175-subtitle-indonesia-englishsoul-land-2-the-peerless-tang-sect-episode-175-indonesia-english-sub/
-[18:23:00] Success: Scraped 16 mirrors and 6 download links.
-[18:23:06] Checkpoint: Saved 1 new items to videos.json (Total database: 11124 items).
-[18:23:06] Checkpoint: Generated and saved catalog.json (Size: 4047 KB).
-[18:23:06] ==========================================
-[18:23:06] Sync Completed: 10/16/2026 18:23:06
-[18:23:06] ==========================================
+﻿[13:02:13] ==========================================
+[13:02:13] Starting Video Sync: 10/17/2026 13:02:13
+[13:02:13] Mode: Incremental Sync (RSS)
+[13:02:13] ==========================================
+[13:02:14] Loaded 11124 existing videos from local database.
+[13:02:24] Scanning recent release pages from Animexin...
+[13:02:41] [Animexin] Scanning recent release pages 1 to 10...
+[13:02:41] [Animexin] Fetching release page 1 from: https://animexin.dev/
+[13:02:42] [Animexin] Found 0 episode links on page 1.
+[13:02:42] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
+[13:02:43] [Animexin] Found 0 episode links on page 2.
+[13:02:43] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
+[13:02:44] [Animexin] Found 0 episode links on page 3.
+[13:02:44] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
+[13:02:45] [Animexin] Found 0 episode links on page 4.
+[13:02:45] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
+[13:02:46] [Animexin] Found 0 episode links on page 5.
+[13:02:46] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
+[13:02:48] [Animexin] Found 0 episode links on page 6.
+[13:02:48] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
+[13:02:49] [Animexin] Found 0 episode links on page 7.
+[13:02:49] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
+[13:02:49] [Animexin] Found 0 episode links on page 8.
+[13:02:49] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
+[13:02:50] [Animexin] Found 0 episode links on page 9.
+[13:02:50] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
+[13:02:51] [Animexin] Found 0 episode links on page 10.
+[13:02:51] Found 7 new episodes to scrape.
+[13:02:53] [1/7] Scraping: Beyond Timeâs Gaze Episode 44 Indonesia, English Sub
+[13:02:53] URL: https://animexin.dev/beyond-times-gaze-episode-44-indonesia-english-sub/
+[13:02:53] Success: Scraped 16 mirrors and 6 download links.
+[13:02:55] [2/7] Scraping: A Record Of Mortalâs Journey To Immortality Episode 196 Indonesia, English Sub
+[13:02:55] URL: https://animexin.dev/a-record-of-mortals-journey-to-immortality-episode-196-indonesia-english-sub/
+[13:02:55] Success: Scraped 16 mirrors and 6 download links.
+[13:02:56] [3/7] Scraping: A Good Day to Ascend Episode 16 Indonesia, English Sub
+[13:02:56] URL: https://animexin.dev/a-good-day-to-ascend-episode-16-indonesia-english-sub/
+[13:02:56] Success: Scraped 16 mirrors and 6 download links.
+[13:02:57] [4/7] Scraping: 100.000 Years of Refining Qi Episode 386 Indonesia, English Sub
+[13:02:57] URL: https://animexin.dev/100-000-years-of-refining-qi-episode-386-indonesia-english-sub/
+[13:02:57] Success: Scraped 16 mirrors and 6 download links.
+[13:02:59] [5/7] Scraping: Wan Jie Du Zun [Ten Thousand Worlds] Episode 492 Indonesia, English Sub
+[13:02:59] URL: https://animexin.dev/wan-jie-du-zun-ten-thousand-worlds-episode-492-indonesia-english-sub/
+[13:02:59] Success: Scraped 16 mirrors and 6 download links.
+[13:03:00] [6/7] Scraping: Tales of Demons and Gods Season 10 Episode 29 [461] Indonesia, English Sub
+[13:03:00] URL: https://animexin.dev/tales-of-demons-and-gods-season-10-episode-29-461-indonesia-english-sub/
+[13:03:00] Success: Scraped 16 mirrors and 6 download links.
+[13:03:05] [7/7] Scraping: Against the Sky Supreme Episode 558 Indonesia, English Sub
+[13:03:05] URL: https://animexin.dev/against-the-sky-supreme-episode-558-indonesia-english-sub/
+[13:03:05] Success: Scraped 16 mirrors and 6 download links.
+[13:03:11] Checkpoint: Saved 7 new items to videos.json (Total database: 11131 items).
+[13:03:12] Checkpoint: Generated and saved catalog.json (Size: 4050 KB).
+[13:03:12] ==========================================
+[13:03:12] Sync Completed: 10/17/2026 13:03:12
+[13:03:12] ==========================================
