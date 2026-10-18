@@ -1,28 +1,36 @@
-﻿[17:22:03] ==========================================
-[17:22:03] Starting Video Sync: 10/18/2026 17:22:03
-[17:22:03] Mode: Incremental Sync (RSS)
-[17:22:03] ==========================================
-[17:22:05] Loaded 11136 existing videos from local database.
-[17:22:13] Scanning recent release pages from Animexin...
-[17:23:07] [Animexin] Scanning recent release pages 1 to 10...
-[17:23:07] [Animexin] Fetching release page 1 from: https://animexin.dev/
-[17:23:12] [Animexin] Found 3 episode links on page 1.
-[17:23:12] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
-[17:23:17] [Animexin] Found 0 episode links on page 2.
-[17:23:17] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
-[17:23:20] [Animexin] Found 0 episode links on page 3.
-[17:23:20] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
-[17:23:22] [Animexin] Found 0 episode links on page 4.
-[17:23:22] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
-[17:23:24] [Animexin] Found 0 episode links on page 5.
-[17:23:24] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
-[17:23:26] [Animexin] Found 0 episode links on page 6.
-[17:23:26] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
-[17:23:28] [Animexin] Found 0 episode links on page 7.
-[17:23:28] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
-[17:23:30] [Animexin] Found 0 episode links on page 8.
-[17:23:30] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
-[17:23:32] [Animexin] Found 0 episode links on page 9.
-[17:23:32] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
-[17:23:34] [Animexin] Found 0 episode links on page 10.
-[17:23:34] No new episodes found. Database is up to date.
+﻿[18:22:03] ==========================================
+[18:22:03] Starting Video Sync: 10/18/2026 18:22:03
+[18:22:03] Mode: Incremental Sync (RSS)
+[18:22:03] ==========================================
+[18:22:04] Loaded 11136 existing videos from local database.
+[18:22:12] Scanning recent release pages from Animexin...
+[18:22:27] [Animexin] Scanning recent release pages 1 to 10...
+[18:22:27] [Animexin] Fetching release page 1 from: https://animexin.dev/
+[18:22:27] [Animexin] Found 0 episode links on page 1.
+[18:22:27] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
+[18:22:29] [Animexin] Found 0 episode links on page 2.
+[18:22:29] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
+[18:22:29] [Animexin] Found 0 episode links on page 3.
+[18:22:29] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
+[18:22:30] [Animexin] Found 0 episode links on page 4.
+[18:22:30] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
+[18:22:30] [Animexin] Found 0 episode links on page 5.
+[18:22:30] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
+[18:22:31] [Animexin] Found 0 episode links on page 6.
+[18:22:31] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
+[18:22:32] [Animexin] Found 0 episode links on page 7.
+[18:22:32] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
+[18:22:32] [Animexin] Found 0 episode links on page 8.
+[18:22:32] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
+[18:22:33] [Animexin] Found 0 episode links on page 9.
+[18:22:33] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
+[18:22:33] [Animexin] Found 0 episode links on page 10.
+[18:22:33] Found 1 new episodes to scrape.
+[18:22:34] [1/1] Scraping: Renegade Immortal Episode 163 Indonesia, English Sub
+[18:22:34] URL: https://animexin.dev/renegade-immortal-episode-163-indonesia-english-sub/
+[18:22:34] Success: Scraped 16 mirrors and 6 download links.
+[18:22:40] Checkpoint: Saved 1 new items to videos.json (Total database: 11137 items).
+[18:22:40] Checkpoint: Generated and saved catalog.json (Size: 4052 KB).
+[18:22:40] ==========================================
+[18:22:40] Sync Completed: 10/18/2026 18:22:40
+[18:22:40] ==========================================
