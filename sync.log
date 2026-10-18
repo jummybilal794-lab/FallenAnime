@@ -1,45 +1,28 @@
-﻿[13:31:25] ==========================================
-[13:31:25] Starting Video Sync: 10/18/2026 13:31:25
-[13:31:25] Mode: Incremental Sync (RSS)
-[13:31:25] ==========================================
-[13:31:30] Loaded 11132 existing videos from local database.
-[13:31:40] Scanning recent release pages from Animexin...
-[13:31:57] [Animexin] Scanning recent release pages 1 to 10...
-[13:31:57] [Animexin] Fetching release page 1 from: https://animexin.dev/
-[13:31:58] [Animexin] Found 0 episode links on page 1.
-[13:31:58] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
-[13:32:00] [Animexin] Found 0 episode links on page 2.
-[13:32:00] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
-[13:32:01] [Animexin] Found 0 episode links on page 3.
-[13:32:01] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
-[13:32:02] [Animexin] Found 0 episode links on page 4.
-[13:32:02] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
-[13:32:03] [Animexin] Found 0 episode links on page 5.
-[13:32:03] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
-[13:32:03] [Animexin] Found 0 episode links on page 6.
-[13:32:03] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
-[13:32:04] [Animexin] Found 0 episode links on page 7.
-[13:32:04] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
-[13:32:06] [Animexin] Found 0 episode links on page 8.
-[13:32:06] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
-[13:32:06] [Animexin] Found 0 episode links on page 9.
-[13:32:06] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
-[13:32:07] [Animexin] Found 0 episode links on page 10.
-[13:32:07] Found 4 new episodes to scrape.
-[13:32:09] [1/4] Scraping: Tales of Herding Gods Episode 105 Indonesia, English Sub
-[13:32:09] URL: https://animexin.dev/tales-of-herding-gods-episode-105-indonesia-english-sub/
-[13:32:09] Success: Scraped 16 mirrors and 6 download links.
-[13:32:10] [2/4] Scraping: Ancient God Sovereign Episode 27 Indonesia, English Sub
-[13:32:10] URL: https://animexin.dev/ancient-god-sovereign-episode-27-indonesia-english-sub/
-[13:32:10] Success: Scraped 16 mirrors and 6 download links.
-[13:32:12] [3/4] Scraping: Martial Master Episode 701 Indonesia, English Sub
-[13:32:12] URL: https://animexin.dev/martial-master-episode-701-indonesia-english-sub/
-[13:32:12] Success: Scraped 16 mirrors and 6 download links.
-[13:32:13] [4/4] Scraping: Golden Curse Episode 12 Indonesia, English Sub
-[13:32:13] URL: https://animexin.dev/golden-curse-episode-12-indonesia-english-sub/
-[13:32:13] Success: Scraped 16 mirrors and 6 download links.
-[13:32:19] Checkpoint: Saved 4 new items to videos.json (Total database: 11136 items).
-[13:32:19] Checkpoint: Generated and saved catalog.json (Size: 4052 KB).
-[13:32:19] ==========================================
-[13:32:19] Sync Completed: 10/18/2026 13:32:19
-[13:32:19] ==========================================
+﻿[14:22:03] ==========================================
+[14:22:03] Starting Video Sync: 10/18/2026 14:22:03
+[14:22:03] Mode: Incremental Sync (RSS)
+[14:22:03] ==========================================
+[14:22:04] Loaded 11136 existing videos from local database.
+[14:22:11] Scanning recent release pages from Animexin...
+[14:22:24] [Animexin] Scanning recent release pages 1 to 10...
+[14:22:24] [Animexin] Fetching release page 1 from: https://animexin.dev/
+[14:22:24] [Animexin] Found 0 episode links on page 1.
+[14:22:24] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
+[14:22:25] [Animexin] Found 0 episode links on page 2.
+[14:22:25] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
+[14:22:26] [Animexin] Found 0 episode links on page 3.
+[14:22:26] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
+[14:22:26] [Animexin] Found 0 episode links on page 4.
+[14:22:26] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
+[14:22:27] [Animexin] Found 0 episode links on page 5.
+[14:22:27] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
+[14:22:28] [Animexin] Found 0 episode links on page 6.
+[14:22:28] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
+[14:22:28] [Animexin] Found 0 episode links on page 7.
+[14:22:28] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
+[14:22:29] [Animexin] Found 0 episode links on page 8.
+[14:22:29] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
+[14:22:30] [Animexin] Found 0 episode links on page 9.
+[14:22:30] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
+[14:22:30] [Animexin] Found 0 episode links on page 10.
+[14:22:30] No new episodes found. Database is up to date.
