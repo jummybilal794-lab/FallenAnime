@@ -1,128 +1,28 @@
-﻿[10:50:07] ==========================================
-[10:50:07] Starting Video Sync: 10/26/2026 10:50:07
-[10:50:07] Mode: Incremental Sync (RSS)
-[10:50:07] ==========================================
-[10:50:13] Loaded 11137 existing videos from local database.
-[10:50:39] Scanning recent release pages from Animexin...
-[10:51:00] [Animexin] Scanning recent release pages 1 to 10...
-[10:51:00] [Animexin] Fetching release page 1 from: https://animexin.dev/
-[10:51:02] [Animexin] Found 0 episode links on page 1.
-[10:51:02] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
-[10:51:03] [Animexin] Found 0 episode links on page 2.
-[10:51:03] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
-[10:51:04] [Animexin] Found 0 episode links on page 3.
-[10:51:04] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
-[10:51:05] [Animexin] Found 0 episode links on page 4.
-[10:51:05] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
-[10:51:05] [Animexin] Found 0 episode links on page 5.
-[10:51:05] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
-[10:51:06] [Animexin] Found 0 episode links on page 6.
-[10:51:06] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
-[10:51:07] [Animexin] Found 0 episode links on page 7.
-[10:51:07] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
-[10:51:08] [Animexin] Found 0 episode links on page 8.
-[10:51:08] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
-[10:51:09] [Animexin] Found 0 episode links on page 9.
-[10:51:09] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
-[10:51:09] [Animexin] Found 0 episode links on page 10.
-[10:51:10] Found 31 new episodes to scrape.
-[10:51:11] [1/31] Scraping: Renegade Immortal Episode 164 Indonesia, English Sub
-[10:51:11] URL: https://animexin.dev/renegade-immortal-episode-164-indonesia-english-sub/
-[10:51:11] Success: Scraped 16 mirrors and 6 download links.
-[10:51:13] [2/31] Scraping: Tales of Herding Gods Episode 106 Indonesia, English Sub
-[10:51:13] URL: https://animexin.dev/tales-of-herding-gods-episode-106-indonesia-english-sub/
-[10:51:13] Success: Scraped 16 mirrors and 6 download links.
-[10:51:14] [3/31] Scraping: Gu An Episode 15 Indonesia, English Sub
-[10:51:14] URL: https://animexin.dev/gu-an-episode-15-indonesia-english-sub/
-[10:51:14] Success: Scraped 16 mirrors and 6 download links.
-[10:51:16] [4/31] Scraping: Battle Through the Heavens Season 5 Episode 216 Indonesia, English Sub
-[10:51:16] URL: https://animexin.dev/battle-through-the-heavens-season-5-episode-216-indonesia-english-sub/
-[10:51:16] Success: Scraped 16 mirrors and 6 download links.
-[10:51:17] [5/31] Scraping: Beyond Timeâs Gaze Episode 45 Indonesia, English Sub
-[10:51:17] URL: https://animexin.dev/beyond-times-gaze-episode-45-indonesia-english-sub/
-[10:51:17] Success: Scraped 16 mirrors and 6 download links.
-[10:51:20] [6/31] Scraping: Supreme God Emperor Episode 652 Indonesia, English Sub
-[10:51:20] URL: https://animexin.dev/supreme-god-emperor-episode-652-indonesia-english-sub/
-[10:51:20] Success: Scraped 16 mirrors and 6 download links.
-[10:51:21] [7/31] Scraping: The Eternal Supreme Li Yunxiao Episode 30 Indonesia, English Sub
-[10:51:21] URL: https://animexin.dev/the-eternal-supreme-li-yunxiao-episode-30-indonesia-english-sub/
-[10:51:21] Success: Scraped 16 mirrors and 6 download links.
-[10:51:22] [8/31] Scraping: UNDER THE GATE Episode 21 Indonesia, English Sub
-[10:51:22] URL: https://animexin.dev/under-the-gate-episode-21-indonesia-english-sub/
-[10:51:22] Success: Scraped 16 mirrors and 6 download links.
-[10:51:23] [9/31] Scraping: Ancient God Sovereign Episode 29 Indonesia, English Sub
-[10:51:23] URL: https://animexin.dev/ancient-god-sovereign-episode-29-indonesia-english-sub/
-[10:51:23] Success: Scraped 16 mirrors and 6 download links.
-[10:51:25] [10/31] Scraping: Martial Master Episode 703 Indonesia, English Sub
-[10:51:25] URL: https://animexin.dev/martial-master-episode-703-indonesia-english-sub/
-[10:51:25] Success: Scraped 16 mirrors and 6 download links.
-[10:51:27] [11/31] Scraping: Golden Curse Episode 13 Subtitle Indonesia, English
-[10:51:27] URL: https://animexin.dev/golden-curse-episode-13-subtitle-indonesia-english/
-[10:51:27] Success: Scraped 16 mirrors and 6 download links.
-[10:51:29] [12/31] Scraping: 100.000 Years of Refining Qi Episode 388 Indonesia, English Sub
-[10:51:29] URL: https://animexin.dev/100-000-years-of-refining-qi-episode-388-indonesia-english-sub/
-[10:51:29] Success: Scraped 16 mirrors and 6 download links.
-[10:51:31] [13/31] Scraping: Wan Jie Du Zun [Ten Thousand Worlds] Episode 494 Indonesia, English Sub
-[10:51:31] URL: https://animexin.dev/wan-jie-du-zun-ten-thousand-worlds-episode-494-indonesia-english-sub/
-[10:51:31] Success: Scraped 16 mirrors and 6 download links.
-[10:51:32] [14/31] Scraping: A Record Of Mortalâs Journey To Immortality Episode 197 Indonesia, English Sub
-[10:51:32] URL: https://animexin.dev/a-record-of-mortals-journey-to-immortality-episode-197-indonesia-english-sub/
-[10:51:32] Success: Scraped 16 mirrors and 6 download links.
-[10:51:33] [15/31] Scraping: Tales of Demons and Gods Season 10 Episode 39 [471] Indonesia, English Sub
-[10:51:33] URL: https://animexin.dev/tales-of-demons-and-gods-season-10-episode-39-471-indonesia-english-sub/
-[10:51:33] Success: Scraped 16 mirrors and 6 download links.
-[10:51:34] [16/31] Scraping: A Good Day to Ascend Episode 17 Indonesia, English Sub
-[10:51:34] URL: https://animexin.dev/a-good-day-to-ascend-episode-17-indonesia-english-sub/
-[10:51:34] Success: Scraped 16 mirrors and 6 download links.
-[10:51:36] [17/31] Scraping: Jade Dynasty Season 4 Final Season Episode 12 Indonesia, English Sub
-[10:51:36] URL: https://animexin.dev/jade-dynasty-season-4-final-season-episode-12-indonesia-english-sub/
-[10:51:36] Success: Scraped 16 mirrors and 6 download links.
-[10:51:37] [18/31] Scraping: Soul Land 2: The Peerless Tang Sect Episode 176 Indonesia, English Sub
-[10:51:37] URL: https://animexin.dev/soul-land-2-the-peerless-tang-sect-episode-176-indonesia-english-sub/
-[10:51:37] Success: Scraped 16 mirrors and 6 download links.
-[10:51:39] [19/31] Scraping: Against the Sky Supreme Episode 560 Indonesia, English Sub
-[10:51:39] URL: https://animexin.dev/against-the-sky-supreme-episode-560-indonesia-english-sub/
-[10:51:39] Success: Scraped 16 mirrors and 6 download links.
-[10:51:40] [20/31] Scraping: The Demon Hunter [Chang Yuan Tu] Episode 100 Indonesia, English Sub
-[10:51:40] URL: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-100-indonesia-english-sub/
-[10:51:40] Success: Scraped 16 mirrors and 6 download links.
-[10:52:06] Checkpoint: Saved 20 new items to videos.json (Total database: 11157 items).
-[10:52:08] Checkpoint: Generated and saved catalog.json (Size: 4059 KB).
-[10:52:09] [21/31] Scraping: The Great Ruler 3D Episode 96 Indonesia, English Sub
-[10:52:09] URL: https://animexin.dev/the-great-ruler-3d-episode-96-indonesia-english-sub/
-[10:52:09] Success: Scraped 16 mirrors and 6 download links.
-[10:52:11] [22/31] Scraping: Xi Xing Ji: Asura Season 2 Episode 7 Indonesia, English Sub
-[10:52:11] URL: https://animexin.dev/xi-xing-ji-asura-season-2-episode-7-indonesia-english-sub/
-[10:52:11] Success: Scraped 16 mirrors and 6 download links.
-[10:52:12] [23/31] Scraping: The Guardian of Daxia Episode 10 Indonesia, English Sub
-[10:52:12] URL: https://animexin.dev/the-guardian-of-daxia-episode-10-indonesia-english-sub/
-[10:52:12] Success: Scraped 16 mirrors and 6 download links.
-[10:52:14] [24/31] Scraping: Big Brother Episode 164 Indonesia, English Sub
-[10:52:14] URL: https://animexin.dev/big-brother-episode-164-indonesia-english-sub/
-[10:52:14] Success: Scraped 16 mirrors and 6 download links.
-[10:52:15] [25/31] Scraping: Oriental Martial Academy Episode 15 Indonesia, English Sub
-[10:52:15] URL: https://animexin.dev/oriental-martial-academy-episode-15-indonesia-english-sub/
-[10:52:15] Success: Scraped 16 mirrors and 6 download links.
-[10:52:17] [26/31] Scraping: Spiritual Realm Walker Episode 9 Indonesia, English Sub
-[10:52:17] URL: https://animexin.dev/spiritual-realm-walker-episode-9-indonesia-english-sub/
-[10:52:17] Success: Scraped 16 mirrors and 6 download links.
-[10:52:19] [27/31] Scraping: Against the Gods Episode 60 Indonesia, English Sub
-[10:52:19] URL: https://animexin.dev/against-the-gods-episode-60-indonesia-english-sub/
-[10:52:19] Success: Scraped 16 mirrors and 6 download links.
-[10:52:27] [28/31] Scraping: Yi Nian Yong Heng [A Will Eternal] Episode 181 Indonesia, English Sub
-[10:52:27] URL: https://animexin.dev/yi-nian-yong-heng-a-will-eternal-episode-181-indonesia-english-sub/
-[10:52:27] Success: Scraped 16 mirrors and 6 download links.
-[10:52:29] [29/31] Scraping: Raised by Demons: Panda Li Episode 15 Indonesia, English Sub
-[10:52:29] URL: https://animexin.dev/raised-by-demons-panda-li-episode-15-indonesia-english-sub/
-[10:52:29] Success: Scraped 14 mirrors and 6 download links.
-[10:52:31] [30/31] Scraping: Shrouding the Heavens Episode 186 Indonesia, English Sub
-[10:52:31] URL: https://animexin.dev/shrouding-the-heavens-episode-186-indonesia-english-sub/
-[10:52:31] Success: Scraped 16 mirrors and 6 download links.
-[10:52:33] [31/31] Scraping: Swallowed Star Season 5 Episode 38 [246] Indonesia, English Sub
-[10:52:33] URL: https://animexin.dev/swallowed-star-season-5-episode-38-246-indonesia-english-sub/
-[10:52:33] Success: Scraped 16 mirrors and 6 download links.
-[10:52:43] Checkpoint: Saved 11 new items to videos.json (Total database: 11168 items).
-[10:52:44] Checkpoint: Generated and saved catalog.json (Size: 4063 KB).
-[10:52:44] ==========================================
-[10:52:44] Sync Completed: 10/26/2026 10:52:44
-[10:52:44] ==========================================
+﻿[11:22:04] ==========================================
+[11:22:04] Starting Video Sync: 10/26/2026 11:22:04
+[11:22:04] Mode: Incremental Sync (RSS)
+[11:22:04] ==========================================
+[11:22:05] Loaded 11168 existing videos from local database.
+[11:22:13] Scanning recent release pages from Animexin...
+[11:22:26] [Animexin] Scanning recent release pages 1 to 10...
+[11:22:26] [Animexin] Fetching release page 1 from: https://animexin.dev/
+[11:22:27] [Animexin] Found 0 episode links on page 1.
+[11:22:27] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
+[11:22:28] [Animexin] Found 0 episode links on page 2.
+[11:22:28] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
+[11:22:29] [Animexin] Found 0 episode links on page 3.
+[11:22:29] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
+[11:22:29] [Animexin] Found 0 episode links on page 4.
+[11:22:29] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
+[11:22:30] [Animexin] Found 0 episode links on page 5.
+[11:22:30] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
+[11:22:31] [Animexin] Found 0 episode links on page 6.
+[11:22:31] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
+[11:22:31] [Animexin] Found 0 episode links on page 7.
+[11:22:31] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
+[11:22:32] [Animexin] Found 0 episode links on page 8.
+[11:22:32] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
+[11:22:33] [Animexin] Found 0 episode links on page 9.
+[11:22:33] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
+[11:22:34] [Animexin] Found 0 episode links on page 10.
+[11:22:34] No new episodes found. Database is up to date.
