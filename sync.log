@@ -1,42 +1,28 @@
-﻿[13:34:12] ==========================================
-[13:34:12] Starting Video Sync: 10/31/2026 13:34:12
-[13:34:12] Mode: Incremental Sync (RSS)
-[13:34:12] ==========================================
-[13:34:15] Loaded 11190 existing videos from local database.
-[13:34:25] Scanning recent release pages from Animexin...
-[13:34:41] [Animexin] Scanning recent release pages 1 to 10...
-[13:34:41] [Animexin] Fetching release page 1 from: https://animexin.dev/
-[13:34:42] [Animexin] Found 0 episode links on page 1.
-[13:34:42] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
-[13:34:44] [Animexin] Found 0 episode links on page 2.
-[13:34:44] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
-[13:34:45] [Animexin] Found 0 episode links on page 3.
-[13:34:45] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
-[13:34:47] [Animexin] Found 0 episode links on page 4.
-[13:34:47] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
-[13:34:49] [Animexin] Found 0 episode links on page 5.
-[13:34:49] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
-[13:34:50] [Animexin] Found 0 episode links on page 6.
-[13:34:50] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
-[13:34:51] [Animexin] Found 0 episode links on page 7.
-[13:34:51] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
-[13:34:52] [Animexin] Found 0 episode links on page 8.
-[13:34:52] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
-[13:34:53] [Animexin] Found 0 episode links on page 9.
-[13:34:53] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
-[13:34:54] [Animexin] Found 0 episode links on page 10.
-[13:34:54] Found 3 new episodes to scrape.
-[13:34:55] [1/3] Scraping: Beyond Timeâs Gaze Episode 46 Indonesia, English Sub
-[13:34:55] URL: https://animexin.dev/beyond-times-gaze-episode-46-indonesia-english-sub/
-[13:34:55] Success: Scraped 15 mirrors and 6 download links.
-[13:34:56] [2/3] Scraping: A Record Of Mortalâs Journey To Immortality Episode 198 Indonesia, English Sub
-[13:34:56] URL: https://animexin.dev/a-record-of-mortals-journey-to-immortality-episode-198-indonesia-english-sub/
-[13:34:56] Success: Scraped 15 mirrors and 6 download links.
-[13:34:59] [3/3] Scraping: A Good Day to Ascend Episode 18 Indonesia, English Sub
-[13:34:59] URL: https://animexin.dev/a-good-day-to-ascend-episode-18-indonesia-english-sub/
-[13:34:59] Success: Scraped 16 mirrors and 6 download links.
-[13:35:05] Checkpoint: Saved 3 new items to videos.json (Total database: 11193 items).
-[13:35:06] Checkpoint: Generated and saved catalog.json (Size: 4073 KB).
-[13:35:06] ==========================================
-[13:35:06] Sync Completed: 10/31/2026 13:35:06
-[13:35:06] ==========================================
+﻿[14:22:04] ==========================================
+[14:22:04] Starting Video Sync: 10/31/2026 14:22:04
+[14:22:04] Mode: Incremental Sync (RSS)
+[14:22:04] ==========================================
+[14:22:05] Loaded 11193 existing videos from local database.
+[14:22:13] Scanning recent release pages from Animexin...
+[14:22:30] [Animexin] Scanning recent release pages 1 to 10...
+[14:22:30] [Animexin] Fetching release page 1 from: https://animexin.dev/
+[14:22:31] [Animexin] Found 0 episode links on page 1.
+[14:22:31] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
+[14:22:32] [Animexin] Found 0 episode links on page 2.
+[14:22:32] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
+[14:22:32] [Animexin] Found 0 episode links on page 3.
+[14:22:32] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
+[14:22:33] [Animexin] Found 0 episode links on page 4.
+[14:22:33] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
+[14:22:34] [Animexin] Found 0 episode links on page 5.
+[14:22:34] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
+[14:22:35] [Animexin] Found 0 episode links on page 6.
+[14:22:35] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
+[14:22:36] [Animexin] Found 0 episode links on page 7.
+[14:22:36] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
+[14:22:37] [Animexin] Found 0 episode links on page 8.
+[14:22:37] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
+[14:22:38] [Animexin] Found 0 episode links on page 9.
+[14:22:38] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
+[14:22:39] [Animexin] Found 0 episode links on page 10.
+[14:22:39] No new episodes found. Database is up to date.
