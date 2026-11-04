@@ -655,7 +655,14 @@ function applyFiltersAndSearchEpisodes() {
                 return scoreB - scoreA; // Higher relevance score first
             }
             
-            // If scores are equal, keep newer publication date first
+            // For matching episodes of the same series, sort in ascending order: 1, 2, 3, 4 etc.
+            const epA = getEpisodeNumber(a.title);
+            const epB = getEpisodeNumber(b.title);
+            if (epA > 0 && epB > 0 && epA !== epB) {
+                return epA - epB;
+            }
+            
+            // If scores are equal and no ep number, keep newer publication date first
             const dateA = new Date(a.pubDate);
             const dateB = new Date(b.pubDate);
             return (isNaN(dateB.getTime()) ? 0 : dateB) - (isNaN(dateA.getTime()) ? 0 : dateA);
@@ -1424,19 +1431,22 @@ function showWatchView(index, scroll = true) {
             });
         }
         
-        // Sort related videos by episode number descending (Newest first, e.g. Ep 3, Ep 2, Ep 1)
+        // Sort related videos by episode number ascending (1, 2, 3, 4 etc.)
         relatedVideos.sort((a, b) => {
             const epA = getEpisodeNumber(a.title);
             const epB = getEpisodeNumber(b.title);
-            return epB - epA;
+            if (epA > 0 && epB > 0 && epA !== epB) {
+                return epA - epB;
+            }
+            return (new Date(a.pubDate || 0)) - (new Date(b.pubDate || 0));
         });
 
         // Find current video index in series list
         const currentIdxInRelated = relatedVideos.findIndex(v => v.link === video.link);
 
         if (currentIdxInRelated !== -1) {
-            // Next Episode (higher number, index decreases in descending list)
-            const nextVideoObj = relatedVideos[currentIdxInRelated - 1];
+            // Next Episode (higher number in ascending list: 1 -> 2 -> 3)
+            const nextVideoObj = relatedVideos[currentIdxInRelated + 1];
             if (nextVideoObj) {
                 newNext.disabled = false;
                 newNext.onclick = () => {
@@ -1447,8 +1457,8 @@ function showWatchView(index, scroll = true) {
                 newNext.disabled = true;
             }
 
-            // Previous Episode (lower number, index increases in descending list)
-            const prevVideoObj = relatedVideos[currentIdxInRelated + 1];
+            // Previous Episode (lower number in ascending list: 3 -> 2 -> 1)
+            const prevVideoObj = relatedVideos[currentIdxInRelated - 1];
             if (prevVideoObj) {
                 newPrev.disabled = false;
                 newPrev.onclick = () => {
@@ -1715,7 +1725,11 @@ function getSeriesName(title) {
 
 // Extract episode number
 function getEpisodeNumber(title) {
-    const match = title.match(/Episode\s*(\d+(\.\d+)?)/i) || title.match(/Ep\s*(\d+(\.\d+)?)/i);
+    if (!title) return 0;
+    const match = title.match(/Episode\s*(\d+(\.\d+)?)/i) || 
+                  title.match(/Eps?\s*(\d+(\.\d+)?)/i) || 
+                  title.match(/\bEp\.?\s*(\d+(\.\d+)?)/i) ||
+                  title.match(/\bE(\d+)\b/i);
     return match ? parseFloat(match[1]) : 0;
 }
 
@@ -1744,11 +1758,14 @@ function renderSidebarList(currentPlayingIdx) {
         });
     }
 
-    // Sort related videos by episode number descending
+    // Sort related videos by episode number ascending (1, 2, 3, 4 etc.)
     relatedVideos.sort((a, b) => {
         const epA = getEpisodeNumber(a.title);
         const epB = getEpisodeNumber(b.title);
-        return epB - epA;
+        if (epA > 0 && epB > 0 && epA !== epB) {
+            return epA - epB;
+        }
+        return (new Date(a.pubDate || 0)) - (new Date(b.pubDate || 0));
     });
 
     const sidebarHeading = document.querySelector('.watch-sidebar .sidebar-heading');
@@ -1758,6 +1775,14 @@ function renderSidebarList(currentPlayingIdx) {
     if (relatedVideos.length <= 1) {
         relatedVideos = allVideos.slice(0, 100);
         isFallback = true;
+    }
+
+    // Auto-align sidebar page to the currently playing episode
+    if (currentPlayingIdx !== undefined && !isFallback) {
+        const playingIdxInList = relatedVideos.findIndex(v => v.link === currentVideo.link);
+        if (playingIdxInList !== -1) {
+            currentSidebarPage = Math.floor(playingIdxInList / sidebarItemsPerPage) + 1;
+        }
     }
     
     if (sidebarHeading) {
