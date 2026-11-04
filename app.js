@@ -148,25 +148,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Fix image URL to route through fast global jsDelivr CDN
+// Universal resilient image error handler (3-tier fallback)
+window.handleImageError = function(img) {
+    if (!img) return;
+    const currentSrc = img.src || '';
+    const attempts = parseInt(img.dataset.failCount || '0', 10);
+    img.dataset.failCount = attempts + 1;
+    
+    // Tier 1: If it was loading from local thumbnails/, try jsDelivr CDN
+    if (attempts === 0 && currentSrc.includes('thumbnails/')) {
+        const file = currentSrc.split('/').pop().split('?')[0];
+        img.src = 'https://cdn.jsdelivr.net/gh/jummybilal794-lab/FallenAnime@main/thumbnails/' + file;
+        return;
+    }
+    
+    // Tier 2: If jsDelivr failed, try direct animexin.vip WordPress CDN
+    if (attempts <= 1) {
+        const file = currentSrc.split('/').pop().split('?')[0];
+        img.src = 'https://animexin.vip/wp-content/uploads/2026/07/' + file;
+        return;
+    }
+    
+    // Tier 3: Final fallback to logo.png
+    img.onerror = null;
+    img.src = 'logo.png';
+    img.style.objectFit = 'contain';
+    img.style.padding = '20px';
+    img.style.backgroundColor = '#0d0e15';
+};
+
+// Fix image URL to point to clean local repository thumbnails
 function fixThumbnailUrl(url) {
     if (!url || url === 'logo.png') return 'logo.png';
     if (url.startsWith('thumbnails/')) {
-        return 'https://cdn.jsdelivr.net/gh/jummybilal794-lab/FallenAnime@main/' + url;
+        return url;
     }
-    if (url.includes('raw.githubusercontent.com/jummybilal794-lab/FallenAnime/main/')) {
-        return url.replace('https://raw.githubusercontent.com/jummybilal794-lab/FallenAnime/main/', 'https://cdn.jsdelivr.net/gh/jummybilal794-lab/FallenAnime@main/');
+    if (url.includes('cdn.jsdelivr.net/gh/jummybilal794-lab/FallenAnime@main/thumbnails/')) {
+        return 'thumbnails/' + url.split('/').pop();
+    }
+    if (url.includes('raw.githubusercontent.com/jummybilal794-lab/FallenAnime/main/thumbnails/')) {
+        return 'thumbnails/' + url.split('/').pop();
     }
     if (url.includes('animexin.dev/wp-content/uploads/') || url.includes('animexin.vip/wp-content/uploads/')) {
         const file = url.split('/').pop();
-        return 'https://cdn.jsdelivr.net/gh/jummybilal794-lab/FallenAnime@main/thumbnails/' + file;
+        return 'thumbnails/' + file;
     }
     if (url.includes('luciferdonghua.in/wp-content/uploads/') && !url.includes('wp.com')) {
         return url.replace('https://luciferdonghua.in/', 'https://i0.wp.com/luciferdonghua.in/');
     }
     return url;
 }
-
 // Normalizes and maps thumbnails to clean series versions by source (Animexin vs LuciferDonghua)
 function normalizeThumbnails() {
     const cleanThumbsAnimexin = {};
@@ -389,7 +420,7 @@ function normalizeThumbnails() {
             }
         } else {
             // Animexin source handling
-            if (v.thumbnail && v.thumbnail.includes('jsdelivr')) {
+            if (v.thumbnail && (v.thumbnail.includes('thumbnails/') || v.thumbnail.includes('jsdelivr') || v.thumbnail.includes('animexin'))) {
                 v.thumbnail = fixThumbnailUrl(v.thumbnail);
             } else if (key && cleanThumbsAnimexin[key]) {
                 v.thumbnail = cleanThumbsAnimexin[key];
@@ -397,7 +428,7 @@ function normalizeThumbnails() {
                 let matched = false;
                 for (const [k, img] of Object.entries(animexinFallbackMap)) {
                     if (titleLower.includes(k)) {
-                        v.thumbnail = 'https://cdn.jsdelivr.net/gh/jummybilal794-lab/FallenAnime@main/thumbnails/' + img;
+                        v.thumbnail = 'thumbnails/' + img;
                         matched = true;
                         break;
                     }
@@ -794,7 +825,7 @@ function renderCatalogGridEpisodes() {
         
         card.innerHTML = `
             <div class="card-thumb-wrapper">
-                <img src="${video.thumbnail || 'logo.png'}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='logo.png'; this.style.objectFit='contain'; this.style.padding='20px'; this.style.backgroundColor='#0d0e15';" alt="${titleClean}" loading="lazy">
+                <img src="${video.thumbnail || 'logo.png'}" referrerpolicy="no-referrer" onerror="handleImageError(this);" alt="${titleClean}" loading="lazy">
                 ${watchedBadge}
                 <span class="card-badge-top-left">ONA</span>
                 <span class="card-badge-bottom-left">${epText}</span>
@@ -867,7 +898,7 @@ function renderCatalogGridAnime() {
         
         card.innerHTML = `
             <div class="card-thumb-wrapper">
-                <img src="${series.thumbnail || 'logo.png'}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='logo.png'; this.style.objectFit='contain'; this.style.padding='20px'; this.style.backgroundColor='#0d0e15';" alt="${titleClean}" loading="lazy">
+                <img src="${series.thumbnail || 'logo.png'}" referrerpolicy="no-referrer" onerror="handleImageError(this);" alt="${titleClean}" loading="lazy">
                 <span class="card-badge-top-left">Series</span>
                 <span class="card-badge-bottom-left">${epText}</span>
                 <span class="card-badge-bottom-right">Sub</span>
@@ -1757,7 +1788,7 @@ function renderSidebarList(currentPlayingIdx) {
         
         item.innerHTML = `
             <div class="sidebar-item-thumb">
-                <img src="${video.thumbnail || 'logo.png'}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='logo.png'; this.style.objectFit='contain'; this.style.padding='5px'; this.style.backgroundColor='#0d0e15';" alt="${sanitizedTitle}">
+                <img src="${video.thumbnail || 'logo.png'}" referrerpolicy="no-referrer" onerror="handleImageError(this);" alt="${sanitizedTitle}">
             </div>
             <div class="sidebar-item-details">
                 <h4 class="sidebar-item-title" style="${isCurrent ? 'color: var(--accent-blue)' : ''}">${sanitizedTitle}</h4>
@@ -2068,13 +2099,7 @@ function populateDrawerAccordions() {
         // Thumbnail Image
         const img = document.createElement('img');
         img.src = seriesThumbnails[series] || 'logo.png';
-        img.onerror = function() {
-            this.onerror = null;
-            this.src = 'logo.png';
-            this.style.objectFit = 'contain';
-            this.style.padding = '5px';
-            this.style.backgroundColor = '#0d0e15';
-        };
+        img.onerror = function() { handleImageError(this); };
         img.alt = series;
         img.className = 'drawer-series-thumb';
         img.loading = 'lazy';
@@ -2745,7 +2770,7 @@ function renderPopularCarousel() {
         
         card.innerHTML = `
             <div class="card-thumb-wrapper">
-                <img src="${video.thumbnail || 'logo.png'}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='logo.png'; this.style.objectFit='contain'; this.style.padding='20px'; this.style.backgroundColor='#0d0e15';" alt="${sanitizedTitle}" loading="lazy">
+                <img src="${video.thumbnail || 'logo.png'}" referrerpolicy="no-referrer" onerror="handleImageError(this);" alt="${sanitizedTitle}" loading="lazy">
                 <span class="card-badge-top-left">ONA</span>
                 <span class="card-badge-bottom-left">${epText}</span>
                 <span class="card-badge-bottom-right">Sub</span>
