@@ -3853,7 +3853,7 @@ function initLiveChat() {
     });
 }
 
-// Reorders mirrors to strictly prioritize English Sub and fast, reliable video hosts
+// Reorders mirrors to strictly prioritize Dailymotion and English Sub for fast, reliable playback
 function reorderMirrors(mirrors) {
     if (!mirrors || !Array.isArray(mirrors)) return [];
     
@@ -3865,23 +3865,34 @@ function reorderMirrors(mirrors) {
         
         let score = 0;
         
-        // 1. Language & Host Specific Priority
-        // Priority #1: Hardsub English Odysee
-        // Priority #2: Hardsub English Dailymotion
-        // Then other English Sub hosts, then All Sub, then Indo Sub
+        const isDailymotion = fullText.includes('dailymotion') || 
+                              fullText.includes('daylimotion') || 
+                              fullText.includes('dmcdn') || 
+                              fullText.includes('geo.dailymotion') ||
+                              fullText.includes('dai.ly');
+
         const isEnglish = label.includes('english') || label.includes('eng') || label.includes('hardsub english') || label.includes('[eng]') || fullText.includes('english sub') || fullText.includes('eng sub');
         const isAllSub = label.includes('all sub') || label.includes('multi') || label.includes('softsub');
         const isIndo = label.includes('indonesia') || label.includes('indo') || label.includes('hardsub indonesia');
         
-        if (isEnglish) {
+        // Priority #1: Dailymotion Player (Highest priority when playing an episode)
+        if (isDailymotion) {
+            if (isEnglish) {
+                score += 5000; // #1 Absolute Priority: Hardsub English Dailymotion
+            } else if (isAllSub) {
+                score += 4500; // #2 Priority: All Sub / Multi-Sub Dailymotion (contains English subs)
+            } else if (isIndo) {
+                score += 1500; // #3 Dailymotion Indonesia (if only Indo is available)
+            } else {
+                score += 4000; // Generic / Unlabelled Dailymotion
+            }
+        } else if (isEnglish) {
             if (fullText.includes('odysee')) {
-                score += 3000; // #1 Priority: Hardsub English Odysee
-            } else if (fullText.includes('dailymotion') || fullText.includes('daylimotion') || fullText.includes('dmcdn') || fullText.includes('geo.dailymotion')) {
-                score += 2800; // #2 Priority: Hardsub English Dailymotion
+                score += 3000;
             } else if (fullText.includes('youtube') || fullText.includes('youtu.be')) {
-                score += 2600;
+                score += 2800;
             } else if (fullText.includes('ok.ru') || fullText.includes('videoembed')) {
-                score += 2500;
+                score += 2600;
             } else if (fullText.includes('streamwish') || fullText.includes('seekplayer') || fullText.includes('vidhide') || fullText.includes('streamsb') || fullText.includes('sbbrisk') || fullText.includes('streamhub') || fullText.includes('filelions')) {
                 score += 2400;
             } else if (fullText.includes('rumble')) {
@@ -3895,23 +3906,19 @@ function reorderMirrors(mirrors) {
             }
         } else if (isAllSub) {
             if (fullText.includes('odysee')) {
-                score += 1500;
-            } else if (fullText.includes('dailymotion') || fullText.includes('daylimotion') || fullText.includes('dmcdn') || fullText.includes('geo.dailymotion')) {
-                score += 1400;
+                score += 1800;
             } else if (fullText.includes('streamwish') || fullText.includes('seekplayer') || fullText.includes('vidhide') || fullText.includes('streamsb') || fullText.includes('sbbrisk')) {
-                score += 1300;
+                score += 1400;
             } else if (fullText.includes('rumble')) {
-                score += 1200;
+                score += 1300;
             } else if (fullText.includes('mega')) {
-                score += 1100;
+                score += 1200;
             } else {
                 score += 1000;
             }
         } else if (isIndo) {
             if (fullText.includes('odysee')) {
                 score += 500;
-            } else if (fullText.includes('dailymotion') || fullText.includes('daylimotion') || fullText.includes('dmcdn')) {
-                score += 450;
             } else if (fullText.includes('ok.ru')) {
                 score += 400;
             } else if (fullText.includes('mega')) {
@@ -3927,7 +3934,7 @@ function reorderMirrors(mirrors) {
         
         // Severely penalize placeholders
         if (isPlaceholderMirror(mirror)) {
-            score -= 5000;
+            score -= 10000;
         }
         
         return score;
