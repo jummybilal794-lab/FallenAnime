@@ -321,6 +321,50 @@ if ($Full) {
             Log-Message "[Animexin] Failed to fetch release page ${page}: $_" "warning"
         }
     }
+    
+    # 3b. Active Series Gap-Detection: Scan episodelist of ongoing/popular anime
+    Log-Message "[Animexin] Checking active series episodic lists for any missing intermediate releases..."
+    $seedCandidates = [System.Collections.Generic.HashSet[string]]::new()
+    foreach ($item in $newItems) {
+        if ($item.link -and $item.link -like "*animexin.dev*") {
+            $null = $seedCandidates.Add($item.link)
+        }
+    }
+    $topCount = 0
+    foreach ($v in $videos) {
+        if ($v.link -and $v.link -like "*animexin.dev*") {
+            $null = $seedCandidates.Add($v.link)
+            $topCount++
+            if ($topCount -ge 25) { break }
+        }
+    }
+    
+    $seriesChecked = 0
+    foreach ($seedUrl in $seedCandidates) {
+        if ($seriesChecked -ge 20) { break }
+        try {
+            $seedResp = Invoke-WebRequest -Uri $seedUrl -UseBasicParsing -UserAgent $userAgent -TimeoutSec 10
+            if ($seedResp.Content -match '(?s)<div class="episodelist">(.*?)</div>\s*</div>') {
+                $eLinks = [regex]::Matches($Matches[1], '<a\s+href="([^"]+)"') | ForEach-Object { $_.Groups[1].Value.Trim() }
+                $gapFound = 0
+                foreach ($el in $eLinks) {
+                    if ($el -and -not $existingLinks.ContainsKey($el) -and -not $candidateLinks.ContainsKey($el)) {
+                        $candidateLinks[$el] = $true
+                        $newItems += [PSCustomObject]@{
+                            link = $el
+                            title = ""
+                            pubDate = (Get-Date).ToString("yyyy-MM-ddTHH:mm:sszzz")
+                        }
+                        $gapFound++
+                    }
+                }
+                if ($gapFound -gt 0) {
+                    Log-Message "[Animexin] Discovered $gapFound missing episode(s) from series list of: $seedUrl"
+                }
+            }
+            $seriesChecked++
+        } catch {}
+    }
 }
 
 # Filter to genuinely missing items
@@ -589,8 +633,27 @@ foreach ($item in $newItems) {
             $thumbnail = $Matches[1]
         }
         
-        if ($thumbnail -and $thumbnail.StartsWith("https://animexin.dev/")) {
-            $thumbnail = $thumbnail -replace "https://animexin\.dev/", "https://animexin.vip/"
+        if ($thumbnail) {
+            $thumbFilename = $thumbnail.Split('/')[-1].Split('?')[0]
+            if ($thumbFilename) {
+                $thumbnailsDir = Join-Path $PSScriptRoot "thumbnails"
+                if (-not (Test-Path $thumbnailsDir)) { New-Item -ItemType Directory -Path $thumbnailsDir -Force | Out-Null }
+                $targetFile = Join-Path $thumbnailsDir $thumbFilename
+                if (-not (Test-Path $targetFile)) {
+                    try {
+                        Invoke-WebRequest -Uri $thumbnail -OutFile $targetFile -TimeoutSec 10 -UserAgent $userAgent
+                        $thumbnail = "thumbnails/$thumbFilename"
+                    } catch {
+                        $vipUrl = $thumbnail -replace 'animexin\.dev', 'animexin.vip'
+                        try {
+                            Invoke-WebRequest -Uri $vipUrl -OutFile $targetFile -TimeoutSec 10 -UserAgent $userAgent
+                            $thumbnail = "thumbnails/$thumbFilename"
+                        } catch {}
+                    }
+                } else {
+                    $thumbnail = "thumbnails/$thumbFilename"
+                }
+            }
         }
         
         # Extract Select class="mirror" dropdown options
