@@ -9,6 +9,7 @@ param(
 
 $videosPath = Join-Path $PSScriptRoot "videos.json"
 $logPath = Join-Path $PSScriptRoot "sync.log"
+$userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 $sources = @(
     @{
         name = "Animexin"
@@ -35,7 +36,7 @@ function Log-Message($msg, $level = "info") {
     
     # Write to console
     if ($level -eq "error") {
-        Write-Error $line
+        [Console]::Error.WriteLine($line)
     } elseif ($level -eq "warning") {
         Write-Warning $line
     } else {
@@ -235,39 +236,12 @@ foreach ($v in $videos) {
 $newItems = @()
 $candidateLinks = @{}
 
-# Always scan latest release HTML pages (Pages 1 to 10) directly from Animexin
-Log-Message "Scanning recent release pages from Animexin..."
-
-# Animexin latest release pages
-for ($p = 1; $p -le 10; $p++) {
-    $url = if ($p -eq 1) { "https://animexin.dev/" } else { "https://animexin.dev/page/$p/" }
-    try {
-        $resp = Invoke-WebRequest -Uri $url -UseBasicParsing -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -TimeoutSec 15
-        $matches = [regex]::Matches($resp.Content, '<a[^>]+href="(https://animexin\.dev/[^"/]+/?)"[^>]+title="([^"]+)"')
-        foreach ($m in $matches) {
-            $link = $m.Groups[1].Value.Trim()
-            $title = $m.Groups[2].Value.Trim()
-            if ($link -match '/blog/' -or $link -match '/anime/' -or $link -match '/genre/' -or $link -match '/category/' -or $link -match '/season/' -or $link -match '/author/') { continue }
-            if ($link -match 'episode|sub' -and -not $candidateLinks.ContainsKey($link)) {
-                $candidateLinks[$link] = $true
-                $newItems += [PSCustomObject]@{
-                    link = $link
-                    title = $title
-                    pubDate = (Get-Date).ToString("yyyy-MM-ddTHH:mm:sszzz")
-                }
-            }
-        }
-    } catch {
-        Log-Message "Failed to fetch Animexin recent page ${p}: $_" "warning"
-    }
-}
-
 if ($Full) {
     # 3. Deep Sync: Fetch URLs from sitemaps
     foreach ($source in $sources) {
         Log-Message "Fetching sitemap index from: $($source.sitemapUrl)"
         try {
-            $sitemapWeb = Invoke-WebRequest -Uri $source.sitemapUrl -UseBasicParsing -TimeoutSec 15
+            $sitemapWeb = Invoke-WebRequest -Uri $source.sitemapUrl -UseBasicParsing -UserAgent $userAgent -TimeoutSec 15
             $sitemapXml = $sitemapWeb.Content
             $postSitemaps = [regex]::Matches($sitemapXml, $source.sitemapPattern) | ForEach-Object { $_.Value } | Sort-Object {
                 if ($_ -match 'post-sitemap(\d+)\.xml') { [int]$Matches[1] } else { 0 }
@@ -279,7 +253,7 @@ if ($Full) {
             foreach ($sitemapUrl in $postSitemaps) {
                 Log-Message "[$($source.name)] Checking sitemap: $sitemapUrl"
                 try {
-                    $subWeb = Invoke-WebRequest -Uri $sitemapUrl -UseBasicParsing -TimeoutSec 15
+                    $subWeb = Invoke-WebRequest -Uri $sitemapUrl -UseBasicParsing -UserAgent $userAgent -TimeoutSec 15
                     $subXml = $subWeb.Content
                     
                     $rawUrlBlocks = [regex]::Matches($subXml, '(?s)<url>(.*?)</url>')
@@ -325,7 +299,7 @@ if ($Full) {
         $url = if ($page -eq 1) { "https://animexin.dev/" } else { "https://animexin.dev/page/$page/" }
         Log-Message "[Animexin] Fetching release page $page from: $url"
         try {
-            $resp = Invoke-WebRequest -Uri $url -UseBasicParsing -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" -TimeoutSec 15
+            $resp = Invoke-WebRequest -Uri $url -UseBasicParsing -UserAgent $userAgent -TimeoutSec 15
             $matches = [regex]::Matches($resp.Content, '<a[^>]+href="(https://animexin\.dev/[^"/]+/?)"[^>]+title="([^"]+)"')
             $pageCount = 0
             foreach ($m in $matches) {
@@ -561,7 +535,7 @@ foreach ($item in $newItems) {
     
     try {
         # Fetch page HTML
-        $webRequest = Invoke-WebRequest -Uri $item.link -UseBasicParsing -TimeoutSec 15
+        $webRequest = Invoke-WebRequest -Uri $item.link -UseBasicParsing -UserAgent $userAgent -TimeoutSec 15
         $html = $webRequest.Content
         
         # Extract title if not present in sitemap item
@@ -636,7 +610,7 @@ foreach ($item in $newItems) {
                         $embedUrl = ""
                         if ($base64Val.StartsWith("http://") -or $base64Val.StartsWith("https://")) {
                             Log-Message "Fetching mirror subpage: $base64Val"
-                            $subWebRequest = Invoke-WebRequest -Uri $base64Val -UseBasicParsing -TimeoutSec 10
+                            $subWebRequest = Invoke-WebRequest -Uri $base64Val -UseBasicParsing -UserAgent $userAgent -TimeoutSec 10
                             $subHtml = $subWebRequest.Content
                             if ($subHtml -match '(?s)<iframe[^>]+src=\"([^\"]+)\"') {
                                 $embedUrl = $Matches[1]

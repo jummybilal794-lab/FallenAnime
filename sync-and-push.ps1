@@ -14,25 +14,47 @@ if ($gitFolder -and (Test-Path $gitFolder)) {
     $env:PATH = "$gitFolder;$env:PATH"
 }
 
-# 1. Run local synchronization
+# 1. Pull latest remote changes first to prevent divergence
+Write-Host "=========================================="
+Write-Host "Checking for latest changes from GitHub..."
+try {
+    & git fetch origin main
+    & git pull --rebase origin main
+} catch {
+    Write-Warning "Git pull --rebase notice: $_"
+}
+
+# 2. Run local synchronization
 Write-Host "=========================================="
 Write-Host "Starting video database sync from Animexin..."
 & "$repoPath\sync-videos.ps1" -Limit 100
 & "$repoPath\generate-sitemap.ps1"
 
-# 2. Commit and push changes directly from repository
+# 3. Commit and push changes directly from repository
 Write-Host "Committing and pushing to GitHub..."
 try {
     $status = & git status --porcelain
     if ($status) {
-        & git add catalog.json sitemap.xml episodes/ videos.json sync.log
+        & git add catalog.json sitemap.xml episodes/
         & git commit -m "System: Auto-synced latest Animexin episodes and updated sitemap"
+        
+        # Push with automatic retry/rebase if remote has new commits
         & git push origin main
-        Write-Host "Successfully pushed latest updates to live website!"
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warning "Push rejected or failed; pulling latest remote commits and retrying..."
+            & git pull --rebase origin main
+            & git push origin main
+        }
+        
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "Successfully pushed latest updates to live website!"
+        } else {
+            Write-Warning "Push finished with exit code $LASTEXITCODE"
+        }
     } else {
         Write-Host "No new updates found to commit."
     }
 } catch {
-    Write-Error "Failed to push updates: $_"
+    Write-Warning "Notice during commit and push: $_"
 }
 Write-Host "=========================================="
