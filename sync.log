@@ -1,48 +1,36 @@
-[04:31:10] ==========================================
-[04:31:10] Starting Video Sync: 11/18/2026 04:31:10
-[04:31:10] Mode: Incremental Sync (RSS)
-[04:31:10] ==========================================
-[04:31:10] videos.json not found. Loading existing video entries from catalog.json...
-[04:31:10] Loaded 11556 existing videos from local database.
-[04:31:13] [Animexin] Scanning recent release pages 1 to 10...
-[04:31:13] [Animexin] Fetching release page 1 from: https://animexin.dev/
-[04:31:14] [Animexin] Found 33 episode links on page 1.
-[04:31:14] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
-[04:31:15] [Animexin] Found 21 episode links on page 2.
-[04:31:15] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
-[04:31:16] [Animexin] Found 20 episode links on page 3.
-[04:31:16] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
-[04:31:17] [Animexin] Found 13 episode links on page 4.
-[04:31:17] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
-[04:31:17] [Animexin] Found 12 episode links on page 5.
-[04:31:17] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
-[04:31:18] [Animexin] Found 14 episode links on page 6.
-[04:31:18] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
-[04:31:19] [Animexin] Found 16 episode links on page 7.
-[04:31:19] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
-[04:31:20] [Animexin] Found 10 episode links on page 8.
-[04:31:20] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
-[04:31:21] [Animexin] Found 14 episode links on page 9.
-[04:31:21] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
-[04:31:22] [Animexin] Found 11 episode links on page 10.
-[04:31:22] [Animexin] Checking active series episodic lists for any missing intermediate releases...
-[04:31:23] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/swallowed-star-season-5-episode-42-250-indonesia-english-sub/
-[04:31:24] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/beyond-times-gaze-episode-48-indonesia-english-sub/
-[04:31:24] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/yi-nian-yong-heng-a-will-eternal-episode-185-indonesia-english-sub/
-[04:31:27] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/supreme-god-emperor-episode-658-indonesia-english-sub/
-[04:31:30] Found 4 new episodes to scrape.
-[04:31:30] [1/4] Scraping: The Guardian of Daxia Episode 17 Indonesia, English Sub
-[04:31:30] URL: https://animexin.dev/the-guardian-of-daxia-episode-17-indonesia-english-sub/
-[04:31:30] Success: Scraped 15 mirrors and 6 download links.
-[04:31:31] [2/4] Scraping: Yi Nian Yong Heng [A Will Eternal] Episode 185 Indonesia, English Sub
-[04:31:31] URL: https://animexin.dev/yi-nian-yong-heng-a-will-eternal-episode-185-indonesia-english-sub/
-[04:31:31] Success: Scraped 15 mirrors and 6 download links.
-[04:31:32] [3/4] Scraping: Beyond Time’s Gaze Episode 47 Indonesia, English Sub
-[04:31:32] URL: https://animexin.dev/beyond-times-gaze-episode-47-indonesia-english-sub/
-[04:31:32] Success: Scraped 15 mirrors and 6 download links.
-[04:31:32] Skipping duplicate episode by title key: Yi Nian Yong Heng [A Will Eternal] Episode 54 Subtitle
-[04:31:33] Checkpoint: Saved 3 new items to videos.json (Total database: 11559 items).
-[04:31:33] Checkpoint: Generated and saved catalog.json (Size: 3821 KB).
-[04:31:33] ==========================================
-[04:31:33] Sync Completed: 11/18/2026 04:31:33
-[04:31:33] ==========================================
+[14:13:44] ==========================================
+[14:13:44] Starting Video Sync: 11/18/2026 14:13:44
+[14:13:44] Mode: Incremental Sync (RSS)
+[14:13:44] ==========================================
+[14:13:44] videos.json not found. Loading existing video entries from catalog.json...
+[14:13:45] Loaded 11559 existing videos from local database.
+[14:13:47] [Animexin] Scanning recent release pages 1 to 10...
+[14:13:47] [Animexin] Fetching release page 1 from: https://animexin.dev/
+[14:13:48] [Animexin] Found 31 episode links on page 1.
+[14:13:48] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
+[14:13:48] [Animexin] Found 18 episode links on page 2.
+[14:13:48] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
+[14:13:49] [Animexin] Found 15 episode links on page 3.
+[14:13:49] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
+[14:13:49] [Animexin] Found 11 episode links on page 4.
+[14:13:49] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
+[14:13:49] [Animexin] Found 16 episode links on page 5.
+[14:13:49] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
+[14:13:50] [Animexin] Found 14 episode links on page 6.
+[14:13:50] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
+[14:13:50] [Animexin] Found 16 episode links on page 7.
+[14:13:50] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
+[14:13:50] [Animexin] Found 11 episode links on page 8.
+[14:13:50] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
+[14:13:51] [Animexin] Found 12 episode links on page 9.
+[14:13:51] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
+[14:13:51] [Animexin] Found 13 episode links on page 10.
+[14:13:51] [Animexin] Checking active series episodic lists for any missing intermediate releases...
+[14:13:53] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/swallowed-star-season-5-episode-42-250-indonesia-english-sub/
+[14:13:55] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/yi-nian-yong-heng-a-will-eternal-episode-185-indonesia-english-sub/
+[14:13:56] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/supreme-god-emperor-episode-658-indonesia-english-sub/
+[14:13:59] Found 1 new episodes to scrape.
+[14:14:00] Skipping duplicate episode by title key: Yi Nian Yong Heng [A Will Eternal] Episode 54 Subtitle
+[14:14:00] ==========================================
+[14:14:00] Sync Completed: 11/18/2026 14:14:00
+[14:14:00] ==========================================
