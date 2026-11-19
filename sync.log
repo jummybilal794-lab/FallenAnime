@@ -1,36 +1,97 @@
-[22:06:53] ==========================================
-[22:06:53] Starting Video Sync: 11/18/2026 22:06:53
-[22:06:53] Mode: Incremental Sync (RSS)
-[22:06:53] ==========================================
-[22:06:53] videos.json not found. Loading existing video entries from catalog.json...
-[22:06:53] Loaded 11559 existing videos from local database.
-[22:06:55] [Animexin] Scanning recent release pages 1 to 10...
-[22:06:55] [Animexin] Fetching release page 1 from: https://animexin.dev/
-[22:06:56] [Animexin] Found 29 episode links on page 1.
-[22:06:56] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
-[22:06:57] [Animexin] Found 25 episode links on page 2.
-[22:06:57] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
-[22:06:57] [Animexin] Found 13 episode links on page 3.
-[22:06:57] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
-[22:06:58] [Animexin] Found 11 episode links on page 4.
-[22:06:58] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
-[22:06:59] [Animexin] Found 18 episode links on page 5.
-[22:06:59] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
-[22:07:00] [Animexin] Found 18 episode links on page 6.
-[22:07:00] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
-[22:07:01] [Animexin] Found 13 episode links on page 7.
-[22:07:01] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
-[22:07:02] [Animexin] Found 9 episode links on page 8.
-[22:07:02] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
-[22:07:03] [Animexin] Found 14 episode links on page 9.
-[22:07:03] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
-[22:07:04] [Animexin] Found 12 episode links on page 10.
-[22:07:04] [Animexin] Checking active series episodic lists for any missing intermediate releases...
-[22:07:07] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/swallowed-star-season-5-episode-42-250-indonesia-english-sub/
-[22:07:08] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/yi-nian-yong-heng-a-will-eternal-episode-185-indonesia-english-sub/
-[22:07:11] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/supreme-god-emperor-episode-658-indonesia-english-sub/
-[22:07:15] Found 1 new episodes to scrape.
-[22:07:16] Skipping duplicate episode by title key: Yi Nian Yong Heng [A Will Eternal] Episode 54 Subtitle
-[22:07:16] ==========================================
-[22:07:16] Sync Completed: 11/18/2026 22:07:16
-[22:07:16] ==========================================
+[03:38:41] ==========================================
+[03:38:41] Starting Video Sync: 11/19/2026 03:38:41
+[03:38:41] Mode: Incremental Sync (RSS)
+[03:38:41] ==========================================
+[03:38:41] videos.json not found. Loading existing video entries from catalog.json...
+[03:38:41] Loaded 11559 existing videos from local database.
+[03:38:44] [Animexin] Scanning recent release pages 1 to 10...
+[03:38:44] [Animexin] Fetching release page 1 from: https://animexin.dev/
+[03:38:46] [Animexin] Found 32 episode links on page 1.
+[03:38:46] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
+[03:38:46] [Animexin] Found 24 episode links on page 2.
+[03:38:46] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
+[03:38:46] [Animexin] Found 13 episode links on page 3.
+[03:38:46] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
+[03:38:47] [Animexin] Found 13 episode links on page 4.
+[03:38:47] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
+[03:38:48] [Animexin] Found 13 episode links on page 5.
+[03:38:48] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
+[03:38:49] [Animexin] Found 20 episode links on page 6.
+[03:38:49] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
+[03:38:50] [Animexin] Found 14 episode links on page 7.
+[03:38:50] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
+[03:38:51] [Animexin] Found 13 episode links on page 8.
+[03:38:51] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
+[03:38:52] [Animexin] Found 10 episode links on page 9.
+[03:38:52] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
+[03:38:53] [Animexin] Found 12 episode links on page 10.
+[03:38:53] [Animexin] Checking active series episodic lists for any missing intermediate releases...
+[03:38:54] [Animexin] Discovered 8 missing episode(s) from series list of: https://animexin.dev/against-the-gods-episode-64-indonesia-english-sub/
+[03:38:55] [Animexin] Discovered 10 missing episode(s) from series list of: https://animexin.dev/oriental-martial-academy-episode-19-indonesia-english-sub/
+[03:38:56] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/yi-nian-yong-heng-a-will-eternal-episode-185-indonesia-english-sub/
+[03:38:58] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/supreme-god-emperor-episode-658-indonesia-english-sub/
+[03:38:59] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/swallowed-star-season-5-episode-42-250-indonesia-english-sub/
+[03:39:02] Found 20 new episodes to scrape.
+[03:39:02] [1/20] Scraping: Against the Gods Episode 64 Indonesia, English Sub
+[03:39:02] URL: https://animexin.dev/against-the-gods-episode-64-indonesia-english-sub/
+[03:39:02] Success: Scraped 13 mirrors and 6 download links.
+[03:39:03] [2/20] Scraping: Oriental Martial Academy Episode 19 Indonesia, English Sub
+[03:39:03] URL: https://animexin.dev/oriental-martial-academy-episode-19-indonesia-english-sub/
+[03:39:03] Success: Scraped 15 mirrors and 6 download links.
+[03:39:03] [3/20] Scraping: Against the Gods Episode 62 Indonesia, English Sub
+[03:39:03] URL: https://animexin.dev/against-the-gods-episode-62-indonesia-english-sub/
+[03:39:03] Success: Scraped 15 mirrors and 6 download links.
+[03:39:04] [4/20] Scraping: Against the Gods Episode 58 Indonesia, English Sub
+[03:39:04] URL: https://animexin.dev/against-the-gods-episode-58-indonesia-english-sub/
+[03:39:04] Success: Scraped 16 mirrors and 6 download links.
+[03:39:05] [5/20] Scraping: Against the Gods Episode 52 Indonesia, English Sub
+[03:39:05] URL: https://animexin.dev/against-the-gods-episode-52-indonesia-english-sub/
+[03:39:05] Success: Scraped 16 mirrors and 6 download links.
+[03:39:06] [6/20] Scraping: Against the Gods Episode 51 Indonesia, English Sub
+[03:39:06] URL: https://animexin.dev/against-the-gods-episode-51-indonesia-english-sub/
+[03:39:06] Success: Scraped 15 mirrors and 6 download links.
+[03:39:06] [7/20] Scraping: Against the Gods Episode 50 Indonesia, English Sub
+[03:39:06] URL: https://animexin.dev/against-the-gods-episode-50-indonesia-english-sub/
+[03:39:06] Success: Scraped 16 mirrors and 6 download links.
+[03:39:07] [8/20] Scraping: Against the Gods Episode 49 Indonesia, English Sub
+[03:39:07] URL: https://animexin.dev/against-the-gods-episode-49-indonesia-english-sub/
+[03:39:07] Success: Scraped 13 mirrors and 6 download links.
+[03:39:08] [9/20] Scraping: Against the Gods Episode 48 Indonesia, English Sub
+[03:39:08] URL: https://animexin.dev/against-the-gods-episode-48-indonesia-english-sub/
+[03:39:08] Success: Scraped 16 mirrors and 6 download links.
+[03:39:08] [10/20] Scraping: Against the Gods Episode 47 Indonesia, English Sub
+[03:39:08] URL: https://animexin.dev/against-the-gods-episode-47-indonesia-english-sub/
+[03:39:08] Success: Scraped 14 mirrors and 6 download links.
+[03:39:09] [11/20] Scraping: Oriental Martial Academy Episode 17 Indonesia, English Sub
+[03:39:09] URL: https://animexin.dev/oriental-martial-academy-episode-17-indonesia-english-sub/
+[03:39:09] Success: Scraped 15 mirrors and 6 download links.
+[03:39:09] [12/20] Scraping: Oriental Martial Academy Episode 13 Indonesia, English Sub
+[03:39:09] URL: https://animexin.dev/oriental-martial-academy-episode-13-indonesia-english-sub/
+[03:39:09] Success: Scraped 16 mirrors and 6 download links.
+[03:39:10] [13/20] Scraping: Oriental Martial Academy Episode 7 Indonesia, English Sub
+[03:39:10] URL: https://animexin.dev/oriental-martial-academy-episode-7-indonesia-english-sub/
+[03:39:10] Success: Scraped 15 mirrors and 6 download links.
+[03:39:10] [14/20] Scraping: Oriental Martial Academy Episode 6 Indonesia, English Sub
+[03:39:10] URL: https://animexin.dev/oriental-martial-academy-episode-6-indonesia-english-sub/
+[03:39:10] Success: Scraped 16 mirrors and 6 download links.
+[03:39:11] [15/20] Scraping: Oriental Martial Academy Episode 5 Indonesia, English Sub
+[03:39:11] URL: https://animexin.dev/oriental-martial-academy-episode-5-indonesia-english-sub/
+[03:39:11] Success: Scraped 16 mirrors and 6 download links.
+[03:39:11] [16/20] Scraping: Oriental Martial Academy Episode 4 Indonesia, English Sub
+[03:39:11] URL: https://animexin.dev/oriental-martial-academy-episode-4-indonesia-english-sub/
+[03:39:11] Success: Scraped 14 mirrors and 6 download links.
+[03:39:12] [17/20] Scraping: Oriental Martial Academy Episode 3 Indonesia, English Sub
+[03:39:12] URL: https://animexin.dev/oriental-martial-academy-episode-3-indonesia-english-sub/
+[03:39:12] Success: Scraped 16 mirrors and 6 download links.
+[03:39:12] [18/20] Scraping: Oriental Martial Academy Episode 2 Indonesia, English Sub
+[03:39:12] URL: https://animexin.dev/oriental-martial-academy-episode-2-indonesia-english-sub/
+[03:39:12] Success: Scraped 15 mirrors and 6 download links.
+[03:39:13] [19/20] Scraping: Oriental Martial Academy Episode 1 Indonesia, English Sub
+[03:39:13] URL: https://animexin.dev/oriental-martial-academy-episode-1-indonesia-english-sub/
+[03:39:13] Success: Scraped 15 mirrors and 6 download links.
+[03:39:13] Skipping duplicate episode by title key: Yi Nian Yong Heng [A Will Eternal] Episode 54 Subtitle
+[03:39:14] Checkpoint: Saved 19 new items to videos.json (Total database: 11578 items).
+[03:39:15] Checkpoint: Generated and saved catalog.json (Size: 3828 KB).
+[03:39:15] ==========================================
+[03:39:15] Sync Completed: 11/19/2026 03:39:15
+[03:39:15] ==========================================
