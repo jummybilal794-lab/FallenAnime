@@ -1,116 +1,85 @@
-[03:31:49] ==========================================
-[03:31:49] Starting Video Sync: 11/20/2026 03:31:49
-[03:31:49] Mode: Incremental Sync (RSS)
-[03:31:49] ==========================================
-[03:31:49] videos.json not found. Loading existing video entries from catalog.json...
-[03:31:49] Loaded 11600 existing videos from local database.
-[03:31:52] [Animexin] Scanning recent release pages 1 to 10...
-[03:31:52] [Animexin] Fetching release page 1 from: https://animexin.dev/
-[03:31:53] [Animexin] Found 31 episode links on page 1.
-[03:31:53] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
-[03:31:53] [Animexin] Found 18 episode links on page 2.
-[03:31:53] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
-[03:31:54] [Animexin] Found 22 episode links on page 3.
-[03:31:54] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
-[03:31:54] [Animexin] Found 8 episode links on page 4.
-[03:31:54] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
-[03:31:55] [Animexin] Found 18 episode links on page 5.
-[03:31:55] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
-[03:31:57] [Animexin] Found 14 episode links on page 6.
-[03:31:57] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
-[03:31:58] [Animexin] Found 14 episode links on page 7.
-[03:31:58] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
-[03:31:59] [Animexin] Found 16 episode links on page 8.
-[03:31:59] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
-[03:31:59] [Animexin] Found 12 episode links on page 9.
-[03:31:59] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
-[03:32:00] [Animexin] Found 11 episode links on page 10.
-[03:32:00] [Animexin] Checking active series episodic lists for any missing intermediate releases...
-[03:32:00] [Animexin] Discovered 9 missing episode(s) from series list of: https://animexin.dev/the-great-ruler-3d-episode-100-indonesia-english-sub/
-[03:32:01] [Animexin] Discovered 10 missing episode(s) from series list of: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-104-indonesia-english-sub/
-[03:32:03] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/oriental-martial-academy-episode-19-indonesia-english-sub/
-[03:32:03] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/yi-nian-yong-heng-a-will-eternal-episode-185-indonesia-english-sub/
-[03:32:05] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/supreme-god-emperor-episode-658-indonesia-english-sub/
-[03:32:05] [Animexin] Discovered 4 missing episode(s) from series list of: https://animexin.dev/in-search-of-gods-episode-24-indonesia-english-sub/
-[03:32:06] Found 26 new episodes to scrape.
-[03:32:06] [1/26] Scraping: The Great Ruler 3D Episode 100 Indonesia, English Sub
-[03:32:06] URL: https://animexin.dev/the-great-ruler-3d-episode-100-indonesia-english-sub/
-[03:32:06] Success: Scraped 15 mirrors and 6 download links.
-[03:32:06] [2/26] Scraping: The Demon Hunter [Chang Yuan Tu] Episode 104 Indonesia, English Sub
-[03:32:06] URL: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-104-indonesia-english-sub/
-[03:32:06] Success: Scraped 15 mirrors and 6 download links.
-[03:32:07] [3/26] Scraping: The Great Ruler 3D Episode 98 Indonesia, English Sub
-[03:32:07] URL: https://animexin.dev/the-great-ruler-3d-episode-98-indonesia-english-sub/
-[03:32:07] Success: Scraped 15 mirrors and 6 download links.
-[03:32:07] [4/26] Scraping: The Great Ruler 3D Episode 94 Indonesia, English Sub
-[03:32:07] URL: https://animexin.dev/the-great-ruler-3d-episode-94-indonesia-english-sub/
-[03:32:07] Success: Scraped 16 mirrors and 6 download links.
-[03:32:08] [5/26] Scraping: The Great Ruler 3D Episode 88 Indonesia, English Sub
-[03:32:08] URL: https://animexin.dev/the-great-ruler-3d-episode-88-indonesia-english-sub/
-[03:32:08] Success: Scraped 16 mirrors and 6 download links.
-[03:32:08] [6/26] Scraping: The Great Ruler 3D Episode 87 Indonesia, English Sub
-[03:32:08] URL: https://animexin.dev/the-great-ruler-3d-episode-87-indonesia-english-sub/
-[03:32:08] Success: Scraped 15 mirrors and 6 download links.
-[03:32:08] [7/26] Scraping: The Great Ruler 3D Episode 86 Indonesia, English Sub
-[03:32:08] URL: https://animexin.dev/the-great-ruler-3d-episode-86-indonesia-english-sub/
-[03:32:08] Success: Scraped 16 mirrors and 6 download links.
-[03:32:09] [8/26] Scraping: The Great Ruler 3D Episode 85 Indonesia, English Sub
-[03:32:09] URL: https://animexin.dev/the-great-ruler-3d-episode-85-indonesia-english-sub/
-[03:32:09] Success: Scraped 16 mirrors and 6 download links.
-[03:32:09] [9/26] Scraping: The Great Ruler 3D Episode 84 Indonesia, English Sub
-[03:32:09] URL: https://animexin.dev/the-great-ruler-3d-episode-84-indonesia-english-sub/
-[03:32:09] Success: Scraped 15 mirrors and 6 download links.
-[03:32:10] [10/26] Scraping: The Great Ruler 3D Episode 83 Indonesia, English Sub
-[03:32:10] URL: https://animexin.dev/the-great-ruler-3d-episode-83-indonesia-english-sub/
-[03:32:10] Success: Scraped 16 mirrors and 6 download links.
-[03:32:10] [11/26] Scraping: The Great Ruler 3D Episode 82 Indonesia, English Sub
-[03:32:10] URL: https://animexin.dev/the-great-ruler-3d-episode-82-indonesia-english-sub/
-[03:32:10] Success: Scraped 16 mirrors and 6 download links.
-[03:32:11] [12/26] Scraping: The Demon Hunter [Chang Yuan Tu] Episode 102 Indonesia, English Sub
-[03:32:11] URL: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-102-indonesia-english-sub/
-[03:32:11] Success: Scraped 13 mirrors and 6 download links.
-[03:32:11] [13/26] Scraping: The Demon Hunter [Chang Yuan Tu] Episode 98 Indonesia, English Sub
-[03:32:11] URL: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-98-indonesia-english-sub/
-[03:32:11] Success: Scraped 16 mirrors and 6 download links.
-[03:32:12] [14/26] Scraping: The Demon Hunter [Chang Yuan Tu] Episode 92 Indonesia, English Sub
-[03:32:12] URL: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-92-indonesia-english-sub/
-[03:32:12] Success: Scraped 14 mirrors and 6 download links.
-[03:32:12] [15/26] Scraping: The Demon Hunter [Chang Yuan Tu] Episode 91 Indonesia, English Sub
-[03:32:12] URL: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-91-indonesia-english-sub/
-[03:32:12] Success: Scraped 15 mirrors and 6 download links.
-[03:32:12] [16/26] Scraping: The Demon Hunter [Chang Yuan Tu] Episode 90 Indonesia, English Sub
-[03:32:12] URL: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-90-indonesia-english-sub/
-[03:32:12] Success: Scraped 16 mirrors and 6 download links.
-[03:32:13] [17/26] Scraping: The Demon Hunter [Chang Yuan Tu] Episode 89 Indonesia, English Sub
-[03:32:13] URL: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-89-indonesia-english-sub/
-[03:32:13] Success: Scraped 16 mirrors and 6 download links.
-[03:32:13] [18/26] Scraping: The Demon Hunter [Chang Yuan Tu] Episode 88 Indonesia, English Sub
-[03:32:13] URL: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-88-indonesia-english-sub/
-[03:32:13] Success: Scraped 16 mirrors and 6 download links.
-[03:32:14] [19/26] Scraping: The Demon Hunter [Chang Yuan Tu] Episode 87 Indonesia, English Sub
-[03:32:14] URL: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-87-indonesia-english-sub/
-[03:32:14] Success: Scraped 16 mirrors and 6 download links.
-[03:32:14] [20/26] Scraping: The Demon Hunter [Chang Yuan Tu] Episode 86 Indonesia, English Sub
-[03:32:14] URL: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-86-indonesia-english-sub/
-[03:32:14] Success: Scraped 15 mirrors and 6 download links.
-[03:32:15] Checkpoint: Saved 20 new items to videos.json (Total database: 11620 items).
-[03:32:16] Checkpoint: Generated and saved catalog.json (Size: 3841 KB).
-[03:32:16] Skipping duplicate episode by title key: The Demon Hunter [Chang Yuan Tu] Episode 47 Indonesia, English Sub
-[03:32:16] Skipping duplicate episode by title key: Yi Nian Yong Heng [A Will Eternal] Episode 54 Subtitle
-[03:32:16] [23/26] Scraping: In Search of Gods Episode 23 Indonesia, English Sub
-[03:32:16] URL: https://animexin.dev/in-search-of-gods-episode-23-indonesia-english-sub/
-[03:32:16] Success: Scraped 16 mirrors and 6 download links.
-[03:32:17] [24/26] Scraping: In Search of Gods Episode 22 Indonesia, English Sub
-[03:32:17] URL: https://animexin.dev/in-search-of-gods-episode-22-indonesia-english-sub/
-[03:32:17] Success: Scraped 15 mirrors and 6 download links.
-[03:32:17] [25/26] Scraping: In Search of Gods Episode 21 Indonesia, English Sub
-[03:32:17] URL: https://animexin.dev/in-search-of-gods-episode-21-indonesia-english-sub/
-[03:32:17] Success: Scraped 14 mirrors and 6 download links.
-[03:32:17] [26/26] Scraping: In Search of Gods Episode 20 Indonesia, English Sub
-[03:32:17] URL: https://animexin.dev/in-search-of-gods-episode-20-indonesia-english-sub/
-[03:32:17] Success: Scraped 16 mirrors and 6 download links.
-[03:32:18] Checkpoint: Saved 4 new items to videos.json (Total database: 11624 items).
-[03:32:19] Checkpoint: Generated and saved catalog.json (Size: 3843 KB).
-[03:32:19] ==========================================
-[03:32:19] Sync Completed: 11/20/2026 03:32:19
-[03:32:19] ==========================================
+[13:07:10] ==========================================
+[13:07:10] Starting Video Sync: 11/20/2026 13:07:10
+[13:07:10] Mode: Incremental Sync (RSS)
+[13:07:10] ==========================================
+[13:07:10] videos.json not found. Loading existing video entries from catalog.json...
+[13:07:11] Loaded 11624 existing videos from local database.
+[13:07:12] [Animexin] Scanning recent release pages 1 to 10...
+[13:07:12] [Animexin] Fetching release page 1 from: https://animexin.dev/
+[13:07:13] [Animexin] Found 35 episode links on page 1.
+[13:07:13] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
+[13:07:14] [Animexin] Found 18 episode links on page 2.
+[13:07:14] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
+[13:07:14] [Animexin] Found 13 episode links on page 3.
+[13:07:14] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
+[13:07:15] [Animexin] Found 14 episode links on page 4.
+[13:07:15] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
+[13:07:15] [Animexin] Found 17 episode links on page 5.
+[13:07:15] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
+[13:07:15] [Animexin] Found 16 episode links on page 6.
+[13:07:15] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
+[13:07:16] [Animexin] Found 15 episode links on page 7.
+[13:07:16] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
+[13:07:16] [Animexin] Found 11 episode links on page 8.
+[13:07:16] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
+[13:07:17] [Animexin] Found 12 episode links on page 9.
+[13:07:17] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
+[13:07:18] [Animexin] Found 13 episode links on page 10.
+[13:07:18] [Animexin] Checking active series episodic lists for any missing intermediate releases...
+[13:07:18] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-104-indonesia-english-sub/
+[13:07:19] [Animexin] Discovered 8 missing episode(s) from series list of: https://animexin.dev/soul-land-2-the-peerless-tang-sect-episode-180-indonesia-english-sub/
+[13:07:20] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/supreme-god-emperor-episode-659-indonesia-english-sub/
+[13:07:23] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/oriental-martial-academy-episode-19-indonesia-english-sub/
+[13:07:24] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/yi-nian-yong-heng-a-will-eternal-episode-185-indonesia-english-sub/
+[13:07:25] [Animexin] Discovered 2 missing episode(s) from series list of: https://animexin.dev/god-of-eternity-episode-3-indonesia-english-sub/
+[13:07:25] Found Animexin item for existing Lucifer Donghua episode: https://animexin.dev/soul-land-2-the-peerless-tang-sect-episode-162-indonesia-english-sub/. Allowing overwrite!
+[13:07:25] Found 15 new episodes to scrape.
+[13:07:25] [1/15] Scraping: Soul Land 2: The Peerless Tang Sect Episode 180 Indonesia, English Sub
+[13:07:25] URL: https://animexin.dev/soul-land-2-the-peerless-tang-sect-episode-180-indonesia-english-sub/
+[13:07:25] Success: Scraped 15 mirrors and 6 download links.
+[13:07:26] [2/15] Scraping: Against the Sky Supreme Episode 568 Indonesia, English Sub
+[13:07:26] URL: https://animexin.dev/against-the-sky-supreme-episode-568-indonesia-english-sub/
+[13:07:26] Success: Scraped 15 mirrors and 6 download links.
+[13:07:26] [3/15] Scraping: Supreme God Emperor Episode 659 Indonesia, English Sub
+[13:07:26] URL: https://animexin.dev/supreme-god-emperor-episode-659-indonesia-english-sub/
+[13:07:26] Success: Scraped 15 mirrors and 6 download links.
+[13:07:27] Skipping duplicate episode by title key: The Demon Hunter [Chang Yuan Tu] Episode 47 Indonesia, English Sub
+[13:07:27] [5/15] Scraping: Soul Land 2: The Peerless Tang Sect Episode 178 Indonesia, English Sub
+[13:07:27] URL: https://animexin.dev/soul-land-2-the-peerless-tang-sect-episode-178-indonesia-english-sub/
+[13:07:27] Success: Scraped 15 mirrors and 6 download links.
+[13:07:28] [6/15] Scraping: Soul Land 2: The Peerless Tang Sect Episode 168 Indonesia, English Sub
+[13:07:28] URL: https://animexin.dev/soul-land-2-the-peerless-tang-sect-episode-168-indonesia-english-sub/
+[13:07:28] Success: Scraped 16 mirrors and 6 download links.
+[13:07:28] [7/15] Scraping: Soul Land 2: The Peerless Tang Sect Episode 167 Indonesia, English Sub
+[13:07:28] URL: https://animexin.dev/soul-land-2-the-peerless-tang-sect-episode-167-indonesia-english-sub-2/
+[13:07:28] Success: Scraped 15 mirrors and 6 download links.
+[13:07:29] [8/15] Scraping: Soul Land 2: The Peerless Tang Sect Episode 166 Indonesia, English Sub
+[13:07:29] URL: https://animexin.dev/soul-land-2-the-peerless-tang-sect-episode-166-indonesia-english-sub/
+[13:07:29] Success: Scraped 16 mirrors and 6 download links.
+[13:07:29] [9/15] Scraping: Soul Land 2: The Peerless Tang Sect Episode 165 Indonesia, English Sub
+[13:07:29] URL: https://animexin.dev/soul-land-2-the-peerless-tang-sect-episode-165-indonesia-english-sub/
+[13:07:29] Success: Scraped 16 mirrors and 6 download links.
+[13:07:30] [10/15] Scraping: Soul Land 2: The Peerless Tang Sect Episode 164 Indonesia, English Sub
+[13:07:30] URL: https://animexin.dev/soul-land-2-the-peerless-tang-sect-episode-164-indonesia-english-sub/
+[13:07:30] Success: Scraped 16 mirrors and 6 download links.
+[13:07:30] [11/15] Scraping: Soul Land 2: The Peerless Tang Sect Episode 163 Indonesia, English Sub
+[13:07:30] URL: https://animexin.dev/soul-land-2-the-peerless-tang-sect-episode-163-indonesia-english-sub/
+[13:07:30] Success: Scraped 16 mirrors and 6 download links.
+[13:07:31] Allowing Animexin scrape for existing Lucifer Donghua episode: Soul Land 2: The Peerless Tang Sect Episode 162 Indonesia, English Sub
+[13:07:31] [12/15] Scraping: Soul Land 2: The Peerless Tang Sect Episode 162 Indonesia, English Sub
+[13:07:31] URL: https://animexin.dev/soul-land-2-the-peerless-tang-sect-episode-162-indonesia-english-sub/
+[13:07:31] Success: Scraped 16 mirrors and 6 download links.
+[13:07:31] Skipping duplicate episode by title key: Yi Nian Yong Heng [A Will Eternal] Episode 54 Subtitle
+[13:07:31] [14/15] Scraping: God of Eternity Episode 2 Indonesia, English Sub
+[13:07:31] URL: https://animexin.dev/god-of-eternity-episode-2-indonesia-english-sub/
+[13:07:31] Success: Scraped 16 mirrors and 6 download links.
+[13:07:32] [15/15] Scraping: God of Eternity Episode 1 Indonesia, English Sub
+[13:07:32] URL: https://animexin.dev/god-of-eternity-episode-1-indonesia-english-sub/
+[13:07:32] Success: Scraped 16 mirrors and 6 download links.
+[13:07:32] Overwriting existing Lucifer Donghua version with new Animexin version for: Soul Land 2: The Peerless Tang Sect Episode 162 Indonesia, English Sub
+[13:07:32] Deleted Lucifer Donghua JSON file: /home/runner/work/FallenAnime/FallenAnime/episodes/soul-land-2-the-peerless-tang-sect-episode-162-lucifer-donghua.json
+[13:07:33] Checkpoint: Saved 13 new items to videos.json (Total database: 11636 items).
+[13:07:33] Checkpoint: Generated and saved catalog.json (Size: 3847 KB).
+[13:07:33] ==========================================
+[13:07:33] Sync Completed: 11/20/2026 13:07:33
+[13:07:33] ==========================================
