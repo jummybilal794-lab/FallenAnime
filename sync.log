@@ -1,35 +1,40 @@
-[22:31:08] ==========================================
-[22:31:08] Starting Video Sync: 11/22/2026 22:31:08
-[22:31:08] Mode: Incremental Sync (RSS)
-[22:31:08] ==========================================
-[22:31:08] videos.json not found. Loading existing video entries from catalog.json...
-[22:31:09] Loaded 11670 existing videos from local database.
-[22:31:10] [Animexin] Scanning recent release pages 1 to 10...
-[22:31:10] [Animexin] Fetching release page 1 from: https://animexin.dev/
-[22:31:11] [Animexin] Found 24 episode links on page 1.
-[22:31:11] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
-[22:31:11] [Animexin] Found 20 episode links on page 2.
-[22:31:11] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
-[22:31:11] [Animexin] Found 17 episode links on page 3.
-[22:31:11] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
-[22:31:12] [Animexin] Found 16 episode links on page 4.
-[22:31:12] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
-[22:31:13] [Animexin] Found 18 episode links on page 5.
-[22:31:13] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
-[22:31:14] [Animexin] Found 13 episode links on page 6.
-[22:31:14] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
-[22:31:15] [Animexin] Found 14 episode links on page 7.
-[22:31:15] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
-[22:31:16] [Animexin] Found 13 episode links on page 8.
-[22:31:16] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
-[22:31:17] [Animexin] Found 13 episode links on page 9.
-[22:31:17] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
-[22:31:18] [Animexin] Found 13 episode links on page 10.
-[22:31:18] [Animexin] Checking active series episodic lists for any missing intermediate releases...
-[22:31:22] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/supreme-god-emperor-episode-659-indonesia-english-sub/
-[22:31:22] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-104-indonesia-english-sub/
-[22:31:23] Found 1 new episodes to scrape.
-[22:31:24] Skipping duplicate episode by title key: The Demon Hunter [Chang Yuan Tu] Episode 47 Indonesia, English Sub
-[22:31:24] ==========================================
-[22:31:24] Sync Completed: 11/22/2026 22:31:24
-[22:31:24] ==========================================
+[03:45:39] ==========================================
+[03:45:39] Starting Video Sync: 11/23/2026 03:45:39
+[03:45:39] Mode: Incremental Sync (RSS)
+[03:45:39] ==========================================
+[03:45:39] videos.json not found. Loading existing video entries from catalog.json...
+[03:45:40] Loaded 11670 existing videos from local database.
+[03:45:42] [Animexin] Scanning recent release pages 1 to 10...
+[03:45:42] [Animexin] Fetching release page 1 from: https://animexin.dev/
+[03:45:44] [Animexin] Found 32 episode links on page 1.
+[03:45:44] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
+[03:45:44] [Animexin] Found 27 episode links on page 2.
+[03:45:44] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
+[03:45:44] [Animexin] Found 17 episode links on page 3.
+[03:45:44] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
+[03:45:46] [Animexin] Found 13 episode links on page 4.
+[03:45:46] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
+[03:45:47] [Animexin] Found 12 episode links on page 5.
+[03:45:47] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
+[03:45:48] [Animexin] Found 16 episode links on page 6.
+[03:45:48] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
+[03:45:49] [Animexin] Found 14 episode links on page 7.
+[03:45:49] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
+[03:45:50] [Animexin] Found 12 episode links on page 8.
+[03:45:50] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
+[03:45:52] [Animexin] Found 10 episode links on page 9.
+[03:45:52] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
+[03:45:53] [Animexin] Found 12 episode links on page 10.
+[03:45:53] [Animexin] Checking active series episodic lists for any missing intermediate releases...
+[03:45:58] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/supreme-god-emperor-episode-659-indonesia-english-sub/
+[03:46:00] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-104-indonesia-english-sub/
+[03:46:01] Found 2 new episodes to scrape.
+[03:46:02] [1/2] Scraping: Gu An Episode 19 Indonesia, English Sub
+[03:46:02] URL: https://animexin.dev/gu-an-episode-19-indonesia-english-sub/
+[03:46:02] Success: Scraped 15 mirrors and 6 download links.
+[03:46:02] Skipping duplicate episode by title key: The Demon Hunter [Chang Yuan Tu] Episode 47 Indonesia, English Sub
+[03:46:03] Checkpoint: Saved 1 new items to videos.json (Total database: 11671 items).
+[03:46:04] Checkpoint: Generated and saved catalog.json (Size: 3858 KB).
+[03:46:04] ==========================================
+[03:46:04] Sync Completed: 11/23/2026 03:46:04
+[03:46:04] ==========================================
