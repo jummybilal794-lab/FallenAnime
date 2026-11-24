@@ -1,47 +1,36 @@
-[14:52:20] ==========================================
-[14:52:20] Starting Video Sync: 11/23/2026 14:52:20
-[14:52:20] Mode: Incremental Sync (RSS)
-[14:52:20] ==========================================
-[14:52:20] videos.json not found. Loading existing video entries from catalog.json...
-[14:52:21] Loaded 11671 existing videos from local database.
-[14:52:22] [Animexin] Scanning recent release pages 1 to 10...
-[14:52:22] [Animexin] Fetching release page 1 from: https://animexin.dev/
-[14:52:24] [Animexin] Found 27 episode links on page 1.
-[14:52:24] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
-[14:52:24] [Animexin] Found 15 episode links on page 2.
-[14:52:24] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
-[14:52:24] [Animexin] Found 20 episode links on page 3.
-[14:52:24] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
-[14:52:24] [Animexin] Found 13 episode links on page 4.
-[14:52:24] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
-[14:52:25] [Animexin] Found 18 episode links on page 5.
-[14:52:25] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
-[14:52:25] [Animexin] Found 20 episode links on page 6.
-[14:52:25] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
-[14:52:25] [Animexin] Found 14 episode links on page 7.
-[14:52:25] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
-[14:52:26] [Animexin] Found 11 episode links on page 8.
-[14:52:26] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
-[14:52:27] [Animexin] Found 10 episode links on page 9.
-[14:52:27] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
-[14:52:28] [Animexin] Found 14 episode links on page 10.
-[14:52:28] [Animexin] Checking active series episodic lists for any missing intermediate releases...
-[14:52:29] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/swallowed-star-season-5-episode-43-251-indonesia-english-sub/
-[14:52:30] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/supreme-god-emperor-episode-660-indonesia-english-sub/
-[14:52:32] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-104-indonesia-english-sub/
-[14:52:33] Found 4 new episodes to scrape.
-[14:52:33] [1/4] Scraping: Swallowed Star Season 5 Episode 43 [251] Indonesia, English Sub
-[14:52:33] URL: https://animexin.dev/swallowed-star-season-5-episode-43-251-indonesia-english-sub/
-[14:52:33] Success: Scraped 15 mirrors and 6 download links.
-[14:52:33] [2/4] Scraping: Against the Sky Supreme Episode 569 Indonesia, English Sub
-[14:52:33] URL: https://animexin.dev/against-the-sky-supreme-episode-569-indonesia-english-sub/
-[14:52:33] Success: Scraped 15 mirrors and 6 download links.
-[14:52:34] [3/4] Scraping: Supreme God Emperor Episode 660 Indonesia, English Sub
-[14:52:34] URL: https://animexin.dev/supreme-god-emperor-episode-660-indonesia-english-sub/
-[14:52:34] Success: Scraped 15 mirrors and 6 download links.
-[14:52:34] Skipping duplicate episode by title key: The Demon Hunter [Chang Yuan Tu] Episode 47 Indonesia, English Sub
-[14:52:35] Checkpoint: Saved 3 new items to videos.json (Total database: 11674 items).
-[14:52:35] Checkpoint: Generated and saved catalog.json (Size: 3859 KB).
-[14:52:35] ==========================================
-[14:52:35] Sync Completed: 11/23/2026 14:52:35
-[14:52:35] ==========================================
+[02:18:10] ==========================================
+[02:18:10] Starting Video Sync: 11/24/2026 02:18:10
+[02:18:10] Mode: Incremental Sync (RSS)
+[02:18:10] ==========================================
+[02:18:10] videos.json not found. Loading existing video entries from catalog.json...
+[02:18:10] Loaded 11674 existing videos from local database.
+[02:18:13] [Animexin] Scanning recent release pages 1 to 10...
+[02:18:13] [Animexin] Fetching release page 1 from: https://animexin.dev/
+[02:18:14] [Animexin] Found 30 episode links on page 1.
+[02:18:14] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
+[02:18:14] [Animexin] Found 21 episode links on page 2.
+[02:18:14] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
+[02:18:14] [Animexin] Found 18 episode links on page 3.
+[02:18:14] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
+[02:18:15] [Animexin] Found 11 episode links on page 4.
+[02:18:15] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
+[02:18:16] [Animexin] Found 11 episode links on page 5.
+[02:18:16] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
+[02:18:17] [Animexin] Found 16 episode links on page 6.
+[02:18:17] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
+[02:18:19] [Animexin] Found 15 episode links on page 7.
+[02:18:19] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
+[02:18:19] [Animexin] Found 12 episode links on page 8.
+[02:18:19] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
+[02:18:20] [Animexin] Found 12 episode links on page 9.
+[02:18:20] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
+[02:18:21] [Animexin] Found 14 episode links on page 10.
+[02:18:21] [Animexin] Checking active series episodic lists for any missing intermediate releases...
+[02:18:21] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/swallowed-star-season-5-episode-43-251-indonesia-english-sub/
+[02:18:24] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/supreme-god-emperor-episode-660-indonesia-english-sub/
+[02:18:27] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-104-indonesia-english-sub/
+[02:18:29] Found 1 new episodes to scrape.
+[02:18:29] Skipping duplicate episode by title key: The Demon Hunter [Chang Yuan Tu] Episode 47 Indonesia, English Sub
+[02:18:29] ==========================================
+[02:18:29] Sync Completed: 11/24/2026 02:18:29
+[02:18:29] ==========================================
