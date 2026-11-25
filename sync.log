@@ -1,31 +1,44 @@
-[23:30:49] ==========================================
-[23:30:49] Starting Video Sync: 11/24/2026 23:30:49
-[23:30:49] Mode: Incremental Sync (RSS)
-[23:30:49] ==========================================
-[23:30:49] videos.json not found. Loading existing video entries from catalog.json...
-[23:30:49] Loaded 11678 existing videos from local database.
-[23:30:52] [Animexin] Scanning recent release pages 1 to 10...
-[23:30:52] [Animexin] Fetching release page 1 from: https://animexin.dev/
-[23:30:53] [Animexin] Found 32 episode links on page 1.
-[23:30:53] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
-[23:30:54] [Animexin] Found 18 episode links on page 2.
-[23:30:54] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
-[23:30:54] [Animexin] Found 15 episode links on page 3.
-[23:30:54] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
-[23:30:54] [Animexin] Found 14 episode links on page 4.
-[23:30:54] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
-[23:30:55] [Animexin] Found 12 episode links on page 5.
-[23:30:55] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
-[23:30:56] [Animexin] Found 19 episode links on page 6.
-[23:30:56] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
-[23:30:57] [Animexin] Found 16 episode links on page 7.
-[23:30:57] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
-[23:30:58] [Animexin] Found 13 episode links on page 8.
-[23:30:58] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
-[23:30:59] [Animexin] Found 12 episode links on page 9.
-[23:30:59] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
-[23:31:00] [Animexin] Found 14 episode links on page 10.
-[23:31:00] [Animexin] Checking active series episodic lists for any missing intermediate releases...
-[23:31:01] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/swallowed-star-season-5-episode-43-251-indonesia-english-sub/
-[23:31:05] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/supreme-god-emperor-episode-660-indonesia-english-sub/
-[23:31:09] No new episodes found. Database is up to date.
+[08:48:09] ==========================================
+[08:48:09] Starting Video Sync: 11/25/2026 08:48:09
+[08:48:09] Mode: Incremental Sync (RSS)
+[08:48:09] ==========================================
+[08:48:09] videos.json not found. Loading existing video entries from catalog.json...
+[08:48:09] Loaded 11678 existing videos from local database.
+[08:48:11] [Animexin] Scanning recent release pages 1 to 10...
+[08:48:11] [Animexin] Fetching release page 1 from: https://animexin.dev/
+[08:48:12] [Animexin] Found 29 episode links on page 1.
+[08:48:12] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
+[08:48:12] [Animexin] Found 22 episode links on page 2.
+[08:48:12] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
+[08:48:13] [Animexin] Found 16 episode links on page 3.
+[08:48:13] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
+[08:48:14] [Animexin] Found 14 episode links on page 4.
+[08:48:14] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
+[08:48:14] [Animexin] Found 16 episode links on page 5.
+[08:48:14] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
+[08:48:15] [Animexin] Found 15 episode links on page 6.
+[08:48:15] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
+[08:48:16] [Animexin] Found 17 episode links on page 7.
+[08:48:16] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
+[08:48:17] [Animexin] Found 11 episode links on page 8.
+[08:48:17] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
+[08:48:18] [Animexin] Found 13 episode links on page 9.
+[08:48:18] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
+[08:48:19] [Animexin] Found 12 episode links on page 10.
+[08:48:19] [Animexin] Checking active series episodic lists for any missing intermediate releases...
+[08:48:21] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/swallowed-star-season-5-episode-43-251-indonesia-english-sub/
+[08:48:21] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/yi-nian-yong-heng-a-will-eternal-episode-186-indonesia-english-sub/
+[08:48:24] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/supreme-god-emperor-episode-660-indonesia-english-sub/
+[08:48:26] Found 3 new episodes to scrape.
+[08:48:26] [1/3] Scraping: Yi Nian Yong Heng [A Will Eternal] Episode 186 Indonesia, English Sub
+[08:48:26] URL: https://animexin.dev/yi-nian-yong-heng-a-will-eternal-episode-186-indonesia-english-sub/
+[08:48:26] Success: Scraped 15 mirrors and 6 download links.
+[08:48:27] [2/3] Scraping: The Guardian of Daxia Episode 19 Indonesia, English Sub
+[08:48:27] URL: https://animexin.dev/the-guardian-of-daxia-episode-19-indonesia-english-sub/
+[08:48:27] Success: Scraped 15 mirrors and 6 download links.
+[08:48:27] Skipping duplicate episode by title key: Yi Nian Yong Heng [A Will Eternal] Episode 54 Subtitle
+[08:48:28] Checkpoint: Saved 2 new items to videos.json (Total database: 11680 items).
+[08:48:28] Checkpoint: Generated and saved catalog.json (Size: 3861 KB).
+[08:48:28] ==========================================
+[08:48:28] Sync Completed: 11/25/2026 08:48:28
+[08:48:28] ==========================================
