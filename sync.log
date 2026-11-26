@@ -1,37 +1,47 @@
-[19:24:30] ==========================================
-[19:24:30] Starting Video Sync: 11/25/2026 19:24:30
-[19:24:30] Mode: Incremental Sync (RSS)
-[19:24:30] ==========================================
-[19:24:30] videos.json not found. Loading existing video entries from catalog.json...
-[19:24:31] Loaded 11680 existing videos from local database.
-[19:24:32] [Animexin] Scanning recent release pages 1 to 10...
-[19:24:32] [Animexin] Fetching release page 1 from: https://animexin.dev/
-[19:24:33] [Animexin] Found 25 episode links on page 1.
-[19:24:33] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
-[19:24:33] [Animexin] Found 25 episode links on page 2.
-[19:24:33] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
-[19:24:34] [Animexin] Found 19 episode links on page 3.
-[19:24:34] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
-[19:24:34] [Animexin] Found 10 episode links on page 4.
-[19:24:34] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
-[19:24:35] [Animexin] Found 16 episode links on page 5.
-[19:24:35] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
-[19:24:35] [Animexin] Found 17 episode links on page 6.
-[19:24:35] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
-[19:24:36] [Animexin] Found 16 episode links on page 7.
-[19:24:36] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
-[19:24:37] [Animexin] Found 10 episode links on page 8.
-[19:24:37] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
-[19:24:38] [Animexin] Found 13 episode links on page 9.
-[19:24:38] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
-[19:24:38] [Animexin] Found 12 episode links on page 10.
-[19:24:38] [Animexin] Checking active series episodic lists for any missing intermediate releases...
-[19:24:41] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/swallowed-star-season-5-episode-43-251-indonesia-english-sub/
-[19:24:42] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/yi-nian-yong-heng-a-will-eternal-episode-186-indonesia-english-sub/
-[19:24:45] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/supreme-god-emperor-episode-660-indonesia-english-sub/
-[19:24:47] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/oriental-martial-academy-episode-19-indonesia-english-sub/
-[19:24:48] Found 1 new episodes to scrape.
-[19:24:48] Skipping duplicate episode by title key: Yi Nian Yong Heng [A Will Eternal] Episode 54 Subtitle
-[19:24:48] ==========================================
-[19:24:48] Sync Completed: 11/25/2026 19:24:48
-[19:24:48] ==========================================
+[02:53:53] ==========================================
+[02:53:53] Starting Video Sync: 11/26/2026 02:53:53
+[02:53:53] Mode: Incremental Sync (RSS)
+[02:53:53] ==========================================
+[02:53:53] videos.json not found. Loading existing video entries from catalog.json...
+[02:53:53] Loaded 11680 existing videos from local database.
+[02:53:54] [Animexin] Scanning recent release pages 1 to 10...
+[02:53:54] [Animexin] Fetching release page 1 from: https://animexin.dev/
+[02:53:55] [Animexin] Found 29 episode links on page 1.
+[02:53:55] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
+[02:53:55] [Animexin] Found 18 episode links on page 2.
+[02:53:55] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
+[02:53:56] [Animexin] Found 16 episode links on page 3.
+[02:53:56] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
+[02:53:56] [Animexin] Found 14 episode links on page 4.
+[02:53:56] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
+[02:53:57] [Animexin] Found 16 episode links on page 5.
+[02:53:57] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
+[02:53:58] [Animexin] Found 15 episode links on page 6.
+[02:53:58] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
+[02:53:59] [Animexin] Found 22 episode links on page 7.
+[02:53:59] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
+[02:54:00] [Animexin] Found 9 episode links on page 8.
+[02:54:00] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
+[02:54:01] [Animexin] Found 13 episode links on page 9.
+[02:54:01] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
+[02:54:02] [Animexin] Found 12 episode links on page 10.
+[02:54:02] [Animexin] Checking active series episodic lists for any missing intermediate releases...
+[02:54:05] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/yi-nian-yong-heng-a-will-eternal-episode-186-indonesia-english-sub/
+[02:54:07] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/swallowed-star-season-5-episode-43-251-indonesia-english-sub/
+[02:54:08] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/supreme-god-emperor-episode-660-indonesia-english-sub/
+[02:54:09] Found 4 new episodes to scrape.
+[02:54:10] [1/4] Scraping: Against the Gods Episode 65 Indonesia, English Sub
+[02:54:10] URL: https://animexin.dev/against-the-gods-episode-65-indonesia-english-sub/
+[02:54:10] Success: Scraped 13 mirrors and 6 download links.
+[02:54:11] [2/4] Scraping: Spiritual Realm Walker Episode 14 Indonesia, English Sub
+[02:54:11] URL: https://animexin.dev/spiritual-realm-walker-episode-14-indonesia-english-sub/
+[02:54:11] Success: Scraped 15 mirrors and 6 download links.
+[02:54:11] [3/4] Scraping: Ancient God Sovereign Episode 38 Indonesia, English Sub
+[02:54:11] URL: https://animexin.dev/ancient-god-sovereign-episode-38-indonesia-english-sub/
+[02:54:11] Success: Scraped 13 mirrors and 6 download links.
+[02:54:11] Skipping duplicate episode by title key: Yi Nian Yong Heng [A Will Eternal] Episode 54 Subtitle
+[02:54:12] Checkpoint: Saved 3 new items to videos.json (Total database: 11683 items).
+[02:54:12] Checkpoint: Generated and saved catalog.json (Size: 3862 KB).
+[02:54:12] ==========================================
+[02:54:12] Sync Completed: 11/26/2026 02:54:12
+[02:54:12] ==========================================
