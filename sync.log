@@ -1,38 +1,53 @@
-[23:32:53] ==========================================
-[23:32:53] Starting Video Sync: 11/27/2026 23:32:53
-[23:32:53] Mode: Incremental Sync (RSS)
-[23:32:53] ==========================================
-[23:32:53] videos.json not found. Loading existing video entries from catalog.json...
-[23:32:54] Loaded 11698 existing videos from local database.
-[23:32:55] [Animexin] Scanning recent release pages 1 to 10...
-[23:32:55] [Animexin] Fetching release page 1 from: https://animexin.dev/
-[23:32:56] [Animexin] Found 26 episode links on page 1.
-[23:32:56] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
-[23:32:57] [Animexin] Found 21 episode links on page 2.
-[23:32:57] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
-[23:32:57] [Animexin] Found 15 episode links on page 3.
-[23:32:57] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
-[23:32:57] [Animexin] Found 15 episode links on page 4.
-[23:32:57] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
-[23:32:57] [Animexin] Found 17 episode links on page 5.
-[23:32:57] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
-[23:32:58] [Animexin] Found 17 episode links on page 6.
-[23:32:58] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
-[23:32:58] [Animexin] Found 18 episode links on page 7.
-[23:32:58] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
-[23:32:59] [Animexin] Found 12 episode links on page 8.
-[23:32:59] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
-[23:33:00] [Animexin] Found 11 episode links on page 9.
-[23:33:00] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
-[23:33:01] [Animexin] Found 11 episode links on page 10.
-[23:33:01] [Animexin] Checking active series episodic lists for any missing intermediate releases...
-[23:33:02] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-105-indonesia-english-sub/
-[23:33:02] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/supreme-god-emperor-episode-661-indonesia-english-sub/
-[23:33:04] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/oriental-martial-academy-episode-20-indonesia-english-sub/
-[23:33:05] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/yi-nian-yong-heng-a-will-eternal-episode-186-indonesia-english-sub/
-[23:33:07] Found 2 new episodes to scrape.
-[23:33:07] Skipping duplicate episode by title key: The Demon Hunter [Chang Yuan Tu] Episode 47 Indonesia, English Sub
-[23:33:07] Skipping duplicate episode by title key: Yi Nian Yong Heng [A Will Eternal] Episode 54 Subtitle
-[23:33:07] ==========================================
-[23:33:07] Sync Completed: 11/27/2026 23:33:07
-[23:33:07] ==========================================
+[08:00:03] ==========================================
+[08:00:03] Starting Video Sync: 11/28/2026 08:00:03
+[08:00:03] Mode: Incremental Sync (RSS)
+[08:00:03] ==========================================
+[08:00:03] videos.json not found. Loading existing video entries from catalog.json...
+[08:00:03] Loaded 11698 existing videos from local database.
+[08:00:05] [Animexin] Scanning recent release pages 1 to 10...
+[08:00:05] [Animexin] Fetching release page 1 from: https://animexin.dev/
+[08:00:05] [Animexin] Found 30 episode links on page 1.
+[08:00:05] [Animexin] Fetching release page 2 from: https://animexin.dev/page/2/
+[08:00:06] [Animexin] Found 23 episode links on page 2.
+[08:00:06] [Animexin] Fetching release page 3 from: https://animexin.dev/page/3/
+[08:00:06] [Animexin] Found 13 episode links on page 3.
+[08:00:06] [Animexin] Fetching release page 4 from: https://animexin.dev/page/4/
+[08:00:06] [Animexin] Found 16 episode links on page 4.
+[08:00:06] [Animexin] Fetching release page 5 from: https://animexin.dev/page/5/
+[08:00:06] [Animexin] Found 17 episode links on page 5.
+[08:00:06] [Animexin] Fetching release page 6 from: https://animexin.dev/page/6/
+[08:00:06] [Animexin] Found 16 episode links on page 6.
+[08:00:06] [Animexin] Fetching release page 7 from: https://animexin.dev/page/7/
+[08:00:07] [Animexin] Found 14 episode links on page 7.
+[08:00:07] [Animexin] Fetching release page 8 from: https://animexin.dev/page/8/
+[08:00:07] [Animexin] Found 10 episode links on page 8.
+[08:00:07] [Animexin] Fetching release page 9 from: https://animexin.dev/page/9/
+[08:00:07] [Animexin] Found 11 episode links on page 9.
+[08:00:07] [Animexin] Fetching release page 10 from: https://animexin.dev/page/10/
+[08:00:08] [Animexin] Found 12 episode links on page 10.
+[08:00:08] [Animexin] Checking active series episodic lists for any missing intermediate releases...
+[08:00:11] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/supreme-god-emperor-episode-661-indonesia-english-sub/
+[08:00:11] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/the-demon-hunter-chang-yuan-tu-episode-105-indonesia-english-sub/
+[08:00:13] [Animexin] Discovered 1 missing episode(s) from series list of: https://animexin.dev/oriental-martial-academy-episode-20-indonesia-english-sub/
+[08:00:14] Found 6 new episodes to scrape.
+[08:00:15] [1/6] Scraping: Beyond Time’s Gaze Episode 50 Indonesia, English Sub
+[08:00:15] URL: https://animexin.dev/beyond-times-gaze-episode-50-indonesia-english-sub/
+[08:00:15] Success: Scraped 15 mirrors and 6 download links.
+[08:00:15] [2/6] Scraping: A Record Of Mortal’s Journey To Immortality Episode 202 Indonesia, English Sub
+[08:00:15] URL: https://animexin.dev/a-record-of-mortals-journey-to-immortality-episode-202-indonesia-english-sub/
+[08:00:15] Success: Scraped 15 mirrors and 6 download links.
+[08:00:15] [3/6] Scraping: A Good Day to Ascend Episode 22 Indonesia, English Sub
+[08:00:15] URL: https://animexin.dev/a-good-day-to-ascend-episode-22-indonesia-english-sub/
+[08:00:15] Success: Scraped 15 mirrors and 6 download links.
+[08:00:16] [4/6] Scraping: Wan Jie Du Zun [Ten Thousand Worlds] Episode 504 Indonesia, English Sub
+[08:00:16] URL: https://animexin.dev/wan-jie-du-zun-ten-thousand-worlds-episode-504-indonesia-english-sub/
+[08:00:16] Success: Scraped 15 mirrors and 6 download links.
+[08:00:16] [5/6] Scraping: 100.000 Years of Refining Qi Episode 398 Indonesia, English Sub
+[08:00:16] URL: https://animexin.dev/100-000-years-of-refining-qi-episode-398-indonesia-english-sub/
+[08:00:16] Success: Scraped 15 mirrors and 6 download links.
+[08:00:17] Skipping duplicate episode by title key: The Demon Hunter [Chang Yuan Tu] Episode 47 Indonesia, English Sub
+[08:00:17] Checkpoint: Saved 5 new items to videos.json (Total database: 11703 items).
+[08:00:18] Checkpoint: Generated and saved catalog.json (Size: 3869 KB).
+[08:00:18] ==========================================
+[08:00:18] Sync Completed: 11/28/2026 08:00:18
+[08:00:18] ==========================================
